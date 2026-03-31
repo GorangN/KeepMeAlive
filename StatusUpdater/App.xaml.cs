@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using StatusUpdater.Services;
 using StatusUpdater.Services.Interfaces;
 using StatusUpdater.ViewModels;
+using StatusUpdater.Views;
 using System.IO.Pipes;
 using System.Threading;
 using System.Windows;
@@ -56,8 +57,8 @@ public partial class App : Application
         var mainViewModel = Services.GetRequiredService<MainViewModel>();
         _trayIcon.DataContext = mainViewModel;
 
-        // Create MainWindow (hidden)
-        var mainWindow = Services.GetRequiredService<MainWindow>();
+        // Create MainWindowView (hidden)
+        var mainWindow = Services.GetRequiredService<MainWindowView>();
         mainViewModel.Initialize(mainWindow, _trayIcon);
 
         // Wire window events
@@ -106,7 +107,7 @@ public partial class App : Application
         services.AddSingleton<MainViewModel>();
 
         // Windows
-        services.AddTransient<MainWindow>();
+        services.AddTransient<MainWindowView>();
     }
 
     private static async Task SignalExistingInstanceAsync()

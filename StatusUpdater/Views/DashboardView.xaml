@@ -8,10 +8,6 @@
     </UserControl.Resources>
 
     <Grid>
-        <!-- Subtle diagonal texture overlay -->
-        <Rectangle Fill="{StaticResource DiagonalStripeBrush}"
-                   IsHitTestVisible="False" Opacity="0.4"/>
-
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <StackPanel Margin="20 16 20 16">
 
@@ -62,12 +58,12 @@
                     <TextBlock Grid.Column="1">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource StatusTextStyle}">
-                                <Setter Property="Text" Value="STOPPED"/>
+                                <Setter Property="Text" Value="Stopped"/>
                                 <Setter Property="Foreground" Value="{DynamicResource SubtleBrush}"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsRunning}" Value="True">
-                                        <Setter Property="Text" Value="RUNNING"/>
-                                        <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+                                        <Setter Property="Text" Value="Running"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource RunningBrush}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -84,7 +80,7 @@
                         <ColumnDefinition Width="90"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="METHOD"
+                    <TextBlock Grid.Column="0" Text="Method"
                                Style="{StaticResource SectionLabelStyle}" VerticalAlignment="Center"/>
                     <ComboBox Grid.Column="1"
                               Style="{StaticResource ComboBoxStyle}"
@@ -104,7 +100,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="INTERVAL"
+                    <TextBlock Grid.Column="0" Text="Interval"
                                Style="{StaticResource SectionLabelStyle}" VerticalAlignment="Center"/>
                     <TextBox Grid.Column="1"
                              Style="{StaticResource InputStyle}"
@@ -120,15 +116,14 @@
                         <ColumnDefinition Width="90"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="KEEP AWAKE"
+                    <TextBlock Grid.Column="0" Text="Keep awake"
                                Style="{StaticResource SectionLabelStyle}" VerticalAlignment="Center"/>
                     <CheckBox Grid.Column="1"
                               Style="{StaticResource ToggleCheckBoxStyle}"
                               IsChecked="{Binding KeepAwakeEnabled}"
                               IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}"
                               Content="Prevent sleep &amp; display off"
-                              Foreground="{DynamicResource ForegroundBrush}"
-                              FontFamily="Consolas" FontSize="11"/>
+                              Foreground="{DynamicResource ForegroundBrush}"/>
                 </Grid>
 
                 <!-- ═══ ADVANCED OPTIONS (collapsible) ═══ -->
@@ -153,7 +148,7 @@
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0" Text="ADVANCED OPTIONS"
+                                            <TextBlock Grid.Column="0" Text="Advanced options"
                                                        Style="{StaticResource SectionLabelStyle}"
                                                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                             <TextBlock Grid.Column="1"
@@ -197,7 +192,7 @@
                                     <ColumnDefinition Width="90"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="VK CODE"
+                                <TextBlock Grid.Column="0" Text="VK code"
                                            Style="{StaticResource SectionLabelStyle}" VerticalAlignment="Center"/>
                                 <TextBox Grid.Column="1"
                                          Style="{StaticResource InputStyle}"
@@ -222,7 +217,7 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="MOUSE Δ"
+                                <TextBlock Grid.Column="0" Text="Mouse delta"
                                            Style="{StaticResource SectionLabelStyle}" VerticalAlignment="Center"/>
                                 <TextBox Grid.Column="1"
                                          Style="{StaticResource InputStyle}"
@@ -239,13 +234,13 @@
                 <Button Command="{Binding StartCommand}"
                         Visibility="{Binding IsRunning, Converter={StaticResource InverseBoolToVisibilityConverter}}"
                         Style="{StaticResource IndustrialButtonStyle}"
-                        Content="S T A R T"
+                        Content="Start"
                         Margin="0 0 0 10"/>
 
                 <Button Command="{Binding StopCommand}"
                         Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibilityConverter}}"
                         Style="{StaticResource DangerButtonStyle}"
-                        Content="S T O P"
+                        Content="Stop"
                         Margin="0 0 0 10"/>
 
                 <!-- ═══ IDLE COUNTER ═══ -->

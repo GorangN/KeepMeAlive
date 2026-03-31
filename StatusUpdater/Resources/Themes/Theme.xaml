@@ -6,57 +6,42 @@
          so theme switching works live.
     ════════════════════════════════════════════════ -->
 
-    <!-- Diagonal stripe texture (barely visible, decorative) -->
-    <VisualBrush x:Key="DiagonalStripeBrush" TileMode="Tile"
-                 Viewport="0,0,8,8" ViewportUnits="Absolute"
-                 Viewbox="0,0,8,8" ViewboxUnits="Absolute">
-        <VisualBrush.Visual>
-            <Canvas Width="8" Height="8">
-                <Line X1="0" Y1="8" X2="8" Y2="0"
-                      Stroke="#08FFFFFF" StrokeThickness="1"/>
-            </Canvas>
-        </VisualBrush.Visual>
-    </VisualBrush>
-
     <!-- ═══ TYPOGRAPHY ═══ -->
 
     <Style x:Key="AppTitleStyle" TargetType="TextBlock">
-        <Setter Property="FontFamily" Value="Consolas"/>
-        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="13"/>
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="Foreground" Value="{DynamicResource SubtleBrush}"/>
-        <!-- LetterSpacing not available in WPF -->
         <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
     <Style x:Key="SectionLabelStyle" TargetType="TextBlock">
-        <Setter Property="FontFamily" Value="Consolas"/>
-        <Setter Property="FontSize" Value="9"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="11"/>
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="Foreground" Value="{DynamicResource SubtleBrush}"/>
-        <!-- LetterSpacing not available in WPF -->
         <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
     <Style x:Key="FooterTextStyle" TargetType="TextBlock">
-        <Setter Property="FontFamily" Value="Consolas"/>
-        <Setter Property="FontSize" Value="9"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="11"/>
         <Setter Property="Foreground" Value="{DynamicResource SubtleBrush}"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
     <Style x:Key="StatusTextStyle" TargetType="TextBlock">
-        <Setter Property="FontFamily" Value="Consolas"/>
-        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="13"/>
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
-        <!-- LetterSpacing not available in WPF -->
     </Style>
 
     <Style x:Key="IdleTextStyle" TargetType="TextBlock">
-        <Setter Property="FontFamily" Value="Consolas"/>
-        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="11"/>
         <Setter Property="Foreground" Value="{DynamicResource SubtleBrush}"/>
     </Style>
 
@@ -67,7 +52,7 @@
         <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="FontFamily" Value="Consolas"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
         <Setter Property="FontSize" Value="13"/>
         <Setter Property="Padding" Value="8 4"/>
         <Setter Property="Height" Value="30"/>
@@ -102,7 +87,7 @@
         <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="FontFamily" Value="Consolas"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
         <Setter Property="FontSize" Value="13"/>
         <Setter Property="Height" Value="30"/>
         <Setter Property="Padding" Value="8 0"/>
@@ -164,7 +149,7 @@
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="ComboBoxItem">
-                    <Setter Property="FontFamily" Value="Consolas"/>
+                    <Setter Property="FontFamily" Value="Segoe UI"/>
                     <Setter Property="FontSize" Value="13"/>
                     <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
                     <Setter Property="Background" Value="Transparent"/>
@@ -178,7 +163,7 @@
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="{DynamicResource Surface2Brush}"/>
+                                        <Setter Property="Background" Value="{DynamicResource BorderBrush}"/>
                                     </Trigger>
                                     <Trigger Property="IsSelected" Value="True">
                                         <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
@@ -196,20 +181,19 @@
 
     <Style x:Key="IndustrialButtonStyle" TargetType="Button">
         <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
-        <Setter Property="Foreground" Value="#000000"/>
+        <Setter Property="Foreground" Value="#FFFFFF"/>
         <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="FontFamily" Value="Consolas"/>
-        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="15"/>
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="Height" Value="42"/>
         <Setter Property="Cursor" Value="Hand"/>
-        <!-- LetterSpacing not available in WPF -->
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="border"
                             Background="{TemplateBinding Background}"
-                            CornerRadius="4">
+                            CornerRadius="20">
                         <ContentPresenter HorizontalAlignment="Center"
                                           VerticalAlignment="Center"/>
                     </Border>
@@ -234,17 +218,17 @@
         <Setter Property="Foreground" Value="#FFFFFF"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#FF5555"/>
+                <Setter Property="Background" Value="#D93025"/>
             </Trigger>
         </Style.Triggers>
     </Style>
 
     <Style x:Key="SecondaryButtonStyle" TargetType="Button">
-        <Setter Property="Background" Value="{DynamicResource Surface2Brush}"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="FontFamily" Value="Consolas"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
         <Setter Property="FontSize" Value="11"/>
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="Height" Value="32"/>
@@ -256,11 +240,12 @@
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="4">
+                            CornerRadius="20">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="{DynamicResource Surface2Brush}"/>
                             <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
@@ -282,7 +267,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border x:Name="border" Background="Transparent" CornerRadius="4">
+                    <Border x:Name="border" Background="Transparent" CornerRadius="16">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -303,8 +288,8 @@
 
     <Style x:Key="ToggleCheckBoxStyle" TargetType="CheckBox">
         <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
-        <Setter Property="FontFamily" Value="Consolas"/>
-        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="13"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Template">
@@ -322,7 +307,7 @@
                                        Text="&#xE73E;"
                                        FontFamily="Segoe MDL2 Assets"
                                        FontSize="10"
-                                       Foreground="{DynamicResource AccentBrush}"
+                                       Foreground="#FFFFFF"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
                                        Visibility="Collapsed"/>
@@ -331,6 +316,7 @@
                     </StackPanel>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="box" Property="Background" Value="{DynamicResource AccentBrush}"/>
                             <Setter TargetName="box" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
                             <Setter TargetName="check" Property="Visibility" Value="Visible"/>
                         </Trigger>

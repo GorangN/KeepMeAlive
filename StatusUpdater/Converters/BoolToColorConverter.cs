@@ -6,7 +6,7 @@ using System.Windows.Media;
 namespace StatusUpdater.Converters;
 
 /// <summary>
-/// True → AccentBrush (neon green = running), False → SubtleBrush (grey = stopped)
+/// True → RunningBrush (Twitter green = running), False → StoppedBrush (grey = stopped)
 /// </summary>
 [ValueConversion(typeof(bool), typeof(Brush))]
 public class BoolToColorConverter : IValueConverter
@@ -14,7 +14,7 @@ public class BoolToColorConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         bool isTrue = value is bool b && b;
-        var key = isTrue ? "AccentBrush" : "SubtleBrush";
+        var key = isTrue ? "RunningBrush" : "StoppedBrush";
         return Application.Current.Resources[key] as Brush ?? Brushes.Gray;
     }
 

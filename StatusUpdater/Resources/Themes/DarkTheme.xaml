@@ -2,19 +2,19 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- ═══ DARK THEME — Status Updater ═══ -->
-    <!-- Brand: neon green (#39FF14) = "alive / running" -->
+    <!-- X.com dark palette: pure black background, Twitter Blue (#1D9BF0) accent -->
 
-    <Color x:Key="WindowColor">#050505</Color>
-    <Color x:Key="SurfaceColor">#111111</Color>
-    <Color x:Key="Surface2Color">#1C1C1C</Color>
-    <Color x:Key="AccentColor">#39FF14</Color>
-    <Color x:Key="AccentHoverColor">#52FF30</Color>
-    <Color x:Key="ForegroundColor">#E8E8E8</Color>
-    <Color x:Key="SubtleColor">#555555</Color>
-    <Color x:Key="DangerColor">#FF4040</Color>
-    <Color x:Key="BorderColor">#2A2A2A</Color>
-    <Color x:Key="InputBgColor">#0A0A0A</Color>
-    <Color x:Key="OverlayColor">#CC000000</Color>
+    <Color x:Key="WindowColor">#000000</Color>
+    <Color x:Key="SurfaceColor">#16181C</Color>
+    <Color x:Key="Surface2Color">#16181C</Color>
+    <Color x:Key="AccentColor">#1D9BF0</Color>
+    <Color x:Key="AccentHoverColor">#1A8CD8</Color>
+    <Color x:Key="ForegroundColor">#E7E9EA</Color>
+    <Color x:Key="SubtleColor">#71767B</Color>
+    <Color x:Key="DangerColor">#F4212E</Color>
+    <Color x:Key="BorderColor">#2F3336</Color>
+    <Color x:Key="InputBgColor">#000000</Color>
+    <Color x:Key="OverlayColor">#80000000</Color>
 
     <SolidColorBrush x:Key="WindowBrush"      Color="{StaticResource WindowColor}"/>
     <SolidColorBrush x:Key="SurfaceBrush"     Color="{StaticResource SurfaceColor}"/>
@@ -28,8 +28,8 @@
     <SolidColorBrush x:Key="InputBgBrush"     Color="{StaticResource InputBgColor}"/>
     <SolidColorBrush x:Key="OverlayBrush"     Color="{StaticResource OverlayColor}"/>
 
-    <!-- Running indicator: neon green glow -->
-    <SolidColorBrush x:Key="RunningBrush"     Color="#39FF14"/>
-    <SolidColorBrush x:Key="StoppedBrush"     Color="#333333"/>
+    <!-- Running indicator: Twitter green -->
+    <SolidColorBrush x:Key="RunningBrush"     Color="#00BA7C"/>
+    <SolidColorBrush x:Key="StoppedBrush"     Color="#2F3336"/>
 
 </ResourceDictionary>

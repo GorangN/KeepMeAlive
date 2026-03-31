@@ -24,19 +24,15 @@
                 <!-- ═══ HEADER ═══ -->
                 <Grid Margin="0 0 0 16">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="4"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <Rectangle Grid.Column="0" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Stretch"/>
+                    <TextBlock Grid.Column="0"
+                               Text="Settings"
+                               Style="{StaticResource AppTitleStyle}"/>
 
-                    <TextBlock Grid.Column="1"
-                               Text="SETTINGS"
-                               Style="{StaticResource AppTitleStyle}"
-                               Margin="10 0 0 0"/>
-
-                    <Button Grid.Column="2"
+                    <Button Grid.Column="1"
                             Style="{StaticResource IconButtonStyle}"
                             Command="{Binding DataContext.ToggleSettingsCommand,
                                       RelativeSource={RelativeSource AncestorType=Window}}"
@@ -54,7 +50,7 @@
                         <ColumnDefinition Width="110"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="THEME"
+                    <TextBlock Grid.Column="0" Text="Theme"
                                Style="{StaticResource SectionLabelStyle}" VerticalAlignment="Center"/>
                     <ComboBox Grid.Column="1"
                               Style="{StaticResource ComboBoxStyle}"
@@ -74,15 +70,14 @@
                         <ColumnDefinition Width="110"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="ON STARTUP"
+                    <TextBlock Grid.Column="0" Text="On startup"
                                Style="{StaticResource SectionLabelStyle}" VerticalAlignment="Center"/>
                     <CheckBox Grid.Column="1"
                               Style="{StaticResource ToggleCheckBoxStyle}"
                               IsChecked="{Binding SettingsViewModel.StartOnBoot,
                                           RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}"
                               Content="Start with Windows"
-                              Foreground="{DynamicResource ForegroundBrush}"
-                              FontFamily="Consolas" FontSize="11"/>
+                              Foreground="{DynamicResource ForegroundBrush}"/>
                 </Grid>
 
                 <!-- ═══ NOTIFICATIONS ═══ -->
@@ -91,61 +86,53 @@
                         <ColumnDefinition Width="110"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="NOTIFY"
+                    <TextBlock Grid.Column="0" Text="Notifications"
                                Style="{StaticResource SectionLabelStyle}" VerticalAlignment="Center"/>
                     <CheckBox Grid.Column="1"
                               Style="{StaticResource ToggleCheckBoxStyle}"
                               IsChecked="{Binding SettingsViewModel.ShowNotifications,
                                           RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}"
                               Content="Show tray notifications"
-                              Foreground="{DynamicResource ForegroundBrush}"
-                              FontFamily="Consolas" FontSize="11"/>
+                              Foreground="{DynamicResource ForegroundBrush}"/>
                 </Grid>
 
                 <!-- Separator -->
                 <Rectangle Style="{StaticResource SeparatorStyle}"/>
 
                 <!-- ═══ SUBSCRIPTION ═══ -->
-                <Grid Margin="0 10 0 0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="4"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Rectangle Grid.Column="0" Fill="{DynamicResource SubtleBrush}" VerticalAlignment="Stretch"/>
-                    <StackPanel Grid.Column="1" Margin="10 0 0 0">
-                        <TextBlock Text="SUBSCRIPTION"
-                                   Style="{StaticResource SectionLabelStyle}"
-                                   Margin="0 0 0 8"/>
-                        <TextBlock Text="License Key"
-                                   FontFamily="Consolas" FontSize="9"
-                                   Foreground="{DynamicResource SubtleBrush}"
-                                   Margin="0 0 0 4"/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox Grid.Column="0"
-                                     Style="{StaticResource InputStyle}"
-                                     Text="{Binding SettingsViewModel.LicenseKey,
-                                            RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}"
-                                     FontSize="11"
-                                     Height="28"/>
-                            <Button Grid.Column="1"
-                                    Style="{StaticResource SecondaryButtonStyle}"
-                                    Command="{Binding SettingsViewModel.ActivateLicenseCommand,
-                                              RelativeSource={RelativeSource AncestorType=Window}}"
-                                    Content="ACTIVATE"
-                                    Width="70"
-                                    Margin="6 0 0 0"/>
-                        </Grid>
-                        <TextBlock Text="Subscription coming soon — enter your license key here when available."
-                                   FontFamily="Consolas" FontSize="9"
-                                   Foreground="{DynamicResource SubtleBrush}"
-                                   TextWrapping="Wrap"
-                                   Margin="0 6 0 0"/>
-                    </StackPanel>
-                </Grid>
+                <StackPanel Margin="0 10 0 0">
+                    <TextBlock Text="Subscription"
+                               Style="{StaticResource SectionLabelStyle}"
+                               Margin="0 0 0 8"/>
+                    <TextBlock Text="License Key"
+                               FontFamily="Segoe UI" FontSize="11"
+                               Foreground="{DynamicResource SubtleBrush}"
+                               Margin="0 0 0 4"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0"
+                                 Style="{StaticResource InputStyle}"
+                                 Text="{Binding SettingsViewModel.LicenseKey,
+                                        RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}"
+                                 FontSize="11"
+                                 Height="28"/>
+                        <Button Grid.Column="1"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding SettingsViewModel.ActivateLicenseCommand,
+                                          RelativeSource={RelativeSource AncestorType=Window}}"
+                                Content="Activate"
+                                Width="70"
+                                Margin="6 0 0 0"/>
+                    </Grid>
+                    <TextBlock Text="Subscription coming soon — enter your license key here when available."
+                               FontFamily="Segoe UI" FontSize="11"
+                               Foreground="{DynamicResource SubtleBrush}"
+                               TextWrapping="Wrap"
+                               Margin="0 6 0 0"/>
+                </StackPanel>
 
                 <!-- Separator -->
                 <Rectangle Style="{StaticResource SeparatorStyle}" Margin="0 14 0 4"/>
@@ -154,7 +141,7 @@
                 <Button Style="{StaticResource IndustrialButtonStyle}"
                         Command="{Binding SettingsViewModel.SaveAndCloseCommand,
                                   RelativeSource={RelativeSource AncestorType=Window}}"
-                        Content="S A V E"/>
+                        Content="Save"/>
             </StackPanel>
         </Border>
     </Grid>
