@@ -1,0 +1,19 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:tb="http://www.hardcodet.net/taskbar">
+
+    <tb:TaskbarIcon x:Key="TrayIcon"
+                    IconSource="/Resources/Icons/tray_inactive.ico"
+                    ToolTipText="Status Updater"
+                    LeftClickCommand="{Binding ShowWindowCommand}"
+                    DoubleClickCommand="{Binding ShowWindowCommand}">
+        <tb:TaskbarIcon.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Open" Command="{Binding ShowWindowCommand}"/>
+                <Separator/>
+                <MenuItem Header="Exit" Command="{Binding ExitApplicationCommand}"/>
+            </ContextMenu>
+        </tb:TaskbarIcon.ContextMenu>
+    </tb:TaskbarIcon>
+
+</ResourceDictionary>

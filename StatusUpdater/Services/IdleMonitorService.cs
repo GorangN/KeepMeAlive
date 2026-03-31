@@ -1,43 +1,45 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using StatusUpdater.Services.Interfaces;
 using System.Windows.Threading;
 using static StatusUpdater.Helpers.Interop;
 
 namespace StatusUpdater.Services;
 
-public class IdleMonitorService : INotifyPropertyChanged, IDisposable
+public class IdleMonitorService : IIdleMonitorService, IDisposable
 {
-	private readonly DispatcherTimer _timer;
-	private int _idleSeconds;
-	public int IdleSeconds
-	{
-		get => _idleSeconds;
-		private set { if (_idleSeconds != value) { _idleSeconds = value; OnPropertyChanged(); } }
-	}
+    private readonly DispatcherTimer _timer;
+    private int _idleSeconds;
 
-	public IdleMonitorService()
-	{
-		_timer = new DispatcherTimer
-		{
-			Interval = TimeSpan.FromSeconds(1)
-		};
-		_timer.Tick += (_, __) => IdleSeconds = GetIdleSeconds();
-	}
+    public int IdleSeconds
+    {
+        get => _idleSeconds;
+        private set
+        {
+            if (_idleSeconds != value)
+            {
+                _idleSeconds = value;
+                IdleUpdated?.Invoke(this, EventArgs.Empty);
+            }
+        }
+    }
 
-	public void Start() => _timer.Start();
-	public void Stop() => _timer.Stop();
+    public event EventHandler? IdleUpdated;
 
-	private static int GetIdleSeconds()
-	{
-		var lii = new LASTINPUTINFO { cbSize = (uint)System.Runtime.InteropServices.Marshal.SizeOf<LASTINPUTINFO>() };
-		if (!GetLastInputInfo(ref lii)) return -1;
-		uint tick = (uint)Environment.TickCount;
-		return (int)((tick - lii.dwTime) / 1000);
-	}
+    public IdleMonitorService()
+    {
+        _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        _timer.Tick += (_, _) => IdleSeconds = GetIdleSeconds();
+    }
 
-	public event PropertyChangedEventHandler? PropertyChanged;
-	private void OnPropertyChanged([CallerMemberName] string? name = null)
-		=> PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    public void Start() => _timer.Start();
+    public void Stop() => _timer.Stop();
 
-	public void Dispose() => _timer.Stop();
+    private static int GetIdleSeconds()
+    {
+        var lii = new LASTINPUTINFO { cbSize = (uint)System.Runtime.InteropServices.Marshal.SizeOf<LASTINPUTINFO>() };
+        if (!GetLastInputInfo(ref lii)) return -1;
+        uint tick = (uint)Environment.TickCount;
+        return (int)((tick - lii.dwTime) / 1000);
+    }
+
+    public void Dispose() => _timer.Stop();
 }

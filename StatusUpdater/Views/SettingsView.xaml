@@ -1,0 +1,161 @@
+<UserControl x:Class="StatusUpdater.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Semi-transparent backdrop -->
+    <Grid>
+        <Rectangle Fill="{DynamicResource OverlayBrush}"/>
+
+        <!-- Settings panel -->
+        <Border Background="{DynamicResource SurfaceBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Width="340"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="16" ShadowDepth="4" Direction="270"
+                                  Color="#000000" Opacity="0.5"/>
+            </Border.Effect>
+
+            <StackPanel Margin="20">
+
+                <!-- ═══ HEADER ═══ -->
+                <Grid Margin="0 0 0 16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="4"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Rectangle Grid.Column="0" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Stretch"/>
+
+                    <TextBlock Grid.Column="1"
+                               Text="SETTINGS"
+                               Style="{StaticResource AppTitleStyle}"
+                               Margin="10 0 0 0"/>
+
+                    <Button Grid.Column="2"
+                            Style="{StaticResource IconButtonStyle}"
+                            Command="{Binding DataContext.ToggleSettingsCommand,
+                                      RelativeSource={RelativeSource AncestorType=Window}}"
+                            ToolTip="Close">
+                        <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="11"/>
+                    </Button>
+                </Grid>
+
+                <!-- Separator -->
+                <Rectangle Style="{StaticResource SeparatorStyle}"/>
+
+                <!-- ═══ THEME ═══ -->
+                <Grid Margin="0 10 0 10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="THEME"
+                               Style="{StaticResource SectionLabelStyle}" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Column="1"
+                              Style="{StaticResource ComboBoxStyle}"
+                              SelectedItem="{Binding SettingsViewModel.SelectedTheme,
+                                             RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}">
+                        <ComboBox.Items>
+                            <system:String xmlns:system="clr-namespace:System;assembly=mscorlib">Dark</system:String>
+                            <system:String xmlns:system="clr-namespace:System;assembly=mscorlib">Light</system:String>
+                            <system:String xmlns:system="clr-namespace:System;assembly=mscorlib">System</system:String>
+                        </ComboBox.Items>
+                    </ComboBox>
+                </Grid>
+
+                <!-- ═══ STARTUP ═══ -->
+                <Grid Margin="0 4 0 10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="ON STARTUP"
+                               Style="{StaticResource SectionLabelStyle}" VerticalAlignment="Center"/>
+                    <CheckBox Grid.Column="1"
+                              Style="{StaticResource ToggleCheckBoxStyle}"
+                              IsChecked="{Binding SettingsViewModel.StartOnBoot,
+                                          RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}"
+                              Content="Start with Windows"
+                              Foreground="{DynamicResource ForegroundBrush}"
+                              FontFamily="Consolas" FontSize="11"/>
+                </Grid>
+
+                <!-- ═══ NOTIFICATIONS ═══ -->
+                <Grid Margin="0 4 0 10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="NOTIFY"
+                               Style="{StaticResource SectionLabelStyle}" VerticalAlignment="Center"/>
+                    <CheckBox Grid.Column="1"
+                              Style="{StaticResource ToggleCheckBoxStyle}"
+                              IsChecked="{Binding SettingsViewModel.ShowNotifications,
+                                          RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}"
+                              Content="Show tray notifications"
+                              Foreground="{DynamicResource ForegroundBrush}"
+                              FontFamily="Consolas" FontSize="11"/>
+                </Grid>
+
+                <!-- Separator -->
+                <Rectangle Style="{StaticResource SeparatorStyle}"/>
+
+                <!-- ═══ SUBSCRIPTION ═══ -->
+                <Grid Margin="0 10 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="4"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Rectangle Grid.Column="0" Fill="{DynamicResource SubtleBrush}" VerticalAlignment="Stretch"/>
+                    <StackPanel Grid.Column="1" Margin="10 0 0 0">
+                        <TextBlock Text="SUBSCRIPTION"
+                                   Style="{StaticResource SectionLabelStyle}"
+                                   Margin="0 0 0 8"/>
+                        <TextBlock Text="License Key"
+                                   FontFamily="Consolas" FontSize="9"
+                                   Foreground="{DynamicResource SubtleBrush}"
+                                   Margin="0 0 0 4"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0"
+                                     Style="{StaticResource InputStyle}"
+                                     Text="{Binding SettingsViewModel.LicenseKey,
+                                            RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}"
+                                     FontSize="11"
+                                     Height="28"/>
+                            <Button Grid.Column="1"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Command="{Binding SettingsViewModel.ActivateLicenseCommand,
+                                              RelativeSource={RelativeSource AncestorType=Window}}"
+                                    Content="ACTIVATE"
+                                    Width="70"
+                                    Margin="6 0 0 0"/>
+                        </Grid>
+                        <TextBlock Text="Subscription coming soon — enter your license key here when available."
+                                   FontFamily="Consolas" FontSize="9"
+                                   Foreground="{DynamicResource SubtleBrush}"
+                                   TextWrapping="Wrap"
+                                   Margin="0 6 0 0"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Separator -->
+                <Rectangle Style="{StaticResource SeparatorStyle}" Margin="0 14 0 4"/>
+
+                <!-- ═══ SAVE BUTTON ═══ -->
+                <Button Style="{StaticResource IndustrialButtonStyle}"
+                        Command="{Binding SettingsViewModel.SaveAndCloseCommand,
+                                  RelativeSource={RelativeSource AncestorType=Window}}"
+                        Content="S A V E"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,110 +1,112 @@
-﻿using StatusUpdater.Helpers;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using StatusUpdater.Messages;
+using StatusUpdater.Models;
 using StatusUpdater.Services;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Windows;
-using System.Windows.Data;
+using StatusUpdater.Services.Interfaces;
+using System.Windows.Threading;
 
 namespace StatusUpdater.ViewModels;
 
-public enum Method { Keyboard, Mouse }
+public enum KeepAliveMethod { Keyboard, Mouse }
 
-public class DashboardViewModel : BaseViewModel
+public partial class DashboardViewModel : ObservableObject
 {
-    private readonly KeepAwakeService _keepAwake = new();
-    private readonly IdleMonitorService _idleMonitor = new();
-    private IKeepAliveStrategy _strategy;
-
-    public ObservableCollection<Method> Methods { get; } = new(new[] { Method.Keyboard, Method.Mouse });
-
-    private Method _selectedMethod = Method.Keyboard;
-    public Method SelectedMethod { 
-        get => _selectedMethod; 
-        set 
-        {
-            if (Set(ref _selectedMethod, value))
-            {
-                Raise(nameof(IsKeyboard));
-                Raise(nameof(IsMouse));
-                OnMethodChanged();
-            }
-        }
-    }
-
-    private int _intervalSeconds = 60;
-    public int IntervalSeconds { get => _intervalSeconds; set { Set(ref _intervalSeconds, value); Raise(nameof(CanStart)); } }
-
-    private int _keyboardVk = 126;
-    public int KeyboardVk { get => _keyboardVk; set => Set(ref _keyboardVk, value); }
-
-    private int _mousePixels = 2;
-    public int MousePixels { get => _mousePixels; set => Set(ref _mousePixels, Math.Clamp(value, 1, 5)); }
-
-    private bool _keepAwakeEnabled = true;
-    public bool KeepAwakeEnabled { get => _keepAwakeEnabled; set => Set(ref _keepAwakeEnabled, value); }
-
-    private bool _isRunning;
-    public bool IsRunning { get => _isRunning; private set { if (Set(ref _isRunning, value)) { Raise(nameof(CanStart)); Raise(nameof(StartButtonText)); } } }
-
-    public bool CanStart => !IsRunning && IntervalSeconds >= 20;
-    public string StartButtonText => IsRunning ? "Running…" : "Start";
-
-    private string _statusText = "Idle";
-    public string StatusText { get => _statusText; set => Set(ref _statusText, value); }
-
-    public int IdleSeconds => _idleMonitor.IdleSeconds;
-
-    public bool IsKeyboard => SelectedMethod == Method.Keyboard;
-    public bool IsMouse => SelectedMethod == Method.Mouse;
-
-    public RelayCommand StartCommand { get; }
-    public RelayCommand StopCommand { get; }
+    private readonly IKeepAwakeService _keepAwake;
+    private readonly IIdleMonitorService _idleMonitor;
+    private readonly ISettingsService _settingsService;
+    private readonly IMessenger _messenger;
 
     private CancellationTokenSource? _cts;
+    private readonly DispatcherTimer _idleTimer;
     private readonly Random _rnd = new();
 
-    public DashboardViewModel()
+    // ═══ Bound Properties ═══
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(StartCommand))]
+    [NotifyCanExecuteChangedFor(nameof(StopCommand))]
+    private bool _isRunning;
+
+    [ObservableProperty]
+    private KeepAliveMethod _selectedMethod = KeepAliveMethod.Keyboard;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(StartCommand))]
+    private int _intervalSeconds = 60;
+
+    [ObservableProperty]
+    private bool _keepAwakeEnabled;
+
+    [ObservableProperty]
+    private int _virtualKeyCode = 126; // VK_F22
+
+    [ObservableProperty]
+    private int _mousePixelDelta = 2;
+
+    [ObservableProperty]
+    private bool _showAdvancedOptions;
+
+    [ObservableProperty]
+    private string _idleTimeDisplay = "Idle: —";
+
+    // ═══ Constructor ═══
+
+    public DashboardViewModel(
+        IKeepAwakeService keepAwake,
+        IIdleMonitorService idleMonitor,
+        ISettingsService settingsService,
+        IMessenger messenger)
     {
-        _strategy = new KeyboardStrategy_ScanCodeShift();
-        _idleMonitor.PropertyChanged += (_, __) => Raise(nameof(IdleSeconds));
+        _keepAwake = keepAwake;
+        _idleMonitor = idleMonitor;
+        _settingsService = settingsService;
+        _messenger = messenger;
+
+        LoadFromSettings();
+
+        _idleMonitor.IdleUpdated += (_, _) => UpdateIdleDisplay();
         _idleMonitor.Start();
 
-        StartCommand = new RelayCommand(async _ => await StartAsync(), _ => CanStart);
-        StopCommand = new RelayCommand(_ => Stop(), _ => IsRunning);
-        Raise(nameof(IsKeyboard));
-        Raise(nameof(IsMouse));
-
+        _idleTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        _idleTimer.Tick += (_, _) => UpdateIdleDisplay();
     }
 
-    private void OnMethodChanged()
-    {
-        Raise(nameof(IsKeyboard)); Raise(nameof(IsMouse));
-        _strategy = SelectedMethod == Method.Keyboard
-            ? new KeyboardStrategy_VirtualKey((ushort)KeyboardVk)
-            : new MouseStrategy(MousePixels);
-    }
+    // ═══ Commands ═══
 
+    [RelayCommand(CanExecute = nameof(CanStart))]
     private async Task StartAsync()
     {
         _cts = new CancellationTokenSource();
         IsRunning = true;
-        StatusText = "Running…";
-        if (KeepAwakeEnabled) _keepAwake.Enable();
+
+        if (KeepAwakeEnabled)
+            _keepAwake.Enable();
+
+        SaveToSettings();
+
+        if (_settingsService.Current.ShowNotifications)
+            _messenger.Send(new ShowNotificationMessage("Status Updater", "Keep-alive started."));
+
+        _messenger.Send(new KeepAliveStatusMessage(true));
+        _idleTimer.Start();
 
         var robustShift = new KeyboardStrategy_ScanCodeShift();
+        var strategy = BuildStrategy();
 
         try
         {
             while (!_cts.IsCancellationRequested)
             {
                 robustShift.Pulse();
-                _strategy.Pulse();
+                strategy.Pulse();
+
+                if (KeepAwakeEnabled) _keepAwake.Refresh();
 
                 var jitter = _rnd.Next(-15, 16);
                 var wait = Math.Max(20, IntervalSeconds + jitter);
                 await Task.Delay(TimeSpan.FromSeconds(wait), _cts.Token);
-
-                if (KeepAwakeEnabled) _keepAwake.Refresh();
             }
         }
         catch (TaskCanceledException) { }
@@ -112,25 +114,62 @@ public class DashboardViewModel : BaseViewModel
         {
             if (KeepAwakeEnabled) _keepAwake.Disable();
             IsRunning = false;
-            StatusText = "Stopped";
+            _idleTimer.Stop();
+            _messenger.Send(new KeepAliveStatusMessage(false));
+
+            if (_settingsService.Current.ShowNotifications)
+                _messenger.Send(new ShowNotificationMessage("Status Updater", "Keep-alive stopped."));
         }
     }
 
-    public class BoolToVisibilityConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            bool boolValue = value is bool b && b;
+    private bool CanStart() => !IsRunning && IntervalSeconds >= 20;
 
-            if (parameter?.ToString() == "invert")
-                boolValue = !boolValue;
-
-            return boolValue ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
-            throw new NotImplementedException();
-    }
-
+    [RelayCommand(CanExecute = nameof(CanStop))]
     private void Stop() => _cts?.Cancel();
+
+    private bool CanStop() => IsRunning;
+
+    [RelayCommand]
+    private void ToggleAdvancedOptions() => ShowAdvancedOptions = !ShowAdvancedOptions;
+
+    // ═══ Private helpers ═══
+
+    private IKeepAliveStrategy BuildStrategy() => SelectedMethod switch
+    {
+        KeepAliveMethod.Mouse => new MouseStrategy(MousePixelDelta),
+        _ => new KeyboardStrategy_VirtualKey((ushort)VirtualKeyCode)
+    };
+
+    private void UpdateIdleDisplay()
+    {
+        var secs = _idleMonitor.IdleSeconds;
+        if (secs < 0) { IdleTimeDisplay = "Idle: —"; return; }
+
+        var ts = TimeSpan.FromSeconds(secs);
+        IdleTimeDisplay = ts.TotalHours >= 1
+            ? $"Idle: {(int)ts.TotalHours}h {ts.Minutes:D2}m {ts.Seconds:D2}s"
+            : $"Idle: {ts.Minutes}m {ts.Seconds:D2}s";
+    }
+
+    private void LoadFromSettings()
+    {
+        var s = _settingsService.Current;
+        if (Enum.TryParse<KeepAliveMethod>(s.KeepAliveMethod, out var method))
+            SelectedMethod = method;
+        IntervalSeconds = s.IntervalSeconds;
+        KeepAwakeEnabled = s.KeepAwakeEnabled;
+        VirtualKeyCode = s.VirtualKeyCode;
+        MousePixelDelta = s.MousePixelDelta;
+    }
+
+    private void SaveToSettings()
+    {
+        var s = _settingsService.Current;
+        s.KeepAliveMethod = SelectedMethod.ToString();
+        s.IntervalSeconds = IntervalSeconds;
+        s.KeepAwakeEnabled = KeepAwakeEnabled;
+        s.VirtualKeyCode = VirtualKeyCode;
+        s.MousePixelDelta = MousePixelDelta;
+        _settingsService.Save(s);
+    }
 }
