@@ -11,4 +11,16 @@ public class AppSettings
     public bool StartOnBoot { get; set; } = false;
     public bool ShowNotifications { get; set; } = true;
     public string LicenseKey { get; set; } = "";
+
+    /// <summary>Gets or sets a value indicating whether the scheduled action is armed.</summary>
+    public bool ScheduledActionEnabled { get; set; } = false;
+
+    /// <summary>Gets or sets the system action to perform at the scheduled time.</summary>
+    public ScheduledAction ScheduledActionType { get; set; } = ScheduledAction.Shutdown;
+
+    /// <summary>
+    /// Gets or sets the scheduled execution time in <c>dd:MM:yyyy:HH:mm:ss</c> format.
+    /// An empty string means no time has been configured.
+    /// </summary>
+    public string ScheduledActionTime { get; set; } = string.Empty;
 }

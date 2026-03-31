@@ -99,6 +99,7 @@ public partial class App : Application
         services.AddSingleton<IUpdateService, UpdateService>();
         services.AddSingleton<IKeepAwakeService, KeepAwakeService>();
         services.AddSingleton<IIdleMonitorService, IdleMonitorService>();
+        services.AddSingleton<IScheduledActionService, ScheduledActionService>();
 
         // ViewModels
         services.AddSingleton<DashboardViewModel>();
