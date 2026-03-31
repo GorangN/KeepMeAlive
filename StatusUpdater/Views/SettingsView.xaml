@@ -12,7 +12,8 @@
                 BorderBrush="{DynamicResource BorderBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
-                Width="340"
+                Width="360"
+                MaxHeight="580"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
             <Border.Effect>
@@ -20,10 +21,14 @@
                                   Color="#000000" Opacity="0.5"/>
             </Border.Effect>
 
-            <StackPanel Margin="20">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                <!-- ═══ HEADER ═══ -->
-                <Grid Margin="0 0 0 16">
+                <!-- ═══ STICKY HEADER ═══ -->
+                <Grid Grid.Row="0" Margin="20 18 20 0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
@@ -42,8 +47,15 @@
                     </Button>
                 </Grid>
 
+                <!-- ═══ SCROLLABLE CONTENT ═══ -->
+                <ScrollViewer Grid.Row="1"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled"
+                              Margin="0 8 0 0">
+                <StackPanel Margin="20 0 20 20">
+
                 <!-- Separator -->
-                <Rectangle Style="{StaticResource SeparatorStyle}"/>
+                <Rectangle Style="{StaticResource SeparatorStyle}" Margin="0 0 0 0"/>
 
                 <!-- ═══ THEME ═══ -->
                 <Grid Margin="0 10 0 10">
@@ -106,8 +118,7 @@
                                Style="{StaticResource SectionLabelStyle}"
                                Margin="0 0 0 8"/>
                     <TextBlock Text="License Key"
-                               FontFamily="Segoe UI" FontSize="11"
-                               Foreground="{DynamicResource SubtleBrush}"
+                               Style="{StaticResource FooterTextStyle}"
                                Margin="0 0 0 4"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -117,9 +128,7 @@
                         <TextBox Grid.Column="0"
                                  Style="{StaticResource InputStyle}"
                                  Text="{Binding SettingsViewModel.LicenseKey,
-                                        RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}"
-                                 FontSize="11"
-                                 Height="28"/>
+                                        RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}"/>
                         <Button Grid.Column="1"
                                 Style="{StaticResource SecondaryButtonStyle}"
                                 Command="{Binding SettingsViewModel.ActivateLicenseCommand,
@@ -129,8 +138,7 @@
                                 Margin="6 0 0 0"/>
                     </Grid>
                     <TextBlock Text="Subscription coming soon — enter your license key here when available."
-                               FontFamily="Segoe UI" FontSize="11"
-                               Foreground="{DynamicResource SubtleBrush}"
+                               Style="{StaticResource FooterTextStyle}"
                                TextWrapping="Wrap"
                                Margin="0 6 0 0"/>
                 </StackPanel>
@@ -199,8 +207,7 @@
                         </TextBox>
                     </Grid>
                     <TextBlock Text="Format: dd:MM:yyyy:HH:mm:ss  (e.g. 01:04:2026:22:30:00)"
-                               FontFamily="Segoe UI" FontSize="11"
-                               Foreground="{DynamicResource SubtleBrush}"
+                               Style="{StaticResource FooterTextStyle}"
                                TextWrapping="Wrap" Margin="110 0 0 0"/>
                 </StackPanel>
 
@@ -212,7 +219,9 @@
                         Command="{Binding SettingsViewModel.SaveAndCloseCommand,
                                   RelativeSource={RelativeSource AncestorType=Window}}"
                         Content="Save"/>
-            </StackPanel>
+                </StackPanel>
+                </ScrollViewer>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>
