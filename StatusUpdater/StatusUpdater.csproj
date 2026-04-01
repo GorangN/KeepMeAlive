@@ -7,11 +7,19 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\Icons\tray_inactive.ico</ApplicationIcon>
+    <AssemblyName>KeepMeAlive</AssemblyName>
+    <RootNamespace>KeepMeAlive</RootNamespace>
+    <Product>KeepMeAlive</Product>
   </PropertyGroup>
 
   <ItemGroup>
     <Resource Include="Resources\Icons\tray_active.ico"/>
     <Resource Include="Resources\Icons\tray_inactive.ico"/>
+    <Resource Include="Resources\Fonts\Inter-Regular.ttf"/>
+    <Resource Include="Resources\Fonts\Inter-Medium.ttf"/>
+    <Resource Include="Resources\Fonts\Inter-SemiBold.ttf"/>
+    <Resource Include="Resources\Fonts\Inter-Bold.ttf"/>
+    <Resource Include="Resources\Fonts\Manrope-Variable.ttf"/>
   </ItemGroup>
 
   <ItemGroup>
