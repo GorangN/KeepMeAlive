@@ -1,4 +1,4 @@
-namespace StatusUpdater.Models;
+namespace KeepMeAlive.Models;
 
 public class AppSettings
 {
@@ -7,7 +7,7 @@ public class AppSettings
     public bool KeepAwakeEnabled { get; set; } = false;
     public int VirtualKeyCode { get; set; } = 126; // F22
     public int MousePixelDelta { get; set; } = 2;
-    public string Theme { get; set; } = "Dark";
+    public string Theme { get; set; } = "Light";
     public bool StartOnBoot { get; set; } = false;
     public bool ShowNotifications { get; set; } = true;
     public string LicenseKey { get; set; } = "";
