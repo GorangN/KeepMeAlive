@@ -1,20 +1,20 @@
 using CommunityToolkit.Mvvm.Messaging;
 using Hardcodet.Wpf.TaskbarNotification;
 using Microsoft.Extensions.DependencyInjection;
-using StatusUpdater.Services;
-using StatusUpdater.Services.Interfaces;
-using StatusUpdater.ViewModels;
-using StatusUpdater.Views;
+using KeepMeAlive.Services;
+using KeepMeAlive.Services.Interfaces;
+using KeepMeAlive.ViewModels;
+using KeepMeAlive.Views;
 using System.IO.Pipes;
 using System.Threading;
 using System.Windows;
 
-namespace StatusUpdater;
+namespace KeepMeAlive;
 
 public partial class App : Application
 {
-    private const string MutexName = "StatusUpdater_SingleInstance_v1";
-    private const string PipeName = "StatusUpdater_Pipe";
+    private const string MutexName = "KeepMeAlive_SingleInstance_v1";
+    private const string PipeName = "KeepMeAlive_Pipe";
 
     public static IServiceProvider Services { get; private set; } = null!;
 
@@ -61,8 +61,7 @@ public partial class App : Application
         var mainWindow = Services.GetRequiredService<MainWindowView>();
         mainViewModel.Initialize(mainWindow, _trayIcon);
 
-        // Wire window events
-        mainWindow.Deactivated += (_, _) => mainViewModel.HideWindowCommand.Execute(null);
+        // Wire window events — close button minimizes to tray (no Deactivated auto-hide)
         mainWindow.Closing += (s, ev) =>
         {
             if (!_isExiting)
@@ -77,7 +76,9 @@ public partial class App : Application
         // Show window unless --silent argument
         bool silent = e.Args.Contains("--silent");
         if (!silent)
+        {
             mainViewModel.ShowWindowCommand.Execute(null);
+        }
 
         // Check for updates in background
         _ = Services.GetRequiredService<UpdateViewModel>().CheckCommand.ExecuteAsync(null);
@@ -150,7 +151,7 @@ public partial class App : Application
     {
         _isExiting = true;
         _trayIcon?.Dispose();
-        if (_ownsMutex) _mutex?.ReleaseMutex();
+        if (_ownsMutex) { _mutex?.ReleaseMutex(); }
         _mutex?.Dispose();
         base.OnExit(e);
     }

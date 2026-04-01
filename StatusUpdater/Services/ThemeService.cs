@@ -1,10 +1,10 @@
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Win32;
-using StatusUpdater.Messages;
-using StatusUpdater.Services.Interfaces;
+using KeepMeAlive.Messages;
+using KeepMeAlive.Services.Interfaces;
 using System.Windows;
 
-namespace StatusUpdater.Services;
+namespace KeepMeAlive.Services;
 
 public class ThemeService : IThemeService
 {

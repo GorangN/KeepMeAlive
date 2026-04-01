@@ -1,3 +1,3 @@
-namespace StatusUpdater.Messages;
+namespace KeepMeAlive.Messages;
 
 public record ThemeChangedMessage(string NewTheme);

@@ -1,7 +1,7 @@
-using StatusUpdater.Models;
-using StatusUpdater.Services.Interfaces;
+using KeepMeAlive.Models;
+using KeepMeAlive.Services.Interfaces;
 
-namespace StatusUpdater.Services;
+namespace KeepMeAlive.Services;
 
 /// <summary>
 /// Subscription stub — all features unlocked.

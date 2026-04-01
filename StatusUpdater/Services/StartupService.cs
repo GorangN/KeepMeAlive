@@ -1,13 +1,13 @@
 using Microsoft.Win32;
-using StatusUpdater.Services.Interfaces;
+using KeepMeAlive.Services.Interfaces;
 using System.Reflection;
 
-namespace StatusUpdater.Services;
+namespace KeepMeAlive.Services;
 
 public class StartupService : IStartupService
 {
     private const string RegistryKeyPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
-    private const string AppName = "StatusUpdater";
+    private const string AppName = "KeepMeAlive";
 
     private static string ExePath =>
         $"\"{Assembly.GetExecutingAssembly().Location}\" --silent";
@@ -19,7 +19,7 @@ public class StartupService : IStartupService
             try
             {
                 using var key = Registry.CurrentUser.OpenSubKey(RegistryKeyPath);
-                return key?.GetValue(AppName) is string val && val.Contains("StatusUpdater");
+                return key?.GetValue(AppName) is string val && val.Contains("KeepMeAlive");
             }
             catch { return false; }
         }

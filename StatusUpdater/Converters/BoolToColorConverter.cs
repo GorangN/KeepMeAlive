@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace StatusUpdater.Converters;
+namespace KeepMeAlive.Converters;
 
 /// <summary>
 /// True → RunningBrush (Twitter green = running), False → StoppedBrush (grey = stopped)

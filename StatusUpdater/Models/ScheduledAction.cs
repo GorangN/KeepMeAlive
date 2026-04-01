@@ -1,4 +1,4 @@
-namespace StatusUpdater.Models;
+namespace KeepMeAlive.Models;
 
 /// <summary>Defines the system action to execute at the scheduled time.</summary>
 public enum ScheduledAction

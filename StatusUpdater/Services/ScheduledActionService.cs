@@ -1,8 +1,8 @@
-using StatusUpdater.Models;
-using StatusUpdater.Services.Interfaces;
+using KeepMeAlive.Models;
+using KeepMeAlive.Services.Interfaces;
 using System.Diagnostics;
 
-namespace StatusUpdater.Services;
+namespace KeepMeAlive.Services;
 
 /// <summary>
 /// Schedules a system action (shutdown, sleep, restart) to execute at a specific local time

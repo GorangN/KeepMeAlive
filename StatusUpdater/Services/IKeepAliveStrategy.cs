@@ -1,2 +1,2 @@
-﻿namespace StatusUpdater.Services;
+﻿namespace KeepMeAlive.Services;
 public interface IKeepAliveStrategy { void Pulse(); }

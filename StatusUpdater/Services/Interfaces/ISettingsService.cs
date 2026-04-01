@@ -1,6 +1,6 @@
-using StatusUpdater.Models;
+using KeepMeAlive.Models;
 
-namespace StatusUpdater.Services.Interfaces;
+namespace KeepMeAlive.Services.Interfaces;
 
 public interface ISettingsService
 {

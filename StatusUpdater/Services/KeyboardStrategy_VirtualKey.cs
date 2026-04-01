@@ -1,6 +1,6 @@
-﻿using static StatusUpdater.Helpers.Interop;
+﻿using static KeepMeAlive.Helpers.Interop;
 
-namespace StatusUpdater.Services;
+namespace KeepMeAlive.Services;
 public class KeyboardStrategy_VirtualKey : IKeepAliveStrategy
 {
     private readonly ushort _vk;

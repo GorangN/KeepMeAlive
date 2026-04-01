@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace StatusUpdater.Converters;
+namespace KeepMeAlive.Converters;
 
 /// <summary>Inverts a bool — used for IsEnabled="{Binding IsRunning, Converter=...}"</summary>
 [ValueConversion(typeof(bool), typeof(bool))]

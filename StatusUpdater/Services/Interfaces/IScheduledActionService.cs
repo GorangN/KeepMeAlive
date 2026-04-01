@@ -1,6 +1,6 @@
-using StatusUpdater.Models;
+using KeepMeAlive.Models;
 
-namespace StatusUpdater.Services.Interfaces;
+namespace KeepMeAlive.Services.Interfaces;
 
 /// <summary>Provides scheduling and cancellation of a deferred system action.</summary>
 public interface IScheduledActionService

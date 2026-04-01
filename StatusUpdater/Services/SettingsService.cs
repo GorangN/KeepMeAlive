@@ -1,15 +1,15 @@
-using StatusUpdater.Models;
-using StatusUpdater.Services.Interfaces;
+using KeepMeAlive.Models;
+using KeepMeAlive.Services.Interfaces;
 using System.IO;
 using System.Text.Json;
 
-namespace StatusUpdater.Services;
+namespace KeepMeAlive.Services;
 
 public class SettingsService : ISettingsService
 {
     private static readonly string SettingsPath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "StatusUpdater", "settings.json");
+        "KeepMeAlive", "settings.json");
 
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
 

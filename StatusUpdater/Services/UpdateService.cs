@@ -1,9 +1,9 @@
-using StatusUpdater.Services.Interfaces;
+using KeepMeAlive.Services.Interfaces;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Reflection;
 
-namespace StatusUpdater.Services;
+namespace KeepMeAlive.Services;
 
 public class UpdateService : IUpdateService
 {
@@ -19,7 +19,7 @@ public class UpdateService : IUpdateService
     public UpdateService(HttpClient http)
     {
         _http = http;
-        _http.DefaultRequestHeaders.UserAgent.ParseAdd("StatusUpdater/1.0");
+        _http.DefaultRequestHeaders.UserAgent.ParseAdd("KeepMeAlive/1.0");
     }
 
     public async Task<bool> CheckForUpdateAsync()

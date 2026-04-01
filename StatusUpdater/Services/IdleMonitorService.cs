@@ -1,8 +1,8 @@
-using StatusUpdater.Services.Interfaces;
+using KeepMeAlive.Services.Interfaces;
 using System.Windows.Threading;
-using static StatusUpdater.Helpers.Interop;
+using static KeepMeAlive.Helpers.Interop;
 
-namespace StatusUpdater.Services;
+namespace KeepMeAlive.Services;
 
 public class IdleMonitorService : IIdleMonitorService, IDisposable
 {

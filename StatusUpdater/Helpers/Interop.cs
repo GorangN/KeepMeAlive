@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace StatusUpdater.Helpers;
+namespace KeepMeAlive.Helpers;
 
 internal static class Interop
 {

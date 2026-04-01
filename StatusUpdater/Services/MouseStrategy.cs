@@ -1,6 +1,6 @@
-﻿using static StatusUpdater.Helpers.Interop;
+﻿using static KeepMeAlive.Helpers.Interop;
 
-namespace StatusUpdater.Services;
+namespace KeepMeAlive.Services;
 public class MouseStrategy : IKeepAliveStrategy
 {
     private readonly int _px;

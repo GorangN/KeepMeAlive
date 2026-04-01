@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Windows.Controls;
 
-namespace StatusUpdater.Helpers;
+namespace KeepMeAlive.Helpers;
 
 /// <summary>
 /// A WPF <see cref="ValidationRule"/> that enforces the date/time format

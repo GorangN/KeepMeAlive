@@ -1,4 +1,4 @@
-namespace StatusUpdater.Models;
+namespace KeepMeAlive.Models;
 
 public enum SubscriptionTier { Trial, Active, Expired }
 

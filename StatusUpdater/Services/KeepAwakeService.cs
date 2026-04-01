@@ -1,7 +1,7 @@
-using StatusUpdater.Services.Interfaces;
-using static StatusUpdater.Helpers.Interop;
+using KeepMeAlive.Services.Interfaces;
+using static KeepMeAlive.Helpers.Interop;
 
-namespace StatusUpdater.Services;
+namespace KeepMeAlive.Services;
 
 public class KeepAwakeService : IKeepAwakeService
 {

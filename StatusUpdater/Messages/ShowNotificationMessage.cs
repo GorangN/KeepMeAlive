@@ -1,6 +1,6 @@
 using Hardcodet.Wpf.TaskbarNotification;
 
-namespace StatusUpdater.Messages;
+namespace KeepMeAlive.Messages;
 
 public record ShowNotificationMessage(
     string Title,

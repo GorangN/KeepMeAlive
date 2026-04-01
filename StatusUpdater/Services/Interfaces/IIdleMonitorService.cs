@@ -1,4 +1,4 @@
-namespace StatusUpdater.Services.Interfaces;
+namespace KeepMeAlive.Services.Interfaces;
 
 public interface IIdleMonitorService
 {
