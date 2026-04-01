@@ -1,10 +1,10 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using StatusUpdater.Services.Interfaces;
+using KeepMeAlive.Services.Interfaces;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace StatusUpdater.ViewModels;
+namespace KeepMeAlive.ViewModels;
 
 public partial class UpdateViewModel : ObservableObject
 {

@@ -1,13 +1,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using StatusUpdater.Helpers;
-using StatusUpdater.Messages;
-using StatusUpdater.Models;
-using StatusUpdater.Services.Interfaces;
+using KeepMeAlive.Helpers;
+using KeepMeAlive.Messages;
+using KeepMeAlive.Models;
+using KeepMeAlive.Services.Interfaces;
 using System.Globalization;
 
-namespace StatusUpdater.ViewModels;
+namespace KeepMeAlive.ViewModels;
 
 public partial class SettingsViewModel : ObservableObject
 {
@@ -62,12 +62,15 @@ public partial class SettingsViewModel : ObservableObject
         _startupService = startupService;
         _messenger = messenger;
         _scheduledActionService = scheduledActionService;
+
+        // Load settings immediately since the main window is always open
+        LoadFromSettings();
     }
 
     public void LoadFromSettings()
     {
         var s = _settingsService.Current;
-        SelectedTheme = s.Theme;
+        SelectedTheme = "Light"; // Light mode only
         StartOnBoot = _startupService.IsStartupEnabled;
         ShowNotifications = s.ShowNotifications;
         LicenseKey = s.LicenseKey;
@@ -78,12 +81,12 @@ public partial class SettingsViewModel : ObservableObject
 
     partial void OnSelectedThemeChanged(string value)
     {
-        // Live preview while settings are open
+        // Live preview as user changes the theme
         _themeService.Apply(value);
     }
 
     [RelayCommand]
-    private void SaveAndClose()
+    private void Save()
     {
         var settings = _settingsService.Current;
         settings.Theme = SelectedTheme;
@@ -114,9 +117,6 @@ public partial class SettingsViewModel : ObservableObject
         }
 
         _messenger.Send(new ThemeChangedMessage(SelectedTheme));
-
-        // Tell MainViewModel to close settings overlay
-        _messenger.Send(new CloseSettingsMessage());
     }
 
     partial void OnScheduledActionEnabledChanged(bool value)

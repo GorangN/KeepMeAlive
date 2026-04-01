@@ -1,13 +1,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using StatusUpdater.Messages;
-using StatusUpdater.Models;
-using StatusUpdater.Services;
-using StatusUpdater.Services.Interfaces;
+using KeepMeAlive.Messages;
+using KeepMeAlive.Models;
+using KeepMeAlive.Services;
+using KeepMeAlive.Services.Interfaces;
 using System.Windows.Threading;
 
-namespace StatusUpdater.ViewModels;
+namespace KeepMeAlive.ViewModels;
 
 public enum KeepAliveMethod { Keyboard, Mouse }
 
@@ -82,12 +82,16 @@ public partial class DashboardViewModel : ObservableObject
         IsRunning = true;
 
         if (KeepAwakeEnabled)
+        {
             _keepAwake.Enable();
+        }
 
         SaveToSettings();
 
         if (_settingsService.Current.ShowNotifications)
-            _messenger.Send(new ShowNotificationMessage("Status Updater", "Keep-alive started."));
+        {
+            _messenger.Send(new ShowNotificationMessage("KeepMeAlive", "Keep-alive started."));
+        }
 
         _messenger.Send(new KeepAliveStatusMessage(true));
         _idleTimer.Start();
@@ -102,7 +106,7 @@ public partial class DashboardViewModel : ObservableObject
                 robustShift.Pulse();
                 strategy.Pulse();
 
-                if (KeepAwakeEnabled) _keepAwake.Refresh();
+                if (KeepAwakeEnabled) { _keepAwake.Refresh(); }
 
                 var jitter = _rnd.Next(-15, 16);
                 var wait = Math.Max(20, IntervalSeconds + jitter);
@@ -112,13 +116,15 @@ public partial class DashboardViewModel : ObservableObject
         catch (TaskCanceledException) { }
         finally
         {
-            if (KeepAwakeEnabled) _keepAwake.Disable();
+            if (KeepAwakeEnabled) { _keepAwake.Disable(); }
             IsRunning = false;
             _idleTimer.Stop();
             _messenger.Send(new KeepAliveStatusMessage(false));
 
             if (_settingsService.Current.ShowNotifications)
-                _messenger.Send(new ShowNotificationMessage("Status Updater", "Keep-alive stopped."));
+            {
+                _messenger.Send(new ShowNotificationMessage("KeepMeAlive", "Keep-alive stopped."));
+            }
         }
     }
 
@@ -155,7 +161,9 @@ public partial class DashboardViewModel : ObservableObject
     {
         var s = _settingsService.Current;
         if (Enum.TryParse<KeepAliveMethod>(s.KeepAliveMethod, out var method))
+        {
             SelectedMethod = method;
+        }
         IntervalSeconds = s.IntervalSeconds;
         KeepAwakeEnabled = s.KeepAwakeEnabled;
         VirtualKeyCode = s.VirtualKeyCode;

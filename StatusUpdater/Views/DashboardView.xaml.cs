@@ -1,6 +1,6 @@
 using System.Windows.Controls;
 
-namespace StatusUpdater.Views;
+namespace KeepMeAlive.Views;
 
 public partial class DashboardView : UserControl
 {
