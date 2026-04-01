@@ -2,60 +2,78 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Hardcodet.Wpf.TaskbarNotification;
-using StatusUpdater.Messages;
-using StatusUpdater.Services.Interfaces;
+using KeepMeAlive.Messages;
+using KeepMeAlive.Models;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
-namespace StatusUpdater.ViewModels;
+namespace KeepMeAlive.ViewModels;
 
+/// <summary>
+/// Shell ViewModel — manages the main window lifecycle, tray icon state,
+/// sidebar navigation, and exposes Start/Stop relay commands for the tray context menu.
+/// </summary>
 public partial class MainViewModel : ObservableObject,
     IRecipient<ShowNotificationMessage>,
-    IRecipient<KeepAliveStatusMessage>,
-    IRecipient<CloseSettingsMessage>
+    IRecipient<KeepAliveStatusMessage>
 {
     private readonly IMessenger _messenger;
-    private readonly IThemeService _themeService;
     private TaskbarIcon? _trayIcon;
     private Window? _window;
+    private bool _isRunning;
 
+    /// <summary>Gets or sets the currently active navigation page.</summary>
     [ObservableProperty]
-    private bool _isSettingsOpen;
+    private NavigationPage _currentPage = NavigationPage.Dashboard;
 
+    /// <summary>Gets the dashboard ViewModel (keep-alive controls).</summary>
     public DashboardViewModel DashboardViewModel { get; }
+
+    /// <summary>Gets the settings ViewModel (preferences, license, scheduled actions).</summary>
     public SettingsViewModel SettingsViewModel { get; }
+
+    /// <summary>Gets the update ViewModel (version check).</summary>
     public UpdateViewModel UpdateViewModel { get; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MainViewModel"/> class.
+    /// </summary>
     public MainViewModel(
         DashboardViewModel dashboardViewModel,
         SettingsViewModel settingsViewModel,
         UpdateViewModel updateViewModel,
-        IMessenger messenger,
-        IThemeService themeService)
+        IMessenger messenger)
     {
         DashboardViewModel = dashboardViewModel;
         SettingsViewModel = settingsViewModel;
         UpdateViewModel = updateViewModel;
         _messenger = messenger;
-        _themeService = themeService;
 
         _messenger.RegisterAll(this);
     }
 
+    /// <summary>Wires the main window and tray icon to this ViewModel.</summary>
+    /// <param name="window">The main application window.</param>
+    /// <param name="trayIcon">The system tray icon.</param>
     public void Initialize(Window window, TaskbarIcon trayIcon)
     {
         _window = window;
         _trayIcon = trayIcon;
     }
 
+    /// <summary>Navigates to the specified sidebar page.</summary>
+    /// <param name="page">The target navigation page.</param>
+    [RelayCommand]
+    private void Navigate(NavigationPage page)
+    {
+        CurrentPage = page;
+    }
+
+    /// <summary>Shows the main window centered on the primary screen.</summary>
     [RelayCommand]
     private void ShowWindow()
     {
-        if (_window == null) return;
-
-        var workArea = SystemParameters.WorkArea;
-        _window.Left = workArea.Right - _window.Width - 12;
-        _window.Top = workArea.Bottom - _window.Height - 12;
+        if (_window == null) { return; }
 
         _window.Show();
         _window.WindowState = WindowState.Normal;
@@ -63,28 +81,26 @@ public partial class MainViewModel : ObservableObject,
         _window.Focus();
     }
 
+    /// <summary>Hides the main window (minimizes to tray).</summary>
     [RelayCommand]
     private void HideWindow()
     {
-        if (IsSettingsOpen)
-            IsSettingsOpen = false;
         _window?.Hide();
     }
 
-    [RelayCommand]
-    private void ToggleSettings()
-    {
-        if (IsSettingsOpen)
-        {
-            IsSettingsOpen = false;
-        }
-        else
-        {
-            SettingsViewModel.LoadFromSettings();
-            IsSettingsOpen = true;
-        }
-    }
+    /// <summary>Starts the keep-alive loop via the tray context menu.</summary>
+    [RelayCommand(CanExecute = nameof(CanTrayStart))]
+    private void TrayStart() => DashboardViewModel.StartCommand.Execute(null);
 
+    private bool CanTrayStart() => !_isRunning;
+
+    /// <summary>Stops the keep-alive loop via the tray context menu.</summary>
+    [RelayCommand(CanExecute = nameof(CanTrayStop))]
+    private void TrayStop() => DashboardViewModel.StopCommand.Execute(null);
+
+    private bool CanTrayStop() => _isRunning;
+
+    /// <summary>Exits the application cleanly.</summary>
     [RelayCommand]
     private void ExitApplication()
     {
@@ -92,6 +108,7 @@ public partial class MainViewModel : ObservableObject,
         Application.Current.Shutdown();
     }
 
+    /// <inheritdoc/>
     public void Receive(ShowNotificationMessage message)
     {
         Application.Current.Dispatcher.Invoke(() =>
@@ -100,25 +117,27 @@ public partial class MainViewModel : ObservableObject,
         });
     }
 
-    public void Receive(CloseSettingsMessage message)
-    {
-        Application.Current.Dispatcher.Invoke(() => IsSettingsOpen = false);
-    }
-
+    /// <inheritdoc/>
     public void Receive(KeepAliveStatusMessage message)
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
-            if (_trayIcon == null) return;
+            _isRunning = message.IsRunning;
+
+            TrayStartCommand.NotifyCanExecuteChanged();
+            TrayStopCommand.NotifyCanExecuteChanged();
+
+            if (_trayIcon == null) { return; }
+
             _trayIcon.ToolTipText = message.IsRunning
-                ? "Status Updater — Running"
-                : "Status Updater — Stopped";
+                ? "KeepMeAlive — Running"
+                : "KeepMeAlive — Stopped";
 
             var iconUri = message.IsRunning
                 ? new Uri("pack://application:,,,/Resources/Icons/tray_active.ico")
                 : new Uri("pack://application:,,,/Resources/Icons/tray_inactive.ico");
 
-            _trayIcon.IconSource = new System.Windows.Media.Imaging.BitmapImage(iconUri);
+            _trayIcon.IconSource = new BitmapImage(iconUri);
         });
     }
 }
