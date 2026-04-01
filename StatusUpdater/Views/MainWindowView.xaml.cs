@@ -1,11 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
-using StatusUpdater.ViewModels;
+using KeepMeAlive.ViewModels;
 using System.Windows;
+using System.Windows.Input;
 
-namespace StatusUpdater.Views;
+namespace KeepMeAlive.Views;
 
 /// <summary>
-/// Main application window — shell that hosts the dashboard and settings overlay.
+/// Main application window — hosts all settings, controls, and status in one consolidated view.
 /// </summary>
 public partial class MainWindowView : Window
 {
@@ -18,11 +19,16 @@ public partial class MainWindowView : Window
         DataContext = App.Services.GetRequiredService<MainViewModel>();
     }
 
-    private void Header_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (e.ClickCount == 1)
         {
             DragMove();
         }
+    }
+
+    private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+    {
+        WindowState = WindowState.Minimized;
     }
 }
