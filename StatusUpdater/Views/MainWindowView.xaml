@@ -40,9 +40,15 @@
 
                 <DockPanel Margin="0">
 
-                    <!-- Sidebar top: drag area + title -->
-                    <Grid DockPanel.Dock="Top" Margin="20 24 20 20">
-                        <StackPanel>
+                    <!-- Sidebar top: title + window controls -->
+                    <Grid DockPanel.Dock="Top" Margin="20 18 12 20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
                             <TextBlock Text="KeepMeAlive"
                                        Style="{StaticResource AppTitleStyle}"/>
                             <TextBlock Text="UTILITY SUITE"
@@ -53,9 +59,25 @@
                                        Opacity="0.6"
                                        Margin="0 3 0 0"/>
                         </StackPanel>
+
+                        <Button Grid.Column="1"
+                                Style="{StaticResource IconButtonStyle}"
+                                Click="MinimizeButton_Click"
+                                ToolTip="Minimize">
+                            <TextBlock Text="&#xE921;" FontFamily="Segoe MDL2 Assets" FontSize="9"
+                                       Foreground="{DynamicResource OnSurfaceVariantBrush}"/>
+                        </Button>
+
+                        <Button Grid.Column="2"
+                                Style="{StaticResource IconButtonStyle}"
+                                Command="{Binding HideWindowCommand}"
+                                ToolTip="Minimize to tray">
+                            <TextBlock Text="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                       Foreground="{DynamicResource OnSurfaceVariantBrush}"/>
+                        </Button>
                     </Grid>
 
-                    <!-- Sidebar bottom: user profile + version -->
+                    <!-- Sidebar bottom: version + update badge -->
                     <StackPanel DockPanel.Dock="Bottom" Margin="16 0 16 20">
 
                         <Rectangle Height="0.5"
@@ -71,36 +93,9 @@
                                 Margin="0 0 0 8"
                                 HorizontalAlignment="Stretch"/>
 
-                        <!-- Window controls row -->
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Grid.Column="0"
-                                       Text="{Binding UpdateViewModel.AppVersion, StringFormat='v{0}'}"
-                                       Style="{StaticResource FooterTextStyle}"
-                                       VerticalAlignment="Center"
-                                       Margin="4 0 0 0"/>
-
-                            <Button Grid.Column="1"
-                                    Style="{StaticResource IconButtonStyle}"
-                                    Click="MinimizeButton_Click"
-                                    ToolTip="Minimize">
-                                <TextBlock Text="&#xE921;" FontFamily="Segoe MDL2 Assets" FontSize="9"
-                                           Foreground="{DynamicResource OnSurfaceVariantBrush}"/>
-                            </Button>
-
-                            <Button Grid.Column="2"
-                                    Style="{StaticResource IconButtonStyle}"
-                                    Command="{Binding HideWindowCommand}"
-                                    ToolTip="Minimize to tray">
-                                <TextBlock Text="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="10"
-                                           Foreground="{DynamicResource OnSurfaceVariantBrush}"/>
-                            </Button>
-                        </Grid>
+                        <TextBlock Text="{Binding UpdateViewModel.AppVersion, StringFormat='v{0}'}"
+                                   Style="{StaticResource FooterTextStyle}"
+                                   Margin="4 0 0 0"/>
                     </StackPanel>
 
                     <!-- Nav items -->
@@ -126,29 +121,6 @@
                                 <TextBlock Text="&#xE80F;" FontFamily="Segoe MDL2 Assets" FontSize="14"
                                            VerticalAlignment="Center" Margin="0 0 10 0"/>
                                 <TextBlock Text="Dashboard" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-
-                        <!-- Methods -->
-                        <Button Margin="0 2"
-                                HorizontalAlignment="Stretch"
-                                Command="{Binding NavigateCommand}"
-                                CommandParameter="{x:Static models:NavigationPage.Methods}">
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource SidebarNavItemStyle}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CurrentPage}" Value="Methods">
-                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
-                                            <Setter Property="FontWeight" Value="SemiBold"/>
-                                            <Setter Property="Background" Value="{DynamicResource NavItemActiveBgBrush}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                            <StackPanel Orientation="Horizontal" Margin="4 0">
-                                <TextBlock Text="&#xE962;" FontFamily="Segoe MDL2 Assets" FontSize="14"
-                                           VerticalAlignment="Center" Margin="0 0 10 0"/>
-                                <TextBlock Text="Methods" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
@@ -240,24 +212,15 @@
 
                 <!-- Dashboard page -->
                 <views:DashboardView
-                    DataContext="{Binding DashboardViewModel}"
-                    Visibility="{Binding CurrentPage,
+                    Visibility="{Binding DataContext.CurrentPage,
                                          RelativeSource={RelativeSource AncestorType=Window},
                                          Converter={StaticResource NavPageVisConverter},
                                          ConverterParameter=Dashboard}"/>
 
-                <!-- Methods page -->
-                <views:MethodsPageView
-                    DataContext="{Binding DashboardViewModel}"
-                    Visibility="{Binding CurrentPage,
-                                         RelativeSource={RelativeSource AncestorType=Window},
-                                         Converter={StaticResource NavPageVisConverter},
-                                         ConverterParameter=Methods}"/>
-
                 <!-- Scheduling page -->
                 <views:SchedulingPageView
                     DataContext="{Binding SettingsViewModel}"
-                    Visibility="{Binding CurrentPage,
+                    Visibility="{Binding DataContext.CurrentPage,
                                          RelativeSource={RelativeSource AncestorType=Window},
                                          Converter={StaticResource NavPageVisConverter},
                                          ConverterParameter=Scheduling}"/>
@@ -265,7 +228,7 @@
                 <!-- Advanced page -->
                 <views:AdvancedPageView
                     DataContext="{Binding DashboardViewModel}"
-                    Visibility="{Binding CurrentPage,
+                    Visibility="{Binding DataContext.CurrentPage,
                                          RelativeSource={RelativeSource AncestorType=Window},
                                          Converter={StaticResource NavPageVisConverter},
                                          ConverterParameter=Advanced}"/>
@@ -273,7 +236,7 @@
                 <!-- License page -->
                 <views:LicensePageView
                     DataContext="{Binding SettingsViewModel}"
-                    Visibility="{Binding CurrentPage,
+                    Visibility="{Binding DataContext.CurrentPage,
                                          RelativeSource={RelativeSource AncestorType=Window},
                                          Converter={StaticResource NavPageVisConverter},
                                          ConverterParameter=License}"/>
