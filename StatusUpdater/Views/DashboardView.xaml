@@ -30,14 +30,14 @@
                                          Width="10" Height="10"
                                          VerticalAlignment="Center"
                                          Margin="0 0 10 0"
-                                         Fill="{Binding IsRunning, Converter={StaticResource BoolToColorConverter}}">
+                                         Fill="{Binding DashboardViewModel.IsRunning, Converter={StaticResource BoolToColorConverter}}">
                                     <Ellipse.RenderTransform>
                                         <ScaleTransform ScaleX="1" ScaleY="1" CenterX="5" CenterY="5"/>
                                     </Ellipse.RenderTransform>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                                                <DataTrigger Binding="{Binding DashboardViewModel.IsRunning}" Value="True">
                                                     <DataTrigger.EnterActions>
                                                         <BeginStoryboard x:Name="PulseBegin">
                                                             <Storyboard RepeatBehavior="Forever" AutoReverse="True">
@@ -67,7 +67,7 @@
                                         <Style TargetType="TextBlock" BasedOn="{StaticResource FieldLabelStyle}">
                                             <Setter Property="Text" Value="STOPPED"/>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                                                <DataTrigger Binding="{Binding DashboardViewModel.IsRunning}" Value="True">
                                                     <Setter Property="Text" Value="RUNNING"/>
                                                     <Setter Property="Foreground" Value="{DynamicResource RunningBrush}"/>
                                                 </DataTrigger>
@@ -84,7 +84,7 @@
                                         <Setter Property="Text" Value="Idle"/>
                                         <Setter Property="Foreground" Value="{DynamicResource SurfaceContainerHighestBrush}"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                                            <DataTrigger Binding="{Binding DashboardViewModel.IsRunning}" Value="True">
                                                 <Setter Property="Text" Value="Active"/>
                                                 <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}"/>
                                             </DataTrigger>
@@ -93,26 +93,121 @@
                                 </TextBlock.Style>
                             </TextBlock>
 
-                            <TextBlock Text="{Binding IdleTimeDisplay}"
+                            <TextBlock Text="{Binding DashboardViewModel.IdleTimeDisplay}"
                                        Style="{StaticResource IdleTextStyle}"
                                        Margin="0 10 0 0"/>
                         </StackPanel>
 
                         <!-- Start / Stop button -->
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <Button Command="{Binding StartCommand}"
-                                    Visibility="{Binding IsRunning, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                            <Button Command="{Binding DashboardViewModel.StartCommand}"
+                                    Visibility="{Binding DashboardViewModel.IsRunning, Converter={StaticResource InverseBoolToVisibilityConverter}}"
                                     Style="{StaticResource PrimaryButtonStyle}"
                                     Content="Start"
                                     Width="120"/>
 
-                            <Button Command="{Binding StopCommand}"
-                                    Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibilityConverter}}"
+                            <Button Command="{Binding DashboardViewModel.StopCommand}"
+                                    Visibility="{Binding DashboardViewModel.IsRunning, Converter={StaticResource BoolToVisibilityConverter}}"
                                     Style="{StaticResource DangerButtonStyle}"
                                     Content="Stop"
                                     Width="120"/>
                         </StackPanel>
                     </Grid>
+                </Border>
+
+                <!-- ═══ Keep Awake card ═══ -->
+                <Border Style="{StaticResource CardSectionStyle}" Margin="0 0 0 20">
+                    <StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 0 0 20">
+                            <TextBlock Text="&#xE945;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                       Foreground="{DynamicResource PrimaryBrush}"
+                                       VerticalAlignment="Center" Margin="0 0 10 0"/>
+                            <TextBlock Text="Keep Awake" Style="{StaticResource CardHeaderStyle}"/>
+                        </StackPanel>
+
+                        <!-- Prevent sleep & display off -->
+                        <Border Style="{StaticResource SettingRowStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Text="Prevent sleep &amp; display off"
+                                               Style="{StaticResource SettingLabelStyle}"/>
+                                    <TextBlock Text="Uses Windows power management to keep the screen and system awake."
+                                               Style="{StaticResource SettingDescriptionStyle}"/>
+                                </StackPanel>
+                                <CheckBox Grid.Column="1"
+                                          Style="{StaticResource ToggleCheckBoxStyle}"
+                                          IsChecked="{Binding DashboardViewModel.KeepAwakeEnabled}"
+                                          IsEnabled="{Binding DashboardViewModel.IsRunning, Converter={StaticResource InverseBoolConverter}}"
+                                          VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                    </StackPanel>
+                </Border>
+
+                <!-- ═══ Preferences card ═══ -->
+                <Border Style="{StaticResource CardSectionStyle}" Margin="0 0 0 20">
+                    <StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 0 0 20">
+                            <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                       Foreground="{DynamicResource PrimaryBrush}"
+                                       VerticalAlignment="Center" Margin="0 0 10 0"/>
+                            <TextBlock Text="Preferences" Style="{StaticResource CardHeaderStyle}"/>
+                        </StackPanel>
+
+                        <!-- Launch at startup -->
+                        <Border Style="{StaticResource SettingRowStyle}" Margin="0 0 0 8">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Text="Launch at system startup"
+                                               Style="{StaticResource SettingLabelStyle}"/>
+                                    <TextBlock Text="Start KeepMeAlive automatically when Windows boots."
+                                               Style="{StaticResource SettingDescriptionStyle}"/>
+                                </StackPanel>
+                                <CheckBox Grid.Column="1"
+                                          Style="{StaticResource ToggleCheckBoxStyle}"
+                                          IsChecked="{Binding SettingsViewModel.StartOnBoot, Mode=TwoWay}"
+                                          VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Activity alerts -->
+                        <Border Style="{StaticResource SettingRowStyle}" Margin="0 0 0 16">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Text="Activity alerts"
+                                               Style="{StaticResource SettingLabelStyle}"/>
+                                    <TextBlock Text="Show tray notifications when keep-alive starts or stops."
+                                               Style="{StaticResource SettingDescriptionStyle}"/>
+                                </StackPanel>
+                                <CheckBox Grid.Column="1"
+                                          Style="{StaticResource ToggleCheckBoxStyle}"
+                                          IsChecked="{Binding SettingsViewModel.ShowNotifications, Mode=TwoWay}"
+                                          VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Save button -->
+                        <Button HorizontalAlignment="Right"
+                                Style="{StaticResource SaveButtonStyle}"
+                                Command="{Binding SettingsViewModel.SaveCommand}"
+                                Content="Save Changes"/>
+
+                    </StackPanel>
                 </Border>
 
             </StackPanel>

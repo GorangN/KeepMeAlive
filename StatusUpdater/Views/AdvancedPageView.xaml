@@ -10,15 +10,80 @@
 
                 <!-- Page header -->
                 <TextBlock Text="Advanced" Style="{StaticResource PageHeadlineStyle}"/>
-                <TextBlock Text="Fine-tune low-level simulation parameters."
+                <TextBlock Text="Configure simulation method and fine-tune low-level parameters."
                            Style="{StaticResource PageSubtitleStyle}"
                            Margin="0 6 0 32"/>
+
+                <!-- Activity Method card -->
+                <Border Style="{StaticResource CardSectionStyle}" Margin="0 0 0 20">
+                    <StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 0 0 24">
+                            <TextBlock Text="&#xE962;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                       Foreground="{DynamicResource PrimaryBrush}"
+                                       VerticalAlignment="Center" Margin="0 0 10 0"/>
+                            <TextBlock Text="Activity Method" Style="{StaticResource CardHeaderStyle}"/>
+                        </StackPanel>
+
+                        <!-- Method row -->
+                        <Border Style="{StaticResource SettingRowStyle}" Margin="0 0 0 8">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="200"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Text="Simulation method"
+                                               Style="{StaticResource SettingLabelStyle}"/>
+                                    <TextBlock Text="How KeepMeAlive signals activity to the system."
+                                               Style="{StaticResource SettingDescriptionStyle}"/>
+                                </StackPanel>
+                                <ComboBox Grid.Column="1"
+                                          Style="{StaticResource ComboBoxStyle}"
+                                          VerticalAlignment="Center"
+                                          SelectedItem="{Binding SelectedMethod, Mode=TwoWay}"
+                                          IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}">
+                                    <ComboBox.Items>
+                                        <vm:KeepAliveMethod>Keyboard</vm:KeepAliveMethod>
+                                        <vm:KeepAliveMethod>Mouse</vm:KeepAliveMethod>
+                                    </ComboBox.Items>
+                                </ComboBox>
+                            </Grid>
+                        </Border>
+
+                        <!-- Interval row -->
+                        <Border Style="{StaticResource SettingRowStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="140"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Text="Interval"
+                                               Style="{StaticResource SettingLabelStyle}"/>
+                                    <TextBlock Text="Seconds between each pulse. Minimum 20 s."
+                                               Style="{StaticResource SettingDescriptionStyle}"/>
+                                </StackPanel>
+                                <TextBox Grid.Column="1"
+                                         Style="{StaticResource InputStyle}"
+                                         Text="{Binding IntervalSeconds, UpdateSourceTrigger=PropertyChanged}"
+                                         IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}"
+                                         VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="2" Text="s"
+                                           Style="{StaticResource FieldLabelStyle}"
+                                           VerticalAlignment="Center"
+                                           Margin="10 0 0 0"/>
+                            </Grid>
+                        </Border>
+
+                    </StackPanel>
+                </Border>
 
                 <!-- Advanced options card -->
                 <Border Style="{StaticResource CardSectionStyle}" Margin="0 0 0 20">
                     <StackPanel>
 
-                        <!-- Card header -->
                         <StackPanel Orientation="Horizontal" Margin="0 0 0 24">
                             <TextBlock Text="&#xE9E9;" FontFamily="Segoe MDL2 Assets" FontSize="16"
                                        Foreground="{DynamicResource PrimaryBrush}"
@@ -98,8 +163,7 @@
                         </Grid>
 
                         <!-- Hint when no method-specific options apply -->
-                        <TextBlock Margin="0 4 0 0"
-                                   TextWrapping="Wrap">
+                        <TextBlock Margin="0 4 0 0" TextWrapping="Wrap">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource FooterTextStyle}">
                                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -110,7 +174,7 @@
                                     </Style.Triggers>
                                 </Style>
                             </TextBlock.Style>
-                            Select a method on the Methods page to see its advanced parameters.
+                            Select a simulation method above to see its advanced parameters.
                         </TextBlock>
 
                     </StackPanel>
