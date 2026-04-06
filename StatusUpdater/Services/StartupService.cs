@@ -9,8 +9,8 @@ public class StartupService : IStartupService
     private const string RegistryKeyPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
     private const string AppName = "KeepMeAlive";
 
-    private static string ExePath =>
-        $"\"{Assembly.GetExecutingAssembly().Location}\" --silent";
+    private static string BaseExePath =>
+        $"\"{Assembly.GetExecutingAssembly().Location}\"";
 
     public bool IsStartupEnabled
     {
@@ -25,17 +25,25 @@ public class StartupService : IStartupService
         }
     }
 
-    public void SetStartup(bool enable)
+    /// <inheritdoc/>
+    public void SetStartup(bool enable, bool minimizedToTray)
     {
         try
         {
             using var key = Registry.CurrentUser.OpenSubKey(RegistryKeyPath, writable: true);
-            if (key == null) return;
+            if (key == null) { return; }
 
             if (enable)
-                key.SetValue(AppName, ExePath);
+            {
+                var value = minimizedToTray
+                    ? $"{BaseExePath} --silent"
+                    : BaseExePath;
+                key.SetValue(AppName, value);
+            }
             else
+            {
                 key.DeleteValue(AppName, throwOnMissingValue: false);
+            }
         }
         catch { /* silently ignore registry errors */ }
     }

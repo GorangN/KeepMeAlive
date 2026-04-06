@@ -181,6 +181,26 @@
                             </Grid>
                         </Border>
 
+                        <!-- Start minimized to tray -->
+                        <Border Style="{StaticResource SettingRowStyle}" Margin="0 0 0 8">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Text="Start minimized to tray"
+                                               Style="{StaticResource SettingLabelStyle}"/>
+                                    <TextBlock Text="Hide the window on launch and run silently in the system tray."
+                                               Style="{StaticResource SettingDescriptionStyle}"/>
+                                </StackPanel>
+                                <CheckBox Grid.Column="1"
+                                          Style="{StaticResource ToggleCheckBoxStyle}"
+                                          IsChecked="{Binding SettingsViewModel.StartMinimizedToTray, Mode=TwoWay}"
+                                          VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
                         <!-- Activity alerts -->
                         <Border Style="{StaticResource SettingRowStyle}" Margin="0 0 0 16">
                             <Grid>

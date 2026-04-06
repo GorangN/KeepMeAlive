@@ -10,6 +10,13 @@ public class AppSettings
     public string Theme { get; set; } = "Light";
     public bool StartOnBoot { get; set; } = false;
     public bool ShowNotifications { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the application window stays
+    /// hidden on startup and only appears in the system tray.
+    /// </summary>
+    public bool StartMinimizedToTray { get; set; } = false;
+
     public string LicenseKey { get; set; } = "";
 
     /// <summary>Gets or sets a value indicating whether the scheduled action is armed.</summary>

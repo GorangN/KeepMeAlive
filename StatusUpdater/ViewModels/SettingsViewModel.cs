@@ -27,6 +27,9 @@ public partial class SettingsViewModel : ObservableObject
     private bool _showNotifications = true;
 
     [ObservableProperty]
+    private bool _startMinimizedToTray;
+
+    [ObservableProperty]
     private string _licenseKey = "";
 
     [ObservableProperty]
@@ -37,6 +40,9 @@ public partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private string _scheduledActionTime = string.Empty;
+
+    [ObservableProperty]
+    private bool _hasUnsavedChanges;
 
     /// <summary>Gets the list of available scheduled actions for binding to a ComboBox.</summary>
     public IReadOnlyList<ScheduledAction> AvailableScheduledActions { get; } =
@@ -73,11 +79,23 @@ public partial class SettingsViewModel : ObservableObject
         SelectedTheme = "Light"; // Light mode only
         StartOnBoot = _startupService.IsStartupEnabled;
         ShowNotifications = s.ShowNotifications;
+        StartMinimizedToTray = s.StartMinimizedToTray;
         LicenseKey = s.LicenseKey;
         ScheduledActionEnabled = s.ScheduledActionEnabled;
         SelectedScheduledAction = s.ScheduledActionType;
         ScheduledActionTime = s.ScheduledActionTime;
+        HasUnsavedChanges = false;
     }
+
+    partial void OnStartOnBootChanged(bool value) => HasUnsavedChanges = true;
+
+    partial void OnShowNotificationsChanged(bool value) => HasUnsavedChanges = true;
+
+    partial void OnStartMinimizedToTrayChanged(bool value) => HasUnsavedChanges = true;
+
+    partial void OnSelectedScheduledActionChanged(ScheduledAction value) => HasUnsavedChanges = true;
+
+    partial void OnScheduledActionTimeChanged(string value) => HasUnsavedChanges = true;
 
     partial void OnSelectedThemeChanged(string value)
     {
@@ -91,13 +109,15 @@ public partial class SettingsViewModel : ObservableObject
         var settings = _settingsService.Current;
         settings.Theme = SelectedTheme;
         settings.ShowNotifications = ShowNotifications;
+        settings.StartMinimizedToTray = StartMinimizedToTray;
         settings.LicenseKey = LicenseKey;
         settings.ScheduledActionEnabled = ScheduledActionEnabled;
         settings.ScheduledActionType = SelectedScheduledAction;
         settings.ScheduledActionTime = ScheduledActionTime;
         _settingsService.Save(settings);
+        HasUnsavedChanges = false;
 
-        _startupService.SetStartup(StartOnBoot);
+        _startupService.SetStartup(StartOnBoot, StartMinimizedToTray);
         _themeService.Apply(SelectedTheme);
 
         if (ScheduledActionEnabled
@@ -121,6 +141,7 @@ public partial class SettingsViewModel : ObservableObject
 
     partial void OnScheduledActionEnabledChanged(bool value)
     {
+        HasUnsavedChanges = true;
         if (!value)
         {
             _scheduledActionService.Cancel();

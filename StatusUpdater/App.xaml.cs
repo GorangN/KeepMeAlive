@@ -73,11 +73,26 @@ public partial class App : Application
 
         SessionEnding += (_, _) => { _isExiting = true; };
 
-        // Show window unless --silent argument
-        bool silent = e.Args.Contains("--silent");
+        // Show window unless --silent argument or user chose to start in tray
+        bool silentArg = e.Args.Contains("--silent");
+        bool silentSetting = settingsService.Current.StartMinimizedToTray;
+        bool silent = silentArg || silentSetting;
+
         if (!silent)
         {
             mainViewModel.ShowWindowCommand.Execute(null);
+        }
+        else if (silentSetting && settingsService.Current.ShowNotifications)
+        {
+            // Inform non-tech users where the app went.
+            // DispatcherPriority.Background lets the tray icon's Win32 handle
+            // finish registering before ShowBalloonTip is called.
+            _ = Dispatcher.InvokeAsync(
+                () => _trayIcon?.ShowBalloonTip(
+                    "KeepMeAlive",
+                    "KeepMeAlive is running in the system tray \u2014 click here to open.",
+                    Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info),
+                System.Windows.Threading.DispatcherPriority.Background);
         }
 
         // Check for updates in background
@@ -101,6 +116,7 @@ public partial class App : Application
         services.AddSingleton<IKeepAwakeService, KeepAwakeService>();
         services.AddSingleton<IIdleMonitorService, IdleMonitorService>();
         services.AddSingleton<IScheduledActionService, ScheduledActionService>();
+        services.AddSingleton<IDialogService, DialogService>();
 
         // ViewModels
         services.AddSingleton<DashboardViewModel>();
