@@ -23,6 +23,12 @@
         </Border.Effect>
 
         <Grid>
+            <Grid.RowDefinitions>
+                <!-- Title bar -->
+                <RowDefinition Height="44"/>
+                <!-- Sidebar + content -->
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <!-- Sidebar -->
                 <ColumnDefinition Width="240"/>
@@ -31,51 +37,26 @@
             </Grid.ColumnDefinitions>
 
             <!-- ═══════════════════════════════════════════════════ -->
+            <!--                   TITLE BAR                         -->
+            <!-- ═══════════════════════════════════════════════════ -->
+
+            <views:TitleBarView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+
+            <!-- Horizontal divider under title bar -->
+            <Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                       Height="0.5"
+                       VerticalAlignment="Bottom"
+                       Fill="{DynamicResource OutlineVariantBrush}"
+                       Opacity="0.2"/>
+
+            <!-- ═══════════════════════════════════════════════════ -->
             <!--                    SIDEBAR                          -->
             <!-- ═══════════════════════════════════════════════════ -->
 
-            <Border Grid.Column="0"
-                    Background="{DynamicResource SurfaceBrush}"
-                    MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+            <Border Grid.Row="1" Grid.Column="0"
+                    Background="{DynamicResource SurfaceBrush}">
 
                 <DockPanel Margin="0">
-
-                    <!-- Sidebar top: title + window controls -->
-                    <Grid DockPanel.Dock="Top" Margin="20 18 12 20">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                            <TextBlock Text="KeepMeAlive"
-                                       Style="{StaticResource AppTitleStyle}"/>
-                            <TextBlock Text="UTILITY SUITE"
-                                       FontFamily="{StaticResource InterFont}"
-                                       FontSize="9"
-                                       FontWeight="Medium"
-                                       Foreground="{DynamicResource OnSurfaceVariantBrush}"
-                                       Opacity="0.6"
-                                       Margin="0 3 0 0"/>
-                        </StackPanel>
-
-                        <Button Grid.Column="1"
-                                Style="{StaticResource IconButtonStyle}"
-                                Click="MinimizeButton_Click"
-                                ToolTip="Minimize">
-                            <TextBlock Text="&#xE921;" FontFamily="Segoe MDL2 Assets" FontSize="9"
-                                       Foreground="{DynamicResource OnSurfaceVariantBrush}"/>
-                        </Button>
-
-                        <Button Grid.Column="2"
-                                Style="{StaticResource IconButtonStyle}"
-                                Command="{Binding HideWindowCommand}"
-                                ToolTip="Minimize to tray">
-                            <TextBlock Text="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="10"
-                                       Foreground="{DynamicResource OnSurfaceVariantBrush}"/>
-                        </Button>
-                    </Grid>
 
                     <!-- Sidebar bottom: version + update badge -->
                     <StackPanel DockPanel.Dock="Bottom" Margin="16 0 16 20">
@@ -99,7 +80,7 @@
                     </StackPanel>
 
                     <!-- Nav items -->
-                    <StackPanel DockPanel.Dock="Top" Margin="12 0" VerticalAlignment="Top">
+                    <StackPanel DockPanel.Dock="Top" Margin="12 12" VerticalAlignment="Top">
 
                         <!-- Dashboard -->
                         <Button Margin="0 2"
@@ -198,7 +179,7 @@
             </Border>
 
             <!-- Sidebar / content separator -->
-            <Rectangle Grid.Column="0"
+            <Rectangle Grid.Row="1" Grid.Column="0"
                        Width="0.5"
                        HorizontalAlignment="Right"
                        Fill="{DynamicResource OutlineVariantBrush}"
@@ -208,7 +189,7 @@
             <!--                  CONTENT AREA                       -->
             <!-- ═══════════════════════════════════════════════════ -->
 
-            <Grid Grid.Column="1">
+            <Grid Grid.Row="1" Grid.Column="1">
 
                 <!-- Dashboard page -->
                 <views:DashboardView

@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using KeepMeAlive.ViewModels;
 using System.Windows;
-using System.Windows.Input;
 
 namespace KeepMeAlive.Views;
 
@@ -17,18 +16,5 @@ public partial class MainWindowView : Window
     {
         InitializeComponent();
         DataContext = App.Services.GetRequiredService<MainViewModel>();
-    }
-
-    private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-    {
-        if (e.ClickCount == 1)
-        {
-            DragMove();
-        }
-    }
-
-    private void MinimizeButton_Click(object sender, RoutedEventArgs e)
-    {
-        WindowState = WindowState.Minimized;
     }
 }
