@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Hardcodet.Wpf.TaskbarNotification;
 using KeepMeAlive.Messages;
 using KeepMeAlive.Models;
+using KeepMeAlive.Services.Interfaces;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -18,6 +19,7 @@ public partial class MainViewModel : ObservableObject,
     IRecipient<KeepAliveStatusMessage>
 {
     private readonly IMessenger _messenger;
+    private readonly IDialogService _dialogService;
     private TaskbarIcon? _trayIcon;
     private Window? _window;
     private bool _isRunning;
@@ -38,16 +40,23 @@ public partial class MainViewModel : ObservableObject,
     /// <summary>
     /// Initializes a new instance of the <see cref="MainViewModel"/> class.
     /// </summary>
+    /// <param name="dashboardViewModel">The dashboard keep-alive ViewModel.</param>
+    /// <param name="settingsViewModel">The settings ViewModel.</param>
+    /// <param name="updateViewModel">The update-check ViewModel.</param>
+    /// <param name="messenger">The messenger for cross-ViewModel communication.</param>
+    /// <param name="dialogService">The dialog service for confirmation prompts.</param>
     public MainViewModel(
         DashboardViewModel dashboardViewModel,
         SettingsViewModel settingsViewModel,
         UpdateViewModel updateViewModel,
-        IMessenger messenger)
+        IMessenger messenger,
+        IDialogService dialogService)
     {
         DashboardViewModel = dashboardViewModel;
         SettingsViewModel = settingsViewModel;
         UpdateViewModel = updateViewModel;
         _messenger = messenger;
+        _dialogService = dialogService;
 
         _messenger.RegisterAll(this);
     }
@@ -66,6 +75,23 @@ public partial class MainViewModel : ObservableObject,
     [RelayCommand]
     private void Navigate(NavigationPage page)
     {
+        if (page == CurrentPage) { return; }
+
+        bool leavingGuardedPage = CurrentPage == NavigationPage.Dashboard
+                                  || CurrentPage == NavigationPage.Scheduling;
+
+        if (leavingGuardedPage && SettingsViewModel.HasUnsavedChanges)
+        {
+            if (_dialogService.ShowUnsavedChangesDialog())
+            {
+                SettingsViewModel.SaveCommand.Execute(null);
+            }
+            else
+            {
+                SettingsViewModel.LoadFromSettings();
+            }
+        }
+
         CurrentPage = page;
     }
 
