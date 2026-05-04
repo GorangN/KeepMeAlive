@@ -6,7 +6,7 @@ Diese Datei sammelt die Punkte, die nach dem aktuellen Umbau noch offen sind, da
 
 ## 1. Branding und Repository
 
-- [ ] GitHub-Repository von `StatusUpdater` auf `KeepMeAlive` umbenennen, falls noch nicht passiert.
+- [x] GitHub-Repository von `StatusUpdater` auf `KeepMeAlive` umbenennen, falls noch nicht passiert.
 - [ ] Release-Assets auf den neuen Namen umstellen:
   - `KeepMeAlive-Setup.exe`
   - `KeepMeAlive-Portable.zip`
