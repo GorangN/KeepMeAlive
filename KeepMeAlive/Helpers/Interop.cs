@@ -15,6 +15,13 @@ internal static class Interop
     [DllImport("kernel32.dll")]
     internal static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
 
+    [DllImport("PowrProf.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static extern bool SetSuspendState(
+        [MarshalAs(UnmanagedType.Bool)] bool hibernate,
+        [MarshalAs(UnmanagedType.Bool)] bool forceCritical,
+        [MarshalAs(UnmanagedType.Bool)] bool disableWakeEvent);
+
     internal const uint INPUT_MOUSE = 0;
     internal const uint INPUT_KEYBOARD = 1;
     internal const uint KEYEVENTF_KEYUP = 0x0002;
