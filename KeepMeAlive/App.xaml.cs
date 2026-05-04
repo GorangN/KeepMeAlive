@@ -22,6 +22,9 @@ public partial class App : Application
     private bool _ownsMutex;
     private bool _isExiting;
     private TaskbarIcon? _trayIcon;
+    private MainViewModel? _mainViewModel;
+    private volatile bool _isMainViewModelReady;
+    private int _pendingShowRequest;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
@@ -60,6 +63,9 @@ public partial class App : Application
         // Create MainWindowView (hidden)
         var mainWindow = Services.GetRequiredService<MainWindowView>();
         mainViewModel.Initialize(mainWindow, _trayIcon);
+        _mainViewModel = mainViewModel;
+        _isMainViewModelReady = true;
+        FlushPendingShowRequest();
 
         // Wire window events — close button minimizes to tray (no Deactivated auto-hide)
         mainWindow.Closing += (s, ev) =>
@@ -156,13 +162,35 @@ public partial class App : Application
                     var msg = await reader.ReadLineAsync();
                     if (msg == "SHOW")
                     {
-                        Dispatcher.Invoke(() =>
-                            Services.GetRequiredService<MainViewModel>().ShowWindowCommand.Execute(null));
+                        RequestShowWindow();
                     }
                 }
                 catch { /* server loop restart on error */ }
             }
         });
+    }
+
+    private void RequestShowWindow()
+    {
+        if (!_isMainViewModelReady || _mainViewModel is null)
+        {
+            Interlocked.Exchange(ref _pendingShowRequest, 1);
+            return;
+        }
+
+        _ = Dispatcher.InvokeAsync(() => _mainViewModel.ShowWindowCommand.Execute(null));
+    }
+
+    private void FlushPendingShowRequest()
+    {
+        if (!_isMainViewModelReady
+            || _mainViewModel is null
+            || Interlocked.Exchange(ref _pendingShowRequest, 0) == 0)
+        {
+            return;
+        }
+
+        _ = Dispatcher.InvokeAsync(() => _mainViewModel.ShowWindowCommand.Execute(null));
     }
 
     protected override void OnExit(ExitEventArgs e)
