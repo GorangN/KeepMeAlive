@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36212.18 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatusUpdater", "StatusUpdater\StatusUpdater.csproj", "{4D1965A6-A864-49E1-8EA4-3C287DF2BAEE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeepMeAlive", "KeepMeAlive\KeepMeAlive.csproj", "{4D1965A6-A864-49E1-8EA4-3C287DF2BAEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,3 +23,4 @@ Global
 		SolutionGuid = {85B08F69-32DB-4C24-B0E5-D81B247AC2DA}
 	EndGlobalSection
 EndGlobal
+
