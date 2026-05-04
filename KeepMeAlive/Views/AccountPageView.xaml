@@ -1,0 +1,242 @@
+<UserControl x:Class="KeepMeAlive.Views.AccountPageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Background="{DynamicResource BackgroundBrush}">
+        <DockPanel>
+
+            <Border DockPanel.Dock="Bottom"
+                    Background="{DynamicResource BackgroundBrush}"
+                    Padding="40 16">
+                <Border.BorderBrush>
+                    <SolidColorBrush Color="{StaticResource OutlineVariantColor}" Opacity="0.15"/>
+                </Border.BorderBrush>
+                <Border.BorderThickness>0 0.5 0 0</Border.BorderThickness>
+                <TextBlock Text="{Binding IntegrationHint}"
+                           Style="{StaticResource FooterTextStyle}"
+                           TextWrapping="Wrap"/>
+            </Border>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="40 36 40 24">
+
+                    <Grid Margin="0 0 0 32">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Account" Style="{StaticResource PageHeadlineStyle}"/>
+                            <TextBlock Text="Centralize user details, account state, and license access in one place."
+                                       Style="{StaticResource PageSubtitleStyle}"
+                                       Margin="0 6 0 0"/>
+                        </StackPanel>
+
+                        <Button Grid.Column="1"
+                                Style="{StaticResource GhostButtonStyle}"
+                                Command="{Binding RefreshCommand}"
+                                Content="Refresh"
+                                MinWidth="110"
+                                VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <Border Style="{StaticResource CardSectionStyle}" Margin="0 0 0 20">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0 0 0 22">
+                                <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                           Foreground="{DynamicResource PrimaryBrush}"
+                                           VerticalAlignment="Center" Margin="0 0 10 0"/>
+                                <TextBlock Text="Account Overview"
+                                           Style="{StaticResource CardHeaderStyle}"/>
+                            </StackPanel>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="12"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="12"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0" Grid.Column="0"
+                                        Background="{DynamicResource SurfaceContainerLowestBrush}"
+                                        CornerRadius="10"
+                                        Padding="14 12">
+                                    <StackPanel>
+                                        <TextBlock Text="DISPLAY NAME" Style="{StaticResource FieldLabelStyle}" Margin="0 0 0 6"/>
+                                        <TextBlock Text="{Binding DisplayName}" Style="{StaticResource SettingLabelStyle}"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="0" Grid.Column="2"
+                                        Background="{DynamicResource SurfaceContainerLowestBrush}"
+                                        CornerRadius="10"
+                                        Padding="14 12">
+                                    <StackPanel>
+                                        <TextBlock Text="EMAIL" Style="{StaticResource FieldLabelStyle}" Margin="0 0 0 6"/>
+                                        <TextBlock Text="{Binding Email}" Style="{StaticResource SettingLabelStyle}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="2" Grid.Column="0"
+                                        Background="{DynamicResource SurfaceContainerLowestBrush}"
+                                        CornerRadius="10"
+                                        Padding="14 12">
+                                    <StackPanel>
+                                        <TextBlock Text="WORKSPACE" Style="{StaticResource FieldLabelStyle}" Margin="0 0 0 6"/>
+                                        <TextBlock Text="{Binding WorkspaceName}" Style="{StaticResource SettingLabelStyle}"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="2" Grid.Column="2"
+                                        Background="{DynamicResource SurfaceContainerLowestBrush}"
+                                        CornerRadius="10"
+                                        Padding="14 12">
+                                    <StackPanel>
+                                        <TextBlock Text="AUTH PROVIDER" Style="{StaticResource FieldLabelStyle}" Margin="0 0 0 6"/>
+                                        <TextBlock Text="{Binding AuthProvider}" Style="{StaticResource SettingLabelStyle}"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <Grid Margin="0 16 0 0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="12"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Border Grid.Column="0"
+                                        Background="{DynamicResource SurfaceContainerLowestBrush}"
+                                        CornerRadius="10"
+                                        Padding="14 12">
+                                    <StackPanel>
+                                        <TextBlock Text="ACCOUNT STATUS" Style="{StaticResource FieldLabelStyle}" Margin="0 0 0 6"/>
+                                        <TextBlock Text="{Binding AccountStatus}" Style="{StaticResource SettingLabelStyle}"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Column="2"
+                                        Background="{DynamicResource SurfaceContainerLowestBrush}"
+                                        CornerRadius="10"
+                                        Padding="14 12">
+                                    <StackPanel>
+                                        <TextBlock Text="LAST REFRESH" Style="{StaticResource FieldLabelStyle}" Margin="0 0 0 6"/>
+                                        <TextBlock Text="{Binding LastSyncedDisplay}" Style="{StaticResource SettingLabelStyle}"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardSectionStyle}" Margin="0 0 0 20"
+                            MaxWidth="700" HorizontalAlignment="Left">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0 0 0 22">
+                                <TextBlock Text="&#xE8D7;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                           Foreground="{DynamicResource PrimaryBrush}"
+                                           VerticalAlignment="Center" Margin="0 0 10 0"/>
+                                <TextBlock Text="License &amp; Access"
+                                           Style="{StaticResource CardHeaderStyle}"/>
+                            </StackPanel>
+
+                            <Grid Margin="0 0 0 18">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="12"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="12"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Border Grid.Column="0"
+                                        Background="{DynamicResource SurfaceContainerLowestBrush}"
+                                        CornerRadius="10"
+                                        Padding="14 12">
+                                    <StackPanel>
+                                        <TextBlock Text="PLAN" Style="{StaticResource FieldLabelStyle}" Margin="0 0 0 6"/>
+                                        <TextBlock Text="{Binding PlanName}" Style="{StaticResource SettingLabelStyle}"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Column="2"
+                                        Background="{DynamicResource SurfaceContainerLowestBrush}"
+                                        CornerRadius="10"
+                                        Padding="14 12">
+                                    <StackPanel>
+                                        <TextBlock Text="ACCESS STATUS" Style="{StaticResource FieldLabelStyle}" Margin="0 0 0 6"/>
+                                        <TextBlock Text="{Binding LicenseAccessStatus}" Style="{StaticResource SettingLabelStyle}"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Column="4"
+                                        Background="{DynamicResource SurfaceContainerLowestBrush}"
+                                        CornerRadius="10"
+                                        Padding="14 12">
+                                    <StackPanel>
+                                        <TextBlock Text="BILLING / EXPIRY" Style="{StaticResource FieldLabelStyle}" Margin="0 0 0 6"/>
+                                        <TextBlock Text="{Binding LicenseExpiryDisplay}" Style="{StaticResource SettingLabelStyle}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <TextBlock Text="LICENSE KEY"
+                                       Style="{StaticResource FieldLabelStyle}"
+                                       Margin="0 0 0 10"/>
+
+                            <Grid Margin="0 0 0 10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="10"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0"
+                                        Background="{DynamicResource SurfaceContainerLowestBrush}"
+                                        CornerRadius="12">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0"
+                                                   Text="&#xE8D7;"
+                                                   FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                                   Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                                   Opacity="0.4"
+                                                   VerticalAlignment="Center"
+                                                   Margin="14 0 0 0"/>
+                                        <TextBox Grid.Column="1"
+                                                 Style="{StaticResource InputStyle}"
+                                                 Text="{Binding LicenseKey, Mode=TwoWay}"
+                                                 FontFamily="Courier New"
+                                                 FontSize="12"
+                                                 Background="Transparent"/>
+                                    </Grid>
+                                </Border>
+                                <Button Grid.Column="2"
+                                        Style="{StaticResource ActivateButtonStyle}"
+                                        Command="{Binding SaveLicenseCommand}"
+                                        Content="Save Key"/>
+                            </Grid>
+
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE946;"
+                                           FontFamily="Segoe MDL2 Assets" FontSize="12"
+                                           Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                           VerticalAlignment="Center" Margin="0 0 6 0"/>
+                                <TextBlock Text="{Binding LicenseStatus}"
+                                           Style="{StaticResource FooterTextStyle}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Grid>
+</UserControl>
