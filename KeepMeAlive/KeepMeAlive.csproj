@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Resources\Icons\tray_inactive.ico</ApplicationIcon>
+    <AssemblyName>KeepMeAlive</AssemblyName>
+    <RootNamespace>KeepMeAlive</RootNamespace>
+    <Product>KeepMeAlive</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Icons\tray_active.ico"/>
+    <Resource Include="Resources\Icons\tray_inactive.ico"/>
+    <Resource Include="Resources\Fonts\Inter-Regular.ttf"/>
+    <Resource Include="Resources\Fonts\Inter-Medium.ttf"/>
+    <Resource Include="Resources\Fonts\Inter-SemiBold.ttf"/>
+    <Resource Include="Resources\Fonts\Inter-Bold.ttf"/>
+    <Resource Include="Resources\Fonts\Manrope-Variable.ttf"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
+  </ItemGroup>
+
+</Project>
