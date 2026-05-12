@@ -1,16 +1,10 @@
-﻿<div align="center">
-
-<img src="docs/assets/banner.png" alt="KeepMeAlive Banner" width="100%" />
-
-<br/>
+<div align="center">
 
 # KeepMeAlive
 
-**Keep your presence active â€” effortlessly.**
+**Keep your presence active - effortlessly.**
 
 KeepMeAlive is a lightweight, privacy-respecting Windows utility that prevents Microsoft Teams and similar collaboration platforms from switching your status to *Away* during short breaks or hands-off periods.
-
-<br/>
 
 [![Release](https://img.shields.io/github/v/release/GorangN/KeepMeAlive?style=flat-square&color=0078D4&label=Latest%20Release)](https://github.com/GorangN/KeepMeAlive/releases/latest)
 [![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
@@ -19,23 +13,19 @@ KeepMeAlive is a lightweight, privacy-respecting Windows utility that prevents M
 [![Build](https://img.shields.io/github/actions/workflow/status/GorangN/KeepMeAlive/dotnet-desktop.yml?style=flat-square&label=Build)](https://github.com/GorangN/KeepMeAlive/actions)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-0078D4?style=flat-square&logo=windows11&logoColor=white)](https://www.microsoft.com/windows)
 
-<br/>
-
-<img src="docs/assets/screenshot-dashboard.png" alt="KeepMeAlive Dashboard" width="680" />
-
 </div>
 
 ---
 
 ## Why KeepMeAlive?
 
-Remote work means presence matters. A 5-minute coffee break or a quick call shouldn't leave your status stuck on *Away* â€” costing you missed messages, awkward follow-ups, or the appearance of being offline.
+Remote work means presence matters. A 5-minute coffee break or a quick call should not leave your status stuck on *Away* - costing you missed messages, awkward follow-ups, or the appearance of being offline.
 
 KeepMeAlive solves this with **a single, silent process** that keeps your session alive exactly when you need it, without interfering with your workflow or typing.
 
 - No admin rights required
 - No background services or drivers
-- No data collection â€” fully offline
+- No data collection - fully offline
 - Runs in your system tray, completely out of the way
 
 ---
@@ -50,16 +40,16 @@ KeepMeAlive solves this with **a single, silent process** that keeps your sessio
 
 Two precision input strategies keep your session active:
 
-- **Keyboard ping** â€” sends a harmless LeftShift scan code that registers as activity without affecting your work
-- **Mouse nudge** â€” moves the cursor by 1â€“5 pixels and back, invisible to the eye
+- **Keyboard ping** - sends a harmless LeftShift scan code that registers as activity without affecting your work
+- **Mouse nudge** - moves the cursor by 1-5 pixels and back, invisible to the eye
 
 </td>
 <td width="50%">
 
 ### <img src="https://img.shields.io/badge/-Smart%20Intervals-107C10?style=flat-square" /> Smart Intervals
 
-- Configurable ping interval (60â€“90 seconds recommended)
-- Built-in **random jitter** (Â±15 s) to avoid robotic patterns
+- Configurable ping interval (60-90 seconds recommended)
+- Built-in **random jitter** (+/-15 s) to avoid robotic patterns
 - Live idle-time display so you can verify it is working
 
 </td>
@@ -69,7 +59,7 @@ Two precision input strategies keep your session active:
 
 ### <img src="https://img.shields.io/badge/-System%20Tray-5C2D91?style=flat-square" /> System Tray Integration
 
-- Minimal footprint â€” lives entirely in the tray
+- Minimal footprint - lives entirely in the tray
 - Dynamic icon reflects running / stopped state at a glance
 - Show or hide the window with a single click
 
@@ -90,7 +80,7 @@ Two precision input strategies keep your session active:
 ### <img src="https://img.shields.io/badge/-Themes-FFB900?style=flat-square&logoColor=black" /> Dark & Light Themes
 
 - Dark, Light, and **System** (auto-follow Windows theme) modes
-- Live theme switching â€” no restart required
+- Live theme switching - no restart required
 - Clean, modern UI with Fluent-inspired aesthetics
 
 </td>
@@ -99,8 +89,8 @@ Two precision input strategies keep your session active:
 ### <img src="https://img.shields.io/badge/-Windows%20Startup-0078D4?style=flat-square" /> Windows Startup Integration
 
 - Optional launch on Windows sign-in
-- Starts silently in the tray â€” no window shown on boot
-- One toggle in Settings â€” no manual registry editing
+- Starts silently in the tray - no window shown on boot
+- One toggle in Settings - no manual registry editing
 
 </td>
 </tr>
@@ -110,14 +100,7 @@ Two precision input strategies keep your session active:
 
 ## Screenshots
 
-<div align="center">
-
-| Dashboard | Settings | System Tray |
-|:---------:|:--------:|:-----------:|
-| <img src="docs/assets/screenshot-dashboard.png" width="220" alt="Dashboard" /> | <img src="docs/assets/screenshot-settings.png" width="220" alt="Settings" /> | <img src="docs/assets/screenshot-tray.png" width="220" alt="System Tray" /> |
-| Start / Stop with method selection | Theme, startup & license | Tray icon with live status |
-
-</div>
+Screenshot assets are being refreshed to match the current KeepMeAlive branding and layout.
 
 ---
 
@@ -129,7 +112,7 @@ Two precision input strategies keep your session active:
 |-------------|---------|
 | Operating System | Windows 10 (1903) or Windows 11 |
 | Runtime | [.NET 8 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) |
-| Privileges | Standard user â€” no admin required |
+| Privileges | Standard user - no admin required |
 
 ### Installation
 
@@ -146,30 +129,28 @@ Portable releases are `framework-dependent`, `win-x64`, and multi-file by design
 
 ## How It Works
 
-```
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚  KeepMeAlive                                                  â”‚
-â”‚                                                                 â”‚
-â”‚   Dashboard â”€â”€â–º DashboardViewModel â”€â”€â–º IKeepAliveStrategy       â”‚
-â”‚                       â”‚                    â”‚                    â”‚
-â”‚                        â”€â”€â–º IIdleMonitor     â”œâ”€ KeyboardStrategy  â”‚
-â”‚                                            â””â”€ MouseStrategy     â”‚
-â”‚                                                    â”‚            â”‚
-â”‚                              Win32 SendInput() â—„â”€â”€â”˜            â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+```mermaid
+flowchart LR
+    dashboard["Dashboard"] --> dashboardVm["DashboardViewModel"]
+    dashboardVm --> keepAlive["IKeepAliveStrategy"]
+    dashboardVm --> idle["IIdleMonitor"]
+    keepAlive --> keyboard["KeyboardStrategy"]
+    keepAlive --> mouse["MouseStrategy"]
+    keyboard --> sendInput["Win32 SendInput()"]
+    mouse --> sendInput
 ```
 
 1. You configure the method and interval on the **Dashboard**
 2. On **Start**, a `DispatcherTimer` fires at your chosen interval (with random jitter)
-3. The selected strategy calls `SendInput()` â€” a Windows API that injects a minimal, invisible input event
-4. Your system (and Teams) registers activity â†’ your status stays **Available**
+3. The selected strategy calls `SendInput()` - a Windows API that injects a minimal, invisible input event
+4. Your system (and Teams) registers activity -> your status stays **Available**
 5. The **Idle Monitor** reads `GetLastInputInfo()` every second and shows your real idle time, confirming it is working
 
 ---
 
 ## Notes
 
-> **Does not work on a locked PC.** Windows and Teams will still show *Away* when the session is locked â€” KeepMeAlive requires an active, unlocked session.
+> **Does not work on a locked PC.** Windows and Teams will still show *Away* when the session is locked - KeepMeAlive requires an active, unlocked session.
 
 > **Enterprise security policies** may block synthetic input on managed devices. Use the live idle-time display to verify your environment supports it before relying on it.
 
@@ -179,35 +160,35 @@ Portable releases are `framework-dependent`, `win-x64`, and multi-file by design
 
 KeepMeAlive is built on **Clean Architecture** with strict **MVVM** separation and **Dependency Injection** throughout.
 
-```
+```text
 KeepMeAlive/
-â”œâ”€â”€ Models/                  # Domain â€” AppSettings, LicenseInfo, SubscriptionTier
-â”œâ”€â”€ Services/
-â”‚   â”œâ”€â”€ Interfaces/          # Abstractions â€” IKeepAwakeService, IIdleMonitorServiceâ€¦
-â”‚   â”œâ”€â”€ Keyboard/            # KeyboardStrategy_ScanCodeShift, KeyboardStrategy_VirtualKey
-â”‚   â”œâ”€â”€ Mouse/               # MouseStrategy
-â”‚   â”œâ”€â”€ KeepAwakeService     # SetThreadExecutionState wrapper
-â”‚   â”œâ”€â”€ IdleMonitorService   # GetLastInputInfo wrapper
-â”‚   â”œâ”€â”€ AppRuntimeModeService # Portable marker + bootstrap-based storage selection
-â”‚   â”œâ”€â”€ SettingsService      # JSON persistence in local or profile storage
-â”‚   â”œâ”€â”€ SecretStore          # Credential Manager or DPAPI-protected portable secrets
-â”‚   â”œâ”€â”€ ThemeService         # System theme detection + live switching
-â”‚   â”œâ”€â”€ StartupService       # HKCU Run registry key management
-â”‚   â”œâ”€â”€ StartupSyncService   # Future startup sync hook, currently local no-op
-â”‚   â””â”€â”€ UpdateService        # Optional GitHub Releases API version check
-â”œâ”€â”€ ViewModels/              # MainViewModel, DashboardViewModel, SettingsViewModel
-â”œâ”€â”€ Views/                   # DashboardView.xaml, SettingsView.xaml (zero code-behind)
-â”œâ”€â”€ Messages/                # WeakReferenceMessenger message types
-â”œâ”€â”€ Helpers/                 # Interop.cs â€” P/Invoke declarations
-â””â”€â”€ Resources/
-    â”œâ”€â”€ Icons/               # tray_active.ico, tray_inactive.ico
-    â””â”€â”€ Themes/              # DarkTheme.xaml, LightTheme.xaml
+|-- Models/                  # Domain - AppSettings, LicenseInfo, SubscriptionTier
+|-- Services/
+|   |-- Interfaces/          # Abstractions - IKeepAwakeService, IIdleMonitorService...
+|   |-- Keyboard/            # KeyboardStrategy_ScanCodeShift, KeyboardStrategy_VirtualKey
+|   |-- Mouse/               # MouseStrategy
+|   |-- KeepAwakeService     # SetThreadExecutionState wrapper
+|   |-- IdleMonitorService   # GetLastInputInfo wrapper
+|   |-- AppRuntimeModeService # Portable marker + bootstrap-based storage selection
+|   |-- SettingsService      # JSON persistence in local or profile storage
+|   |-- SecretStore          # Credential Manager or DPAPI-protected portable secrets
+|   |-- ThemeService         # System theme detection + live switching
+|   |-- StartupService       # HKCU Run registry key management
+|   |-- StartupSyncService   # Future startup sync hook, currently local no-op
+|   `-- UpdateService        # Optional GitHub Releases API version check
+|-- ViewModels/              # MainViewModel, DashboardViewModel, SettingsViewModel
+|-- Views/                   # DashboardView.xaml, SettingsView.xaml (zero code-behind)
+|-- Messages/                # WeakReferenceMessenger message types
+|-- Helpers/                 # Interop.cs - P/Invoke declarations
+`-- Resources/
+    |-- Icons/               # tray_active.ico, tray_inactive.ico
+    `-- Themes/              # DarkTheme.xaml, LightTheme.xaml
 ```
 
 **Key patterns:**
-- **Strategy Pattern** â€” swap keep-alive methods without changing the timer logic
-- **Messenger (WeakReference)** â€” decoupled ViewModel-to-ViewModel communication
-- **Single-Instance Enforcement** â€” Mutex + Named Pipe IPC; secondary launches bring the window to focus
+- **Strategy Pattern** - swap keep-alive methods without changing the timer logic
+- **Messenger (WeakReference)** - decoupled ViewModel-to-ViewModel communication
+- **Single-Instance Enforcement** - Mutex + Named Pipe IPC; secondary launches bring the window to focus
 
 **Stack:**
 
@@ -284,13 +265,13 @@ Storage behavior is explicit:
   - `PortableLocal`: DPAPI-protected local file
 - Windows startup writes `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` only when you enable it
 
-See [KeepMeAlive/docs/PRIVACY_DATA_FLOW.md](KeepMeAlive/docs/PRIVACY_DATA_FLOW.md) for the exact data flow and storage map.
+See [PRIVACY_DATA_FLOW.md](KeepMeAlive/docs/PRIVACY_DATA_FLOW.md) for the exact data flow and storage map.
 
 ---
 
 ## Contributing
 
-Contributions are welcome. Please follow the established code style defined in [CLAUDE.md](CLAUDE.md) â€” zero warnings, XML documentation on all public members, strict MVVM with no logic in code-behind.
+Contributions are welcome. Please follow the established code style defined in [CLAUDE.md](CLAUDE.md) - zero warnings, XML documentation on all public members, strict MVVM with no logic in code-behind.
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/your-feature`
@@ -316,4 +297,3 @@ Made for remote workers who just need a quick coffee break.
 [![GitHub Forks](https://img.shields.io/github/forks/GorangN/KeepMeAlive?style=social)](https://github.com/GorangN/KeepMeAlive/network/members)
 
 </div>
-

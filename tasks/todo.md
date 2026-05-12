@@ -24,3 +24,16 @@
 ## Review
 
 - `dotnet build KeepMeAlive.sln -c Release` succeeded with `0` warnings and `0` errors after the MahApps dropdown refresh.
+
+# README Repair
+
+- [x] Confirm whether `README.md` is actually corrupted or only mis-decoded locally, including a check against the GitHub-rendered page.
+- [x] Identify every rendering-sensitive section that is currently broken (special characters, ASCII diagrams, relative doc/image links).
+- [x] Apply the minimal README fix needed so GitHub renders the document correctly again.
+- [x] Verify the repaired README locally, capture review notes here, and keep the rest of the repo untouched.
+
+## Review
+
+- Confirmed the README had two real problems: mojibake characters in the committed Markdown and dead image references under `docs/assets/*`.
+- Replaced the broken asset references with stable text, normalized the README to ASCII-safe content, and swapped fragile Unicode art for GitHub-safe Mermaid / ASCII blocks.
+- Verified `README.md` contains no non-ASCII characters and that all remaining repo-local links in the document resolve successfully.
