@@ -123,23 +123,26 @@
                         </StackPanel>
 
                         <!-- Start / Stop button -->
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <StackPanel Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Right"
+                                    Margin="24 0 0 0">
                             <Button Command="{Binding DashboardViewModel.StartCommand}"
                                     Visibility="{Binding DashboardViewModel.IsRunning, Converter={StaticResource InverseBoolToVisibilityConverter}}"
                                     Style="{StaticResource PrimaryButtonStyle}"
                                     Content="Start Keep-Alive"
-                                    Width="160"/>
+                                    MinWidth="190"/>
 
                             <Button Command="{Binding DashboardViewModel.StopCommand}"
                                     Visibility="{Binding DashboardViewModel.IsRunning, Converter={StaticResource BoolToVisibilityConverter}}"
                                     Style="{StaticResource DangerButtonStyle}"
                                     Content="Stop Session"
-                                    Width="160"/>
+                                    MinWidth="190"/>
 
                             <TextBlock Text="Runs silently in the tray and keeps your presence active."
                                        Style="{StaticResource FooterTextStyle}"
                                        TextWrapping="Wrap"
-                                       Width="160"
+                                       Width="190"
                                        Margin="0 12 0 0"/>
                         </StackPanel>
                     </Grid>

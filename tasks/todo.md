@@ -14,3 +14,13 @@
 - `dotnet build KeepMeAlive.sln -c Release` succeeded with `0` warnings and `0` errors.
 - `dotnet publish KeepMeAlive\KeepMeAlive.csproj -c Release -p:PublishProfile=Portable` succeeded.
 - Portable publish output contains the expected `KeepMeAlive.portable` marker beside `KeepMeAlive.exe`.
+
+# MahApps Dropdown Refresh
+
+- [x] Add MahApps.Metro and wire its dropdown resources into the WPF application.
+- [x] Rebase the app dropdown styling on MahApps for ComboBoxes and tray menus while preserving the existing palette and typography.
+- [x] Verify the `Release` build still completes with zero warnings and zero errors.
+
+## Review
+
+- `dotnet build KeepMeAlive.sln -c Release` succeeded with `0` warnings and `0` errors after the MahApps dropdown refresh.

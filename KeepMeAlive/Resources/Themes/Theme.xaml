@@ -187,104 +187,32 @@
 
     <!-- ═══ COMBOBOX ═══ -->
 
-    <Style x:Key="ComboBoxStyle" TargetType="ComboBox">
+    <Style x:Key="ComboBoxStyle"
+           TargetType="ComboBox"
+           BasedOn="{StaticResource MahApps.Styles.ComboBox}">
         <Setter Property="Background" Value="{DynamicResource SurfaceContainerLowestBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="FontFamily" Value="{DynamicResource InterFont}"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="Height" Value="44"/>
-        <Setter Property="Padding" Value="14 0"/>
-        <Setter Property="Template">
+        <Setter Property="BorderBrush">
             <Setter.Value>
-                <ControlTemplate TargetType="ComboBox">
-                    <Grid>
-                        <Border x:Name="border"
-                                Background="{TemplateBinding Background}"
-                                BorderThickness="0"
-                                CornerRadius="12">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="36"/>
-                                </Grid.ColumnDefinitions>
-                                <ContentPresenter Grid.Column="0"
-                                                  Content="{TemplateBinding SelectionBoxItem}"
-                                                  Margin="{TemplateBinding Padding}"
-                                                  VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1"
-                                           Text="&#xE70D;"
-                                           FontFamily="Segoe MDL2 Assets"
-                                           FontSize="10"
-                                           Foreground="{DynamicResource OnSurfaceVariantBrush}"
-                                           VerticalAlignment="Center"
-                                           HorizontalAlignment="Center"/>
-                            </Grid>
-                        </Border>
-                        <Popup x:Name="PART_Popup"
-                               IsOpen="{TemplateBinding IsDropDownOpen}"
-                               AllowsTransparency="True"
-                               PopupAnimation="Fade"
-                               Placement="Bottom">
-                            <Border Background="{DynamicResource SurfaceContainerLowestBrush}"
-                                    BorderBrush="{DynamicResource OutlineVariantBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="12"
-                                    MinWidth="{TemplateBinding ActualWidth}"
-                                    Margin="0 4 0 0">
-                                <Border.Effect>
-                                    <DropShadowEffect BlurRadius="24" ShadowDepth="4" Direction="270"
-                                                      Opacity="0.08" Color="{StaticResource OnSurfaceColor}"/>
-                                </Border.Effect>
-                                <ScrollViewer Padding="4 4">
-                                    <ItemsPresenter/>
-                                </ScrollViewer>
-                            </Border>
-                        </Popup>
-                        <ToggleButton Background="Transparent"
-                                      BorderThickness="0"
-                                      IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                      Focusable="False"/>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Opacity" Value="0.4"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
+                <SolidColorBrush Color="{StaticResource OutlineVariantColor}" Opacity="0.35"/>
             </Setter.Value>
         </Setter>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="FontFamily" Value="{DynamicResource InterFont}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Height" Value="44"/>
+        <Setter Property="MinHeight" Value="44"/>
+        <Setter Property="Padding" Value="14 0"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
-                <Style TargetType="ComboBoxItem">
+                <Style TargetType="ComboBoxItem"
+                       BasedOn="{StaticResource MahApps.Styles.ComboBoxItem}">
                     <Setter Property="FontFamily" Value="{DynamicResource InterFont}"/>
                     <Setter Property="FontSize" Value="13"/>
                     <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}"/>
-                    <Setter Property="Background" Value="Transparent"/>
                     <Setter Property="Padding" Value="14 10"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ComboBoxItem">
-                                <Border x:Name="itemBg"
-                                        Background="{TemplateBinding Background}"
-                                        CornerRadius="8"
-                                        Margin="2 1"
-                                        Padding="{TemplateBinding Padding}">
-                                    <ContentPresenter/>
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="itemBg" Property="Background"
-                                                Value="{DynamicResource SurfaceContainerLowBrush}"/>
-                                    </Trigger>
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
-                                        <Setter Property="FontWeight" Value="Medium"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
                 </Style>
             </Setter.Value>
         </Setter>
