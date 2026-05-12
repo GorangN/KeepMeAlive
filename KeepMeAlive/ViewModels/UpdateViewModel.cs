@@ -8,13 +8,18 @@ namespace KeepMeAlive.ViewModels;
 
 public partial class UpdateViewModel : ObservableObject
 {
+    private const string DefaultReleaseUrl = "https://github.com/GorangN/KeepMeAlive/releases/latest";
+
     private readonly IUpdateService _updateService;
 
     [ObservableProperty]
     private bool _updateAvailable;
 
     [ObservableProperty]
-    private string _updateLabel = "";
+    private string _updateLabel = "Automatic update checks are off by default. Use Check Now to query GitHub releases.";
+
+    [ObservableProperty]
+    private bool _isChecking;
 
     public string AppVersion { get; } =
         Assembly.GetExecutingAssembly()
@@ -29,19 +34,42 @@ public partial class UpdateViewModel : ObservableObject
     [RelayCommand]
     private async Task CheckAsync()
     {
-        var hasUpdate = await _updateService.CheckForUpdateAsync();
-        if (hasUpdate)
+        if (IsChecking)
         {
-            UpdateAvailable = true;
-            UpdateLabel = $"v{_updateService.LatestVersion} available";
+            return;
+        }
+
+        IsChecking = true;
+        UpdateLabel = "Checking for updates...";
+
+        try
+        {
+            var hasUpdate = await _updateService.CheckForUpdateAsync();
+            if (hasUpdate)
+            {
+                UpdateAvailable = true;
+                UpdateLabel = $"v{_updateService.LatestVersion} available";
+                return;
+            }
+
+            UpdateAvailable = false;
+            UpdateLabel = string.IsNullOrWhiteSpace(_updateService.LatestVersion)
+                ? "Update check failed."
+                : "You are up to date.";
+        }
+        finally
+        {
+            IsChecking = false;
         }
     }
 
     [RelayCommand]
     private void OpenReleasePage()
     {
-        var url = _updateService.ReleaseUrl;
-        if (!string.IsNullOrEmpty(url))
-            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        var url = string.IsNullOrWhiteSpace(_updateService.ReleaseUrl)
+            ? DefaultReleaseUrl
+            : _updateService.ReleaseUrl;
+
+        Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
     }
 }

@@ -29,4 +29,18 @@ public sealed class DialogService : IDialogService
         dialog.ShowDialog();
         return dialog.SaveChosen;
     }
+
+    /// <inheritdoc/>
+    public bool ShowConfirmation(string title, string message)
+    {
+        var owner = Application.Current.Windows
+            .OfType<MainWindowView>()
+            .FirstOrDefault();
+
+        var result = owner is null
+            ? MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Warning)
+            : MessageBox.Show(owner, message, title, MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+        return result == MessageBoxResult.Yes;
+    }
 }

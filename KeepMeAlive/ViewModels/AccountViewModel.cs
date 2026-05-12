@@ -1,14 +1,18 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using KeepMeAlive.Messages;
+using KeepMeAlive.Models;
 using KeepMeAlive.Services.Interfaces;
 
 namespace KeepMeAlive.ViewModels;
 
 /// <summary>ViewModel for the account and license area.</summary>
-public partial class AccountViewModel : ObservableObject
+public partial class AccountViewModel : ObservableObject, IRecipient<StorageChangedMessage>
 {
     private readonly IAccountService _accountService;
     private readonly ISettingsService _settingsService;
+    private readonly ISecretStore _secretStore;
 
     [ObservableProperty]
     private string _displayName = "Local User";
@@ -38,6 +42,9 @@ public partial class AccountViewModel : ObservableObject
     private string _licenseStatus = "No license key stored";
 
     [ObservableProperty]
+    private string _licenseStorageLocation = "Windows Credential Manager";
+
+    [ObservableProperty]
     private string _licenseAccessStatus = "Preview access";
 
     [ObservableProperty]
@@ -55,12 +62,21 @@ public partial class AccountViewModel : ObservableObject
     /// </summary>
     /// <param name="accountService">The account data service.</param>
     /// <param name="settingsService">The settings persistence service.</param>
-    public AccountViewModel(IAccountService accountService, ISettingsService settingsService)
+    /// <param name="secretStore">The secure secret store.</param>
+    /// <param name="messenger">The messenger used to observe storage mode changes.</param>
+    public AccountViewModel(
+        IAccountService accountService,
+        ISettingsService settingsService,
+        ISecretStore secretStore,
+        IMessenger messenger)
     {
         _accountService = accountService;
         _settingsService = settingsService;
+        _secretStore = secretStore;
 
-        LicenseKey = _settingsService.Current.LicenseKey;
+        messenger.RegisterAll(this);
+
+        LicenseKey = _secretStore.GetLicenseKey();
         UpdateLicenseState();
 
         _ = RefreshAsync();
@@ -87,7 +103,7 @@ public partial class AccountViewModel : ObservableObject
             AccountStatus = profile.StatusLabel;
             LastSyncedDisplay = profile.LastSyncedAtUtc.ToLocalTime().ToString("dd MMM yyyy, HH:mm");
 
-            LicenseKey = _settingsService.Current.LicenseKey;
+            LicenseKey = _secretStore.GetLicenseKey();
             UpdateLicenseState();
         }
         finally
@@ -99,21 +115,35 @@ public partial class AccountViewModel : ObservableObject
     [RelayCommand]
     private void SaveLicense()
     {
-        var settings = _settingsService.Current;
-        settings.LicenseKey = LicenseKey.Trim();
-        _settingsService.Save(settings);
-
-        LicenseKey = settings.LicenseKey;
+        _secretStore.SaveLicenseKey(LicenseKey);
+        LicenseKey = _secretStore.GetLicenseKey();
         UpdateLicenseState();
+    }
+
+    /// <inheritdoc/>
+    public void Receive(StorageChangedMessage message)
+    {
+        LicenseKey = _secretStore.GetLicenseKey(message.StorageMode);
+        UpdateLicenseState(message.StorageMode);
     }
 
     private void UpdateLicenseState()
     {
+        UpdateLicenseState(_settingsService.CurrentStorageMode);
+    }
+
+    private void UpdateLicenseState(StorageMode storageMode)
+    {
         bool hasLicenseKey = !string.IsNullOrWhiteSpace(LicenseKey);
+        LicenseStorageLocation = storageMode switch
+        {
+            StorageMode.PortableLocal => "local protected storage",
+            _ => "Windows Credential Manager"
+        };
 
         LicenseStatus = hasLicenseKey
-            ? "Key saved locally"
-            : "No license key stored";
+            ? $"Stored securely in {LicenseStorageLocation}."
+            : $"No license key stored. New keys are saved to {LicenseStorageLocation}.";
 
         LicenseAccessStatus = hasLicenseKey
             ? "License key on file"

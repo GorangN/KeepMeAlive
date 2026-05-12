@@ -8,11 +8,12 @@ namespace KeepMeAlive.Services;
 public class UpdateService : IUpdateService
 {
     private const string ApiUrl = "https://api.github.com/repos/GorangN/KeepMeAlive/releases/latest";
+    private const string DefaultReleaseUrl = "https://github.com/GorangN/KeepMeAlive/releases/latest";
 
     private readonly HttpClient _http;
 
     public string LatestVersion { get; private set; } = "";
-    public string ReleaseUrl { get; private set; } = "";
+    public string ReleaseUrl { get; private set; } = DefaultReleaseUrl;
 
     private bool _checked;
 
@@ -39,6 +40,7 @@ public class UpdateService : IUpdateService
         }
         catch
         {
+            LatestVersion = "";
             return false;
         }
     }
