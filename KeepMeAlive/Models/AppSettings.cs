@@ -2,6 +2,7 @@ namespace KeepMeAlive.Models;
 
 public class AppSettings
 {
+    public StorageMode StorageMode { get; set; } = StorageMode.ProfileAppData;
     public string KeepAliveMethod { get; set; } = "Keyboard";
     public int IntervalSeconds { get; set; } = 60;
     public bool KeepAwakeEnabled { get; set; } = false;
@@ -10,14 +11,14 @@ public class AppSettings
     public string Theme { get; set; } = "Light";
     public bool StartOnBoot { get; set; } = false;
     public bool ShowNotifications { get; set; } = true;
+    public bool EnableAutomaticUpdateChecks { get; set; } = false;
+    public bool EnableStartupAccountSync { get; set; } = false;
 
     /// <summary>
     /// Gets or sets a value indicating whether the application window stays
     /// hidden on startup and only appears in the system tray.
     /// </summary>
     public bool StartMinimizedToTray { get; set; } = false;
-
-    public string LicenseKey { get; set; } = "";
 
     /// <summary>Gets or sets a value indicating whether the scheduled action is armed.</summary>
     public bool ScheduledActionEnabled { get; set; } = false;

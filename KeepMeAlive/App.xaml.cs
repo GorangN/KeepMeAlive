@@ -101,13 +101,21 @@ public partial class App : Application
                 System.Windows.Threading.DispatcherPriority.Background);
         }
 
-        // Check for updates in background
-        _ = Services.GetRequiredService<UpdateViewModel>().CheckCommand.ExecuteAsync(null);
+        if (settingsService.Current.EnableStartupAccountSync)
+        {
+            _ = Services.GetRequiredService<IStartupSyncService>().SyncAsync();
+        }
+
+        if (settingsService.Current.EnableAutomaticUpdateChecks)
+        {
+            _ = Services.GetRequiredService<UpdateViewModel>().CheckCommand.ExecuteAsync(null);
+        }
     }
 
     private static void ConfigureServices(IServiceCollection services)
     {
         // Infrastructure
+        services.AddSingleton<IAppRuntimeModeService, AppRuntimeModeService>();
         services.AddSingleton<System.Net.Http.HttpClient>();
         services.AddSingleton(WeakReferenceMessenger.Default);
         services.AddSingleton<CommunityToolkit.Mvvm.Messaging.IMessenger>(
@@ -115,8 +123,10 @@ public partial class App : Application
 
         // Services
         services.AddSingleton<ISettingsService, SettingsService>();
+        services.AddSingleton<ISecretStore, SecretStore>();
         services.AddSingleton<IThemeService, ThemeService>();
         services.AddSingleton<IStartupService, StartupService>();
+        services.AddSingleton<IStartupSyncService, StartupSyncService>();
         services.AddSingleton<IAccountService, AccountService>();
         services.AddSingleton<ILicenseService, LicenseService>();
         services.AddSingleton<IUpdateService, UpdateService>();

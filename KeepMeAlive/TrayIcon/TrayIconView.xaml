@@ -8,89 +8,45 @@
                     LeftClickCommand="{Binding ShowWindowCommand}"
                     DoubleClickCommand="{Binding ShowWindowCommand}">
         <tb:TaskbarIcon.ContextMenu>
-
-            <ContextMenu Background="Transparent"
-                         BorderThickness="0"
-                         Padding="0"
-                         HasDropShadow="False">
-
-                <!-- Apple-style floating card template -->
-                <ContextMenu.Template>
-                    <ControlTemplate TargetType="ContextMenu">
-                        <!-- Outer transparent padding so shadow is not clipped -->
-                        <Border Background="Transparent" Padding="8">
-                            <Border x:Name="menuCard"
-                                    Background="#FFFFFF"
-                                    CornerRadius="12"
-                                    Padding="0 5">
-                                <Border.Effect>
-                                    <DropShadowEffect BlurRadius="28" ShadowDepth="0"
-                                                      Opacity="0.22" Color="#000000"/>
-                                </Border.Effect>
-                                <ItemsPresenter/>
-                            </Border>
-                        </Border>
-                    </ControlTemplate>
-                </ContextMenu.Template>
-
-                <!-- MenuItem and Separator styles scoped to this menu -->
+            <ContextMenu Style="{DynamicResource MahApps.Styles.ContextMenu}"
+                         Background="{DynamicResource SurfaceContainerLowestBrush}"
+                         Foreground="{DynamicResource OnSurfaceBrush}"
+                         BorderBrush="{DynamicResource OutlineVariantBrush}"
+                         BorderThickness="1"
+                         HasDropShadow="True">
                 <ContextMenu.Resources>
-
-                    <Style TargetType="MenuItem">
+                    <Style TargetType="MenuItem"
+                           BasedOn="{StaticResource MahApps.Styles.MenuItem}">
                         <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="Foreground" Value="#1D1D1F"/>
-                        <Setter Property="FontFamily" Value="Segoe UI"/>
+                        <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}"/>
+                        <Setter Property="FontFamily" Value="{DynamicResource InterFont}"/>
                         <Setter Property="FontSize" Value="13"/>
+                        <Setter Property="FontWeight" Value="Medium"/>
                         <Setter Property="Cursor" Value="Hand"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="MenuItem">
-                                    <Border x:Name="itemBg"
-                                            Background="Transparent"
-                                            CornerRadius="7"
-                                            Margin="5 1"
-                                            MinWidth="200"
-                                            Height="34">
-                                        <ContentPresenter ContentSource="Header"
-                                                          Margin="14 0"
-                                                          VerticalAlignment="Center"
-                                                          TextElement.FontFamily="Segoe UI"
-                                                          TextElement.FontSize="13"
-                                                          TextElement.Foreground="{TemplateBinding Foreground}"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsHighlighted" Value="True">
-                                            <Setter TargetName="itemBg" Property="Background" Value="#007AFF"/>
-                                            <Setter Property="Foreground" Value="#FFFFFF"/>
-                                        </Trigger>
-                                        <Trigger Property="IsEnabled" Value="False">
-                                            <Setter Property="Opacity" Value="0.35"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
+                        <Setter Property="MinWidth" Value="210"/>
+                        <Setter Property="Padding" Value="12 8"/>
                     </Style>
 
                     <Style TargetType="Separator">
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="Separator">
-                                    <Border Height="0.5" Background="#D1D1D6" Margin="14 3"/>
+                                    <Border Height="1"
+                                            Background="{DynamicResource OutlineVariantBrush}"
+                                            Opacity="0.35"
+                                            Margin="12 4"/>
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
                     </Style>
-
                 </ContextMenu.Resources>
 
-                <MenuItem Header="▶  Start"  Command="{Binding TrayStartCommand}"/>
-                <MenuItem Header="⏹  Stop"   Command="{Binding TrayStopCommand}"/>
+                <MenuItem Header="Start" Command="{Binding TrayStartCommand}"/>
+                <MenuItem Header="Stop" Command="{Binding TrayStopCommand}"/>
                 <Separator/>
                 <MenuItem Header="Open KeepMeAlive" Command="{Binding ShowWindowCommand}"/>
                 <Separator/>
                 <MenuItem Header="Exit" Command="{Binding ExitApplicationCommand}"/>
-
             </ContextMenu>
         </tb:TaskbarIcon.ContextMenu>
     </tb:TaskbarIcon>

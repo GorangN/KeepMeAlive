@@ -123,23 +123,26 @@
                         </StackPanel>
 
                         <!-- Start / Stop button -->
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <StackPanel Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Right"
+                                    Margin="24 0 0 0">
                             <Button Command="{Binding DashboardViewModel.StartCommand}"
                                     Visibility="{Binding DashboardViewModel.IsRunning, Converter={StaticResource InverseBoolToVisibilityConverter}}"
                                     Style="{StaticResource PrimaryButtonStyle}"
                                     Content="Start Keep-Alive"
-                                    Width="160"/>
+                                    MinWidth="190"/>
 
                             <Button Command="{Binding DashboardViewModel.StopCommand}"
                                     Visibility="{Binding DashboardViewModel.IsRunning, Converter={StaticResource BoolToVisibilityConverter}}"
                                     Style="{StaticResource DangerButtonStyle}"
                                     Content="Stop Session"
-                                    Width="160"/>
+                                    MinWidth="190"/>
 
                             <TextBlock Text="Runs silently in the tray and keeps your presence active."
                                        Style="{StaticResource FooterTextStyle}"
                                        TextWrapping="Wrap"
-                                       Width="160"
+                                       Width="190"
                                        Margin="0 12 0 0"/>
                         </StackPanel>
                     </Grid>
@@ -191,6 +194,34 @@
                             <TextBlock Text="Preferences" Style="{StaticResource CardHeaderStyle}"/>
                         </StackPanel>
 
+                        <!-- Storage location -->
+                        <Border Style="{StaticResource SettingRowStyle}" Margin="0 0 0 8">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="220"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <TextBlock Text="Storage location"
+                                                   Style="{StaticResource SettingLabelStyle}"/>
+                                        <TextBlock Text="{Binding SettingsViewModel.StorageModeDescription}"
+                                                   Style="{StaticResource SettingDescriptionStyle}"
+                                                   TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <ComboBox Grid.Column="1"
+                                              Style="{StaticResource ComboBoxStyle}"
+                                              VerticalAlignment="Center"
+                                              ItemsSource="{Binding SettingsViewModel.AvailableStorageModes}"
+                                              SelectedItem="{Binding SettingsViewModel.SelectedStorageMode, Mode=TwoWay}"/>
+                                </Grid>
+                                <TextBlock Text="{Binding SettingsViewModel.StorageLocationDisplay}"
+                                           Style="{StaticResource FooterTextStyle}"
+                                           TextWrapping="Wrap"
+                                           Margin="0 10 0 0"/>
+                            </StackPanel>
+                        </Border>
+
                         <!-- Launch at startup -->
                         <Border Style="{StaticResource SettingRowStyle}" Margin="0 0 0 8">
                             <Grid>
@@ -201,7 +232,7 @@
                                 <StackPanel Grid.Column="0" VerticalAlignment="Center">
                                     <TextBlock Text="Launch at system startup"
                                                Style="{StaticResource SettingLabelStyle}"/>
-                                    <TextBlock Text="Start KeepMeAlive automatically when Windows boots."
+                                    <TextBlock Text="{Binding SettingsViewModel.StartOnBootDescription}"
                                                Style="{StaticResource SettingDescriptionStyle}"/>
                                 </StackPanel>
                                 <CheckBox Grid.Column="1"
@@ -248,6 +279,76 @@
                                           Style="{StaticResource ToggleCheckBoxStyle}"
                                           IsChecked="{Binding SettingsViewModel.ShowNotifications, Mode=TwoWay}"
                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Automatic update checks -->
+                        <Border Style="{StaticResource SettingRowStyle}" Margin="0 0 0 8">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Text="Automatic update checks"
+                                               Style="{StaticResource SettingLabelStyle}"/>
+                                    <TextBlock Text="Allows a GitHub release check during startup only when explicitly enabled."
+                                               Style="{StaticResource SettingDescriptionStyle}"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <CheckBox Grid.Column="1"
+                                          Style="{StaticResource ToggleCheckBoxStyle}"
+                                          IsChecked="{Binding SettingsViewModel.EnableAutomaticUpdateChecks, Mode=TwoWay}"
+                                          VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Startup account sync -->
+                        <Border Style="{StaticResource SettingRowStyle}" Margin="0 0 0 16">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Text="Startup account sync"
+                                               Style="{StaticResource SettingLabelStyle}"/>
+                                    <TextBlock Text="Prepares account and premium status sync at startup. The current implementation stays local until a backend is connected."
+                                               Style="{StaticResource SettingDescriptionStyle}"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <CheckBox Grid.Column="1"
+                                          Style="{StaticResource ToggleCheckBoxStyle}"
+                                          IsChecked="{Binding SettingsViewModel.EnableStartupAccountSync, Mode=TwoWay}"
+                                          VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Manual update check -->
+                        <Border Style="{StaticResource SettingRowStyle}" Margin="0 0 0 16">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Text="Manual update check"
+                                               Style="{StaticResource SettingLabelStyle}"/>
+                                    <TextBlock Text="{Binding UpdateViewModel.UpdateLabel}"
+                                               Style="{StaticResource SettingDescriptionStyle}"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Style="{StaticResource GhostButtonStyle}"
+                                            Command="{Binding UpdateViewModel.OpenReleasePageCommand}"
+                                            Content="Open Releases"
+                                            MinWidth="120"
+                                            Margin="0 0 10 0"/>
+                                    <Button Style="{StaticResource PrimaryButtonStyle}"
+                                            Command="{Binding UpdateViewModel.CheckCommand}"
+                                            Content="Check Now"
+                                            MinWidth="110"/>
+                                </StackPanel>
                             </Grid>
                         </Border>
 

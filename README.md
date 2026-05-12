@@ -133,17 +133,14 @@ Two precision input strategies keep your session active:
 
 ### Installation
 
-**Option A â€” Installer (Recommended)**
-
-1. Download the latest `KeepMeAlive-Setup.exe` from [**Releases**](https://github.com/GorangN/KeepMeAlive/releases/latest)
-2. Run the installer and follow the setup wizard
-3. KeepMeAlive launches automatically and appears in your system tray
-
-**Option B â€” Portable**
+**Portable release**
 
 1. Download `KeepMeAlive-Portable.zip` from [**Releases**](https://github.com/GorangN/KeepMeAlive/releases/latest)
-2. Extract to any folder (e.g., `C:\Tools\KeepMeAlive`)
-3. Run `KeepMeAlive.exe` â€” settings are stored in `%APPDATA%\KeepMeAlive`
+2. Extract it to any folder, for example `C:\Tools\KeepMeAlive`
+3. Ensure the [.NET 8 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) is installed
+4. Run `KeepMeAlive.exe`
+
+Portable releases are `framework-dependent`, `win-x64`, and multi-file by design. By default they store settings in a local `Data` folder beside the executable. You can switch the storage mode to `%APPDATA%\KeepMeAlive` from the app preferences.
 
 ---
 
@@ -191,10 +188,13 @@ KeepMeAlive/
 â”‚   â”œâ”€â”€ Mouse/               # MouseStrategy
 â”‚   â”œâ”€â”€ KeepAwakeService     # SetThreadExecutionState wrapper
 â”‚   â”œâ”€â”€ IdleMonitorService   # GetLastInputInfo wrapper
-â”‚   â”œâ”€â”€ SettingsService      # JSON persistence â†’ %APPDATA%\KeepMeAlive
+â”‚   â”œâ”€â”€ AppRuntimeModeService # Portable marker + bootstrap-based storage selection
+â”‚   â”œâ”€â”€ SettingsService      # JSON persistence in local or profile storage
+â”‚   â”œâ”€â”€ SecretStore          # Credential Manager or DPAPI-protected portable secrets
 â”‚   â”œâ”€â”€ ThemeService         # System theme detection + live switching
 â”‚   â”œâ”€â”€ StartupService       # HKCU Run registry key management
-â”‚   â””â”€â”€ UpdateService        # GitHub Releases API version check
+â”‚   â”œâ”€â”€ StartupSyncService   # Future startup sync hook, currently local no-op
+â”‚   â””â”€â”€ UpdateService        # Optional GitHub Releases API version check
 â”œâ”€â”€ ViewModels/              # MainViewModel, DashboardViewModel, SettingsViewModel
 â”œâ”€â”€ Views/                   # DashboardView.xaml, SettingsView.xaml (zero code-behind)
 â”œâ”€â”€ Messages/                # WeakReferenceMessenger message types
@@ -233,6 +233,9 @@ cd KeepMeAlive
 dotnet restore
 dotnet build -c Release
 
+# Publish the portable release layout
+dotnet publish KeepMeAlive/KeepMeAlive.csproj -c Release -p:PublishProfile=Portable
+
 # Run
 dotnet run --project KeepMeAlive/KeepMeAlive.csproj
 ```
@@ -260,13 +263,28 @@ dotnet run --project KeepMeAlive/KeepMeAlive.csproj
 
 ## Privacy
 
-KeepMeAlive operates **entirely on your local machine**. It does not:
+KeepMeAlive is **local-first and privacy-first by default**. It does not:
 
 - Transmit any usage data, telemetry, or analytics
 - Read, capture, or log your keystrokes
-- Require an internet connection (except for the optional GitHub update check)
+- Attempt to hide from antivirus, EDR, enterprise monitoring, or endpoint controls
 
-The sole network call is an unauthenticated `GET` to the GitHub Releases API for version comparison. This can be disabled in Settings.
+Network behavior is explicit:
+
+- Automatic GitHub update checks are **off by default**
+- Startup account/license sync is **off by default** and currently a local no-op stub
+- The only shipped network call is an optional unauthenticated `GET` to the GitHub Releases API for version comparison
+
+Storage behavior is explicit:
+
+- Portable releases default to `<AppFolder>\Data\settings.json`
+- Profile storage uses `%APPDATA%\KeepMeAlive\settings.json`
+- License keys are stored securely outside `settings.json`
+  - `ProfileAppData`: Windows Credential Manager
+  - `PortableLocal`: DPAPI-protected local file
+- Windows startup writes `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` only when you enable it
+
+See [KeepMeAlive/docs/PRIVACY_DATA_FLOW.md](KeepMeAlive/docs/PRIVACY_DATA_FLOW.md) for the exact data flow and storage map.
 
 ---
 

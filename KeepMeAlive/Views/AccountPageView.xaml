@@ -222,7 +222,7 @@
                                 <Button Grid.Column="2"
                                         Style="{StaticResource ActivateButtonStyle}"
                                         Command="{Binding SaveLicenseCommand}"
-                                        Content="Save Key"/>
+                                        Content="Save Securely"/>
                             </Grid>
 
                             <StackPanel Orientation="Horizontal">
@@ -233,6 +233,11 @@
                                 <TextBlock Text="{Binding LicenseStatus}"
                                            Style="{StaticResource FooterTextStyle}"/>
                             </StackPanel>
+
+                            <TextBlock Text="{Binding LicenseStorageLocation, StringFormat='Storage backend: {0}'}"
+                                       Style="{StaticResource FooterTextStyle}"
+                                       Margin="0 8 0 0"
+                                       TextWrapping="Wrap"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>

@@ -10,6 +10,13 @@
     <AssemblyName>KeepMeAlive</AssemblyName>
     <RootNamespace>KeepMeAlive</RootNamespace>
     <Product>KeepMeAlive</Product>
+    <Authors>GorangN</Authors>
+    <Company>KeepMeAlive</Company>
+    <Description>Privacy-first Windows keep-alive utility with portable and profile storage modes.</Description>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <InformationalVersion>1.0.0</InformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +32,7 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
+    <PackageReference Include="MahApps.Metro" Version="2.4.11" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
   </ItemGroup>
 

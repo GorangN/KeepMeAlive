@@ -39,3 +39,65 @@ jobs:
       with:
         name: Build Output ${{ matrix.configuration }}
         path: '**\bin\${{ matrix.configuration }}\**\*.exe'
+
+  portable:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore the application
+      run: dotnet restore KeepMeAlive.sln
+
+    - name: Publish portable build
+      run: dotnet publish KeepMeAlive\KeepMeAlive.csproj -c Release -p:PublishProfile=Portable --no-restore
+
+    - name: Import signing certificate
+      if: ${{ secrets.WINDOWS_SIGNING_CERT_BASE64 != '' && secrets.WINDOWS_SIGNING_CERT_PASSWORD != '' }}
+      shell: pwsh
+      run: |
+        $certificatePath = Join-Path $env:RUNNER_TEMP "keepmealive-signing.pfx"
+        [System.IO.File]::WriteAllBytes(
+          $certificatePath,
+          [System.Convert]::FromBase64String("${{ secrets.WINDOWS_SIGNING_CERT_BASE64 }}"))
+        "WINDOWS_SIGNING_CERT_PATH=$certificatePath" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+    - name: Sign portable executable
+      if: ${{ env.WINDOWS_SIGNING_CERT_PATH != '' && secrets.WINDOWS_SIGNING_CERT_PASSWORD != '' }}
+      shell: pwsh
+      run: |
+        $publishDir = Resolve-Path "KeepMeAlive\bin\Release\net8.0-windows\win-x64\publish"
+        $exePath = Join-Path $publishDir "KeepMeAlive.exe"
+        $signtool = "${env:ProgramFiles(x86)}\Windows Kits\10\App Certification Kit\signtool.exe"
+        if (-not (Test-Path $signtool)) {
+          $signtool = (Get-Command signtool.exe -ErrorAction Stop).Source
+        }
+        & $signtool sign `
+          /fd SHA256 `
+          /tr http://timestamp.digicert.com `
+          /td SHA256 `
+          /f "$env:WINDOWS_SIGNING_CERT_PATH" `
+          /p "${{ secrets.WINDOWS_SIGNING_CERT_PASSWORD }}" `
+          $exePath
+
+    - name: Package portable zip
+      shell: pwsh
+      run: |
+        $publishDir = Resolve-Path "KeepMeAlive\bin\Release\net8.0-windows\win-x64\publish"
+        $zipPath = Join-Path $env:RUNNER_TEMP "KeepMeAlive-Portable.zip"
+        if (Test-Path $zipPath) {
+          Remove-Item $zipPath -Force
+        }
+        Compress-Archive -Path (Join-Path $publishDir "*") -DestinationPath $zipPath
+
+    - name: Upload portable artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: KeepMeAlive-Portable
+        path: ${{ runner.temp }}\KeepMeAlive-Portable.zip
