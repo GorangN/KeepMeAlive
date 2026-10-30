@@ -151,7 +151,15 @@ Assumptions: the existing staging root is disposable for a short account-service
 
 - [x] Review all candidate files for secrets, personal data and generated build outputs; confirm remote main has no unexpected changes.
 - [x] Add a beginner publishing guide explaining SMTP and separating source push from public application/account release.
-- [ ] Commit the reviewed implementation, project skills, tests and safe evidence on main; push without force.
-- [ ] Verify local/remote commit equality, a clean tracked/untracked working tree and the resulting CI state; report exact remaining release actions in plain language.
+- [x] Commit the reviewed implementation, project skills, tests and safe evidence on main; push without force.
+- [x] Verify local/remote commit equality, a clean tracked/untracked working tree and the resulting CI state; report exact remaining release actions in plain language.
 
 The user explicitly requested a direct commit and push to main. This authorizes that branch choice; do not create a new worktree or require a PR solely because a generic workflow skill recommends one. Build artifacts and local secrets stay ignored.
+
+## Publishing hand-off review (2026-10-30)
+
+- Reviewed 318 candidate files; no real credentials, private account data or generated distribution packages were included. Whitespace checks pass. Corrected the advanced-input caption to identify virtual key 126 as F15.
+- Committed the implementation, project skills, tests, safe native evidence and beginner publishing guide as `32a35ca9d2f9406a03ba64334cdf75ea4330fe3f` and pushed normally to canonical `https://github.com/GorangN/KeepMeAlive.git`, branch `main`. Remote HEAD matched local HEAD and the working tree was clean after that push.
+- A fresh local Release build reports zero warnings/errors; all 107 desktop tests pass. GitHub [Verify and package run 41043405430](https://github.com/GorangN/KeepMeAlive/actions/runs/41043405430) passed both backend and Windows jobs, including tests, audits, production-guard regression and complete installer/portable packaging. The unsigned validation artifact was uploaded. Production-only email, live-backend and signing steps were not enabled by this source push.
+- Added `KeepMeAlive/docs/PUBLISHING_STEP_BY_STEP.md` and linked it from README. It explains SMTP as email delivery, gives verified provider/Neon setup instructions, documents signing and remaining acceptance, and distinguishes committing, building and manually publishing downloads.
+- No public release or version tag was created. Production accounts remain disabled until real email delivery/link acceptance, trusted signing, controlled production promotion and the documented remaining Windows/database checks pass. The existing project version is 1.0.0 while the previous public release is v1.0.1; the guide requires a higher unused version and a build from its exact tested commit before release.
