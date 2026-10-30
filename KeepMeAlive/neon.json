@@ -1,0 +1,6 @@
+{
+  "apiBaseUrl": "https://br-fragrant-voice-b9m46w7y-keepmealive.compute.c-7.eu-central-1.aws.neon.tech/",
+  "authIssuer": "https://ep-rough-flower-b9s4hagj.neonauth.c-7.eu-central-1.aws.neon.tech/neondb/auth",
+  "resource": "https://keepmealive.app/api",
+  "clientId": ""
+}

@@ -1,0 +1,57 @@
+{
+  "verifiedAtUtc": "2026-10-29T22:30:16Z",
+  "target": "isolated staging, actual self-contained Windows WPF app",
+  "projectId": "sweet-truth-01118709",
+  "branchId": "br-red-flower-b9wmbkmb",
+  "publicClientId": "rRwBPkonGujPtDihzCtDKZJronKFaVtN",
+  "appDirectory": "artifacts/native-account-validation-20261029",
+  "syntheticEmail": "native-a3fc74f6-05c2-4893-a2aa-4df1bfc9c820@example.test",
+  "checks": {
+    "computerUseReset": true,
+    "desktopInitiatedSystemBrowser": true,
+    "exactLoopbackCallback": true,
+    "nativeConnectedScreen": true,
+    "realProfileIdentity": true,
+    "realSyncTimestamp": true,
+    "missingSubscriptionReportedTruthfully": true,
+    "nativeProfileSave": true,
+    "protectedSessionDpapiHeaderVerified": true,
+    "accessTokensNotInspected": true,
+    "cleanQuitRestart": true,
+    "startupSyncOptInRemainedOff": true,
+    "explicitRefreshRestoredWithoutBrowser": true,
+    "restoredSavedProfileName": "KeepMeAlive native verified",
+    "encryptedSessionFileReplacedOnRefresh": true,
+    "nativeSignOut": true,
+    "sessionPrimaryAndBackupDeleted": true,
+    "refreshAfterLogoutRemainedSignedOut": true,
+    "accountSwitchReachedEmptyLogin": true,
+    "nativeCancelReturnedSignedOut": true,
+    "signedOutUtilityStartStop": true,
+    "finalAppExited": true,
+    "normalProfileUnchanged": true,
+    "startupRegistrationUnchanged": true,
+    "testProxyExited": true,
+    "callbackListenerClosed": true
+  },
+  "limitations": {
+    "actualSmtpVerified": false,
+    "nativeOutageInjectionVerified": false,
+    "nativeTwoDifferentUsersVerified": false,
+    "twoUserApiIsolationEvidence": "tasks/verification/staging-oauth-2026-10-29.json",
+    "productionPromoted": false,
+    "trustedSigningVerified": false,
+    "broaderManualWindowsChecks": "KeepMeAlive/docs/RELEASE_READINESS.md",
+    "approvalRejection": "Earlier automatic approval review rejected the PowerShell launch configured with a process-local test proxy as blocked by policy. No equivalent launch was attempted; normal native launcher used without a proxy."
+  },
+  "screenshots": [
+    "tasks/verification/windows-neon-connected-2026-10-29.png",
+    "tasks/verification/windows-neon-restored-2026-10-29.png"
+  ],
+  "automated": {
+    "desktopPassed": 104,
+    "backendPassed": 24,
+    "typeScriptStrict": true,
+    "npmVulnerabilities": 0
+  }
+}

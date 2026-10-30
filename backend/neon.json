@@ -1,0 +1,30 @@
+{
+  "projectId": "morning-bread-41310427",
+  "region": "aws-eu-central-1",
+  "function": "keepmealive",
+  "resource": "https://keepmealive.app/api",
+  "development": {
+    "branchId": "br-fancy-star-b98qz19k",
+    "issuer": "https://ep-floral-firefly-b9u2nq15.neonauth.c-7.eu-central-1.aws.neon.tech/neondb/auth",
+    "apiBaseUrl": "https://br-fancy-star-b98qz19k-keepmealive.compute.c-7.eu-central-1.aws.neon.tech/"
+  },
+  "production": {
+    "branchId": "br-fragrant-voice-b9m46w7y",
+    "issuer": "https://ep-rough-flower-b9s4hagj.neonauth.c-7.eu-central-1.aws.neon.tech/neondb/auth",
+    "apiBaseUrl": "https://br-fragrant-voice-b9m46w7y-keepmealive.compute.c-7.eu-central-1.aws.neon.tech/",
+    "clientId": "IzVVcdXJJGYyOblRvHhTUqUuhTdRsGSL"
+  },
+  "staging": {
+    "projectId": "sweet-truth-01118709",
+    "branchId": "br-red-flower-b9wmbkmb",
+    "issuer": "https://ep-red-rain-b9c8tumi.neonauth.c-7.eu-central-1.aws.neon.tech/neondb/auth",
+    "apiBaseUrl": "https://br-red-flower-b9wmbkmb-keepmealive.compute.c-7.eu-central-1.aws.neon.tech/",
+    "clientId": "rRwBPkonGujPtDihzCtDKZJronKFaVtN"
+  },
+  "accountReleaseReady": false,
+  "remainingGates": [
+    "Configure application-owned SMTP and verify actual verification/reset delivery",
+    "Complete remaining Windows environment-specific acceptance and trusted release signing",
+    "Promote validated backend and activate the production desktop client"
+  ]
+}

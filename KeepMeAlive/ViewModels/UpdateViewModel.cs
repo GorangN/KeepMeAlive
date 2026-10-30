@@ -1,16 +1,17 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using KeepMeAlive.Services.Interfaces;
-using System.Diagnostics;
 using System.Reflection;
 
 namespace KeepMeAlive.ViewModels;
 
+/// <summary>Exposes user-initiated release checks and their result.</summary>
 public partial class UpdateViewModel : ObservableObject
 {
     private const string DefaultReleaseUrl = "https://github.com/GorangN/KeepMeAlive/releases/latest";
 
     private readonly IUpdateService _updateService;
+    private readonly IBrowserLauncher _browser;
 
     [ObservableProperty]
     private bool _updateAvailable;
@@ -21,18 +22,23 @@ public partial class UpdateViewModel : ObservableObject
     [ObservableProperty]
     private bool _isChecking;
 
+    /// <summary>Gets the running application version.</summary>
     public string AppVersion { get; } =
         Assembly.GetExecutingAssembly()
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
             ?.InformationalVersion?.Split('+')[0] ?? "1.0.0";
 
-    public UpdateViewModel(IUpdateService updateService)
+    /// <summary>Creates the release-check controls.</summary>
+    /// <param name="updateService">The release metadata service.</param>
+    /// <param name="browser">The system browser adapter.</param>
+    public UpdateViewModel(IUpdateService updateService, IBrowserLauncher browser)
     {
         _updateService = updateService;
+        _browser = browser;
     }
 
     [RelayCommand]
-    private async Task CheckAsync()
+    private async Task CheckAsync(CancellationToken cancellationToken)
     {
         if (IsChecking)
         {
@@ -44,7 +50,7 @@ public partial class UpdateViewModel : ObservableObject
 
         try
         {
-            var hasUpdate = await _updateService.CheckForUpdateAsync();
+            var hasUpdate = await _updateService.CheckForUpdateAsync(cancellationToken);
             if (hasUpdate)
             {
                 UpdateAvailable = true;
@@ -57,6 +63,11 @@ public partial class UpdateViewModel : ObservableObject
                 ? "Update check failed."
                 : "You are up to date.";
         }
+        catch (Exception exception) when (exception is System.Net.Http.HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            UpdateAvailable = false;
+            UpdateLabel = "Could not reach GitHub. Check your connection and try again.";
+        }
         finally
         {
             IsChecking = false;
@@ -66,10 +77,7 @@ public partial class UpdateViewModel : ObservableObject
     [RelayCommand]
     private void OpenReleasePage()
     {
-        var url = string.IsNullOrWhiteSpace(_updateService.ReleaseUrl)
-            ? DefaultReleaseUrl
-            : _updateService.ReleaseUrl;
-
-        Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        try { _browser.Open(new Uri(DefaultReleaseUrl)); }
+        catch (System.ComponentModel.Win32Exception) { UpdateLabel = "Could not open your browser. Visit the KeepMeAlive releases page on GitHub."; }
     }
 }

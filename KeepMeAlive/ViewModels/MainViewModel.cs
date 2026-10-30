@@ -1,175 +1,89 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using Hardcodet.Wpf.TaskbarNotification;
 using KeepMeAlive.Messages;
 using KeepMeAlive.Models;
 using KeepMeAlive.Services.Interfaces;
-using System.Windows;
-using System.Windows.Media.Imaging;
 
 namespace KeepMeAlive.ViewModels;
 
-/// <summary>
-/// Shell ViewModel — manages the main window lifecycle, tray icon state,
-/// sidebar navigation, and exposes Start/Stop relay commands for the tray context menu.
-/// </summary>
-public partial class MainViewModel : ObservableObject,
-    IRecipient<ShowNotificationMessage>,
-    IRecipient<KeepAliveStatusMessage>
+/// <summary>Coordinates navigation and shell commands through presentation interfaces.</summary>
+public partial class MainViewModel : ObservableObject, IRecipient<ShowNotificationMessage>, IRecipient<KeepAliveStatusMessage>
 {
-    private readonly IMessenger _messenger;
-    private readonly IDialogService _dialogService;
-    private TaskbarIcon? _trayIcon;
-    private Window? _window;
+    private readonly IDialogService _dialogs;
+    private readonly IShellService _shell;
     private bool _isRunning;
 
-    /// <summary>Gets or sets the currently active navigation page.</summary>
     [ObservableProperty]
     private NavigationPage _currentPage = NavigationPage.Dashboard;
-
-    /// <summary>Gets the dashboard ViewModel (keep-alive controls).</summary>
+    /// <summary>Gets the keep-alive controls.</summary>
     public DashboardViewModel DashboardViewModel { get; }
-
-    /// <summary>Gets the settings ViewModel (preferences and scheduled actions).</summary>
+    /// <summary>Gets the preferences and schedule editor.</summary>
     public SettingsViewModel SettingsViewModel { get; }
-
-    /// <summary>Gets the account ViewModel (account overview and license storage).</summary>
+    /// <summary>Gets the connected account controls.</summary>
     public AccountViewModel AccountViewModel { get; }
-
-    /// <summary>Gets the update ViewModel (version check).</summary>
+    /// <summary>Gets the release checker.</summary>
     public UpdateViewModel UpdateViewModel { get; }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MainViewModel"/> class.
-    /// </summary>
-    /// <param name="dashboardViewModel">The dashboard keep-alive ViewModel.</param>
-    /// <param name="settingsViewModel">The settings ViewModel.</param>
-    /// <param name="accountViewModel">The account ViewModel.</param>
-    /// <param name="updateViewModel">The update-check ViewModel.</param>
-    /// <param name="messenger">The messenger for cross-ViewModel communication.</param>
-    /// <param name="dialogService">The dialog service for confirmation prompts.</param>
-    public MainViewModel(
-        DashboardViewModel dashboardViewModel,
-        SettingsViewModel settingsViewModel,
-        AccountViewModel accountViewModel,
-        UpdateViewModel updateViewModel,
-        IMessenger messenger,
-        IDialogService dialogService)
+    /// <summary>Creates the application shell coordinator.</summary>
+    /// <param name="dashboardViewModel">The dashboard.</param>
+    /// <param name="settingsViewModel">The preferences.</param>
+    /// <param name="accountViewModel">The account.</param>
+    /// <param name="updateViewModel">The release checker.</param>
+    /// <param name="messenger">The application messenger.</param>
+    /// <param name="dialogService">The dialog adapter.</param>
+    /// <param name="shell">The shell adapter.</param>
+    public MainViewModel(DashboardViewModel dashboardViewModel, SettingsViewModel settingsViewModel,
+        AccountViewModel accountViewModel, UpdateViewModel updateViewModel, IMessenger messenger,
+        IDialogService dialogService, IShellService shell)
     {
         DashboardViewModel = dashboardViewModel;
         SettingsViewModel = settingsViewModel;
         AccountViewModel = accountViewModel;
         UpdateViewModel = updateViewModel;
-        _messenger = messenger;
-        _dialogService = dialogService;
-
-        _messenger.RegisterAll(this);
+        _dialogs = dialogService;
+        _shell = shell;
+        messenger.RegisterAll(this);
     }
 
-    /// <summary>Wires the main window and tray icon to this ViewModel.</summary>
-    /// <param name="window">The main application window.</param>
-    /// <param name="trayIcon">The system tray icon.</param>
-    public void Initialize(Window window, TaskbarIcon trayIcon)
-    {
-        _window = window;
-        _trayIcon = trayIcon;
-    }
-
-    /// <summary>Navigates to the specified sidebar page.</summary>
-    /// <param name="page">The target navigation page.</param>
     [RelayCommand]
     private void Navigate(NavigationPage page)
     {
         if (page == CurrentPage) { return; }
-
-        bool leavingGuardedPage = CurrentPage == NavigationPage.Dashboard
-                                  || CurrentPage == NavigationPage.Scheduling;
-
-        if (leavingGuardedPage && SettingsViewModel.HasUnsavedChanges)
+        if (SettingsViewModel.HasUnsavedChanges || DashboardViewModel.HasUnsavedChanges)
         {
-            if (_dialogService.ShowUnsavedChangesDialog())
+            switch (_dialogs.ShowUnsavedChangesDialog())
             {
-                SettingsViewModel.SaveCommand.Execute(null);
-            }
-            else
-            {
-                SettingsViewModel.LoadFromSettings();
+                case UnsavedChangesChoice.Cancel: return;
+                case UnsavedChangesChoice.Save:
+                    if (!SettingsViewModel.TrySave() || !DashboardViewModel.ApplySettings()) { return; }
+                    break;
+                case UnsavedChangesChoice.Discard:
+                    SettingsViewModel.LoadFromSettings();
+                    DashboardViewModel.DiscardChanges();
+                    break;
             }
         }
-
         CurrentPage = page;
     }
 
-    /// <summary>Shows the main window centered on the primary screen.</summary>
-    [RelayCommand]
-    private void ShowWindow()
-    {
-        if (_window == null) { return; }
-
-        _window.Show();
-        _window.WindowState = WindowState.Normal;
-        _window.Activate();
-        _window.Focus();
-    }
-
-    /// <summary>Hides the main window (minimizes to tray).</summary>
-    [RelayCommand]
-    private void HideWindow()
-    {
-        _window?.Hide();
-    }
-
-    /// <summary>Starts the keep-alive loop via the tray context menu.</summary>
-    [RelayCommand(CanExecute = nameof(CanTrayStart))]
-    private void TrayStart() => DashboardViewModel.StartCommand.Execute(null);
-
+    [RelayCommand] private void ShowWindow() => _shell.Show();
+    [RelayCommand] private void HideWindow() => _shell.Hide();
+    [RelayCommand] private void MinimizeWindow() => _shell.Minimize();
+    [RelayCommand] private void ToggleMaximize() => _shell.ToggleMaximize();
+    [RelayCommand(CanExecute = nameof(CanTrayStart))] private void TrayStart() => DashboardViewModel.StartCommand.Execute(null);
     private bool CanTrayStart() => !_isRunning;
-
-    /// <summary>Stops the keep-alive loop via the tray context menu.</summary>
-    [RelayCommand(CanExecute = nameof(CanTrayStop))]
-    private void TrayStop() => DashboardViewModel.StopCommand.Execute(null);
-
+    [RelayCommand(CanExecute = nameof(CanTrayStop))] private void TrayStop() => DashboardViewModel.StopCommand.Execute(null);
     private bool CanTrayStop() => _isRunning;
-
-    /// <summary>Exits the application cleanly.</summary>
-    [RelayCommand]
-    private void ExitApplication()
-    {
-        _trayIcon?.Dispose();
-        Application.Current.Shutdown();
-    }
-
+    [RelayCommand] private void ExitApplication() => _shell.Exit();
     /// <inheritdoc/>
-    public void Receive(ShowNotificationMessage message)
-    {
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            _trayIcon?.ShowBalloonTip(message.Title, message.Body, message.Icon);
-        });
-    }
-
+    public void Receive(ShowNotificationMessage message) => _shell.Notify(message.Title, message.Body);
     /// <inheritdoc/>
     public void Receive(KeepAliveStatusMessage message)
     {
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            _isRunning = message.IsRunning;
-
-            TrayStartCommand.NotifyCanExecuteChanged();
-            TrayStopCommand.NotifyCanExecuteChanged();
-
-            if (_trayIcon == null) { return; }
-
-            _trayIcon.ToolTipText = message.IsRunning
-                ? "KeepMeAlive — Running"
-                : "KeepMeAlive — Stopped";
-
-            var iconUri = message.IsRunning
-                ? new Uri("pack://application:,,,/Resources/Icons/tray_active.ico")
-                : new Uri("pack://application:,,,/Resources/Icons/tray_inactive.ico");
-
-            _trayIcon.IconSource = new BitmapImage(iconUri);
-        });
+        _isRunning = message.IsRunning;
+        TrayStartCommand.NotifyCanExecuteChanged();
+        TrayStopCommand.NotifyCanExecuteChanged();
+        _shell.SetRunning(message.IsRunning);
     }
 }

@@ -1,0 +1,83 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls">
+    <DataTemplate x:Key="Tabler.CalendarButtonTemplate">
+        <ContentControl Style="{StaticResource TablerIconStyle}" Content="{StaticResource Tabler.Calendar}"/>
+    </DataTemplate>
+    <DataTemplate x:Key="Tabler.CheckTemplate">
+        <ContentControl Style="{StaticResource TablerIconStyle}" Content="{StaticResource Tabler.Check}"/>
+    </DataTemplate>
+    <DataTemplate x:Key="Tabler.IndeterminateTemplate">
+        <ContentControl Style="{StaticResource TablerIconStyle}" Content="{StaticResource Tabler.Minus}"/>
+    </DataTemplate>
+    <Style TargetType="DatePicker" BasedOn="{StaticResource MahApps.Styles.DatePicker}">
+        <Setter Property="mah:DatePickerHelper.DropDownButtonContentTemplate" Value="{StaticResource Tabler.CalendarButtonTemplate}"/>
+    </Style>
+    <Style TargetType="CheckBox" BasedOn="{StaticResource MahApps.Styles.CheckBox}">
+        <Setter Property="mah:CheckBoxHelper.CheckGlyphCheckedTemplate" Value="{StaticResource Tabler.CheckTemplate}"/>
+        <Setter Property="mah:CheckBoxHelper.CheckGlyphIndeterminateTemplate" Value="{StaticResource Tabler.IndeterminateTemplate}"/>
+    </Style>
+    <Style x:Key="Tabler.CalendarNavigationButton" TargetType="Button">
+        <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.IdealForeground}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Width" Value="28"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="surface" Background="{TemplateBinding Background}">
+                        <ContentControl Style="{StaticResource TablerIconStyle}" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="surface" Property="Opacity" Value="0.75"/></Trigger>
+                        <Trigger Property="IsPressed" Value="True"><Setter TargetName="surface" Property="Opacity" Value="0.55"/></Trigger>
+                        <Trigger Property="IsEnabled" Value="False"><Setter TargetName="surface" Property="Opacity" Value="0.4"/></Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="MahApps.Styles.Button.Calendar.Previous" TargetType="Button" BasedOn="{StaticResource Tabler.CalendarNavigationButton}">
+        <Setter Property="AutomationProperties.Name" Value="Previous month"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Content" Value="{StaticResource Tabler.ChevronLeft}"/>
+    </Style>
+    <Style x:Key="MahApps.Styles.Button.Calendar.Next" TargetType="Button" BasedOn="{StaticResource Tabler.CalendarNavigationButton}">
+        <Setter Property="AutomationProperties.Name" Value="Next month"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="Content" Value="{StaticResource Tabler.ChevronRight}"/>
+    </Style>
+    <Style x:Key="MahApps.Styles.RepeatButton.ScrollBarSmall" TargetType="RepeatButton">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource OnSurfaceVariantBrush}"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="IsTabStop" Value="False"/>
+        <Setter Property="Height" Value="{DynamicResource MahApps.Sizes.ScrollBar.VerticalRepeatButton.Height}"/>
+        <Setter Property="Width" Value="{DynamicResource MahApps.Sizes.ScrollBar.HorizontalRepeatButton.Width}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Interval" Value="50"/>
+        <Setter Property="Margin" Value="1"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RepeatButton">
+                    <Border Background="{TemplateBinding Background}">
+                        <ContentControl x:Name="glyph" Style="{StaticResource TablerIconStyle}" Content="{StaticResource Tabler.ChevronDown}"
+                                        Foreground="{TemplateBinding Foreground}" Width="12" Height="12" RenderTransformOrigin="0.5,0.5"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Command" Value="{x:Static ScrollBar.LineUpCommand}">
+                            <Setter TargetName="glyph" Property="RenderTransform"><Setter.Value><RotateTransform Angle="180"/></Setter.Value></Setter>
+                        </Trigger>
+                        <Trigger Property="Command" Value="{x:Static ScrollBar.LineLeftCommand}"><Setter TargetName="glyph" Property="Content" Value="{StaticResource Tabler.ChevronLeft}"/></Trigger>
+                        <Trigger Property="Command" Value="{x:Static ScrollBar.LineRightCommand}"><Setter TargetName="glyph" Property="Content" Value="{StaticResource Tabler.ChevronRight}"/></Trigger>
+                        <Trigger Property="IsMouseOver" Value="True"><Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}"/></Trigger>
+                        <Trigger Property="IsPressed" Value="True"><Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/></Trigger>
+                        <Trigger Property="IsEnabled" Value="False"><Setter TargetName="glyph" Property="Opacity" Value="0.5"/></Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

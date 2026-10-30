@@ -1,0 +1,21 @@
+{
+  "desktopTests": 89,
+  "packages": [
+    {
+      "sha256": "A76C6A1F1239670A6031AB07F6D3D98192E89C46689A5E91E911011ACB5FFEC7",
+      "name": "KeepMeAlive-Portable.zip",
+      "bytes": 78288396
+    },
+    {
+      "sha256": "0BD7C94FE7CF99584BC77057302C25D39924C6275145D69B519C299FD093361D",
+      "name": "KeepMeAlive-Setup.exe",
+      "bytes": 54696035
+    }
+  ],
+  "recordedAtUtc": "2026-10-29T17:24:13.5313801+00:00",
+  "runtimePatch": "10.0.14",
+  "validationOnly": true,
+  "previousArtifacts": "artifacts/previous-before-oauth-consent",
+  "backendTests": 18,
+  "productionAccountsActivated": false
+}

@@ -30,9 +30,7 @@
 
                 <!-- Header -->
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0 0 0 10">
-                    <TextBlock Text="&#xE7BA;"
-                               FontFamily="Segoe MDL2 Assets"
-                               FontSize="16"
+                    <ContentControl Content="{StaticResource Tabler.AlertTriangle}" Style="{StaticResource TablerIconStyle}"
                                Foreground="{DynamicResource PrimaryBrush}"
                                VerticalAlignment="Center"
                                Margin="0 0 10 0"/>
@@ -55,11 +53,11 @@
                             Style="{StaticResource GhostButtonStyle}"
                             Width="110"
                             Margin="0 0 10 0"
-                            Click="DiscardButton_Click"/>
+                            />
                     <Button Content="Save"
                             Style="{StaticResource PrimaryButtonStyle}"
                             Width="90"
-                            Click="SaveButton_Click"/>
+                            />
                 </StackPanel>
             </Grid>
         </Border>

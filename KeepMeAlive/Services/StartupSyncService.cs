@@ -2,14 +2,12 @@ using KeepMeAlive.Services.Interfaces;
 
 namespace KeepMeAlive.Services;
 
-/// <summary>
-/// Local stub for future startup account and license synchronization.
-/// </summary>
-public sealed class StartupSyncService : IStartupSyncService
+/// <summary>Refreshes account data only when explicitly enabled by startup preferences.</summary>
+public sealed class StartupSyncService(IAccountService accounts) : IStartupSyncService
 {
     /// <inheritdoc/>
-    public Task SyncAsync(CancellationToken cancellationToken = default)
+    public async Task SyncAsync(CancellationToken cancellationToken = default)
     {
-        return Task.CompletedTask;
+        await accounts.GetCurrentAsync(cancellationToken).ConfigureAwait(false);
     }
 }

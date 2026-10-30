@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0-windows7.0": {
+      "CommunityToolkit.Mvvm": {
+        "type": "Direct",
+        "requested": "[8.4.0, )",
+        "resolved": "8.4.0",
+        "contentHash": "tqVU8yc/ADO9oiTRyTnwhFN68hCwvkliMierptWOudIAvWY1mWCh5VFh+guwHJmpMwfg0J0rY+yyd5Oy7ty9Uw=="
+      },
+      "Hardcodet.NotifyIcon.Wpf": {
+        "type": "Direct",
+        "requested": "[1.1.0, )",
+        "resolved": "1.1.0",
+        "contentHash": "FFEkdRSidMrbMfQVwhCzq6KtSyR1qQojqtiUrkCyjnOOuMf7W3TNQkzFnBBxYxFe7uLk5mz7M38wFh1qdWyfvg=="
+      },
+      "MahApps.Metro": {
+        "type": "Direct",
+        "requested": "[2.4.11, )",
+        "resolved": "2.4.11",
+        "contentHash": "pvk757N/ViZy+zlbB56AakryuZkts328M6pX2mMn/Z7r5ifkScDrS300zSBjLd+eGOPeHgUjH4f7cZbRiMyvQg==",
+        "dependencies": {
+          "ControlzEx": "[4.4.0, 6.0.0)"
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection": {
+        "type": "Direct",
+        "requested": "[10.0.0, )",
+        "resolved": "10.0.0",
+        "contentHash": "f0RBabswJq+gRu5a+hWIobrLWiUYPKMhCD9WO3sYBAdSy3FFH14LMvLVFZc2kPSCimBLxSuitUhsd6tb0TAY6A==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.0"
+        }
+      },
+      "ControlzEx": {
+        "type": "Transitive",
+        "resolved": "4.4.0",
+        "contentHash": "pZ5z4hYWwE4R13UMCVs6vII//nL7hz+Nwn4oJlnsZJRGqJNy6Z9KnJiTZfly6lKFu0pMc1aWBZpx+VqFTQKP1Q==",
+        "dependencies": {
+          "Microsoft.Xaml.Behaviors.Wpf": "1.1.19"
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions": {
+        "type": "Transitive",
+        "resolved": "10.0.0",
+        "contentHash": "L3AdmZ1WOK4XXT5YFPEwyt0ep6l8lGIPs7F5OOBZc77Zqeo01Of7XXICy47628sdVl0v/owxYJTe86DTgFwKCA=="
+      },
+      "Microsoft.Xaml.Behaviors.Wpf": {
+        "type": "Transitive",
+        "resolved": "1.1.19",
+        "contentHash": "5sPWkbqImc2t1aQwIfJcKsUo7tOg1Tr8+6xVzZJB56Nzt4u9NlpcLofgdX/aRYpPKdWDA3U23Akw1KQzU5e82g=="
+      },
+      "keepmealive.application": {
+        "type": "Project",
+        "dependencies": {
+          "CommunityToolkit.Mvvm": "[8.4.0, )",
+          "KeepMeAlive.Core": "[1.0.0, )"
+        }
+      },
+      "keepmealive.core": {
+        "type": "Project"
+      },
+      "keepmealive.infrastructure": {
+        "type": "Project",
+        "dependencies": {
+          "KeepMeAlive.Application": "[1.0.0, )",
+          "KeepMeAlive.Core": "[1.0.0, )"
+        }
+      }
+    },
+    "net10.0-windows7.0/win-x64": {}
+  }
+}

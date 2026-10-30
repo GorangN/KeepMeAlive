@@ -1,59 +1,40 @@
-# KeepMeAlive Privacy and Data Flow
+# Privacy and data flow
 
-## Stored data
+## Local preferences
 
-- `settings.json`
-  - keep-alive method
-  - interval and advanced input values
-  - theme
-  - startup and notification preferences
-  - storage mode
-  - privacy toggles for update checks and startup sync
-  - scheduled action settings
-- License key
-  - never stored in plain text inside `settings.json`
-  - stored in Windows Credential Manager when `StorageMode = ProfileAppData`
-  - stored in a DPAPI-protected local file when `StorageMode = PortableLocal`
-- Runtime bootstrap
-  - stored beside the executable as `KeepMeAlive.bootstrap.json`
-  - records the selected storage mode before the main settings file is loaded
+Settings contain input method and interval, appearance, startup/notification preferences, network opt-ins, storage location, and one-time scheduling preferences. They do not contain passwords or refresh tokens.
 
-## Storage locations
+- Portable settings: `<AppFolder>\Data\settings.json`.
+- Profile settings: `%APPDATA%\KeepMeAlive\settings.json`.
+- Settings writes use a temporary file, a complete flush, and atomic replacement. The preceding file is retained as `.bak`.
+- Invalid primary files are preserved when defaults or a valid backup are used.
+- Portable storage selection is stored in `<AppFolder>\KeepMeAlive.bootstrap.json`.
+- Installed/profile storage selection is stored in `%APPDATA%\KeepMeAlive\runtime.json`. Existing sidecar bootstrap files remain readable for compatibility.
 
-### PortableLocal
+## Protected data
 
-- Settings: `<AppFolder>\Data\settings.json`
-- Protected license data: `<AppFolder>\Data\Secrets\license.bin`
-- Runtime marker: `<AppFolder>\KeepMeAlive.portable`
-- Bootstrap: `<AppFolder>\KeepMeAlive.bootstrap.json`
+Refresh-session material is stored at `<DataDirectory>\Secrets\session.bin`, protected with DPAPI `CurrentUser`. Access tokens remain in memory. DPAPI data is bound to a Windows user and machine; portable data copied elsewhere may require sign-in again.
 
-### ProfileAppData
+Legacy license keys use Windows Credential Manager (`KeepMeAlive/LicenseKey`) in profile mode and DPAPI-protected `Secrets\license.bin` in portable mode. A saved key is not proof of an active entitlement.
 
-- Settings: `%APPDATA%\KeepMeAlive\settings.json`
-- Protected license data: Windows Credential Manager entry `KeepMeAlive/LicenseKey`
-- Bootstrap: `<AppFolder>\KeepMeAlive.bootstrap.json`
+Storage migration copies and verifies settings and secrets before committing the new location. Protected source copies and encrypted destination recovery snapshots can remain for recovery. Sign-out deletes the active session and its backup, plus matching copies of the same sign-in session in the other storage mode. Recovery snapshots lose only that session's material; legacy license recovery data and unrelated sessions remain. Each interactive sign-in has a distinct session identity that survives refresh rotation.
 
-## Network calls
+## Network behavior
 
-- Automatic update checks
-  - disabled by default
-  - optional unauthenticated `GET` to `https://api.github.com/repos/GorangN/KeepMeAlive/releases/latest`
-- Startup account/license sync
-  - disabled by default
-  - current implementation is a local no-op stub and performs no network traffic
-- Manual release page open
-  - opens the GitHub releases page in the default browser only when the user clicks the UI action
+- Manual browser sign-in talks to the configured Neon Auth endpoint and hosted authentication pages.
+- Account requests send an access token to the configured API. The API stores a user profile and server-managed entitlements in Neon.
+- Utility settings, machine names, input events, and usage history are not uploaded.
+- Startup account synchronization is disabled by default. Enabling it permits session refresh and account requests during startup.
+- Automatic update checks are disabled by default. Manual checks and enabled automatic checks use the GitHub Releases API.
+- Opening a release page launches a validated GitHub HTTPS URL in the default browser.
+- There is no telemetry, analytics, or third-party crash-reporting upload.
 
-## Registry writes
+Neon production email delivery and the public desktop OAuth client must be configured before production account launch. The shared provider is suitable for development only.
 
-- `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`
-  - written only when the user explicitly enables Windows startup
-  - removed when the user disables Windows startup
-- Theme detection reads:
-  - `HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize`
+## Windows integration
 
-## Explicit non-goals
+Startup registration uses the current user's `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` value and a quoted executable path. It is written only when enabled. Disabling startup or uninstalling removes only a registration that targets the current executable, preserving a different installation's registration.
 
-- No attempt to hide from antivirus, EDR, enterprise monitoring, or endpoint controls
-- No code packing, obfuscation, or stealth startup behavior
-- No telemetry, analytics, or usage reporting in the current implementation
+The app reads the Windows appearance preference, observes lock/suspend state, and injects only the selected keyboard/mouse strategy during an active unlocked session. It does not read keystrokes or upload input information.
+
+Diagnostics stay local, redact credential material, and use bounded retention. Clear local sign-in with Sign out; uninstall retains user preferences and protected data unless removed separately.

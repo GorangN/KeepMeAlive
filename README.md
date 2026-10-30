@@ -1,299 +1,92 @@
-<div align="center">
-
 # KeepMeAlive
 
-**Keep your presence active - effortlessly.**
+A native Windows utility for keeping an unlocked session active, with an optional account backed by Neon.
 
-KeepMeAlive is a lightweight, privacy-respecting Windows utility that prevents Microsoft Teams and similar collaboration platforms from switching your status to *Away* during short breaks or hands-off periods.
+KeepMeAlive runs as a standard user, lives in the system tray, and keeps its input settings and schedules on your PC. Its WPF interface supports light, dark, and system appearance, keyboard navigation, and Windows high contrast.
 
-[![Release](https://img.shields.io/github/v/release/GorangN/KeepMeAlive?style=flat-square&color=0078D4&label=Latest%20Release)](https://github.com/GorangN/KeepMeAlive/releases/latest)
-[![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
-[![WPF](https://img.shields.io/badge/WPF-Windows%20UI-0078D4?style=flat-square&logo=windows&logoColor=white)](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/)
-[![License](https://img.shields.io/github/license/GorangN/KeepMeAlive?style=flat-square&color=107C10)](LICENSE)
-[![Build](https://img.shields.io/github/actions/workflow/status/GorangN/KeepMeAlive/dotnet-desktop.yml?style=flat-square&label=Build)](https://github.com/GorangN/KeepMeAlive/actions)
-[![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-0078D4?style=flat-square&logo=windows11&logoColor=white)](https://www.microsoft.com/windows)
+![Dashboard preview](KeepMeAlive/docs/screenshot.png)
 
-</div>
+## Download and run
 
----
+Validation packages are produced by the [verification workflow](.github/workflows/dotnet-desktop.yml):
 
-## Why KeepMeAlive?
+- **KeepMeAlive-Portable.zip**: extract the complete archive to a writable directory and run `KeepMeAlive.exe`. Settings default to the adjacent `Data` directory.
+- **KeepMeAlive-Setup.exe**: installs for the current user under `%LOCALAPPDATA%\Programs\KeepMeAlive`. Administrator access is not required. Settings default to `%APPDATA%\KeepMeAlive`.
 
-Remote work means presence matters. A 5-minute coffee break or a quick call should not leave your status stuck on *Away* - costing you missed messages, awkward follow-ups, or the appearance of being offline.
+Both packages include the .NET runtime. Windows 11 is the primary target; Windows 10 22H2 remains a compatibility target. A production account release requires the checks in [Release readiness](KeepMeAlive/docs/RELEASE_READINESS.md). An unsigned validation build is not a signed production release.
 
-KeepMeAlive solves this with **a single, silent process** that keeps your session alive exactly when you need it, without interfering with your workflow or typing.
+Native validation covers light/dark pages, actual Windows high contrast and 100/150/175% scaling, calendar/dropdown controls and read-only date entry, invalid scheduling/numeric input, accessible calendar labels, keyboard activation, resizing/maximize/restore, secondary-instance restoration, close-to-tray, clean exit, Neon account restoration, service-outage recovery and artifact rollback. Actual 200% scaling, fresh-user installation/uninstall, spoken screen-reader output, tray-menu clicks and database recovery remain release checks.
 
-- No admin rights required
-- No background services or drivers
-- No data collection - fully offline
-- Runs in your system tray, completely out of the way
+## Using the app
 
----
+1. Choose Keyboard or Mouse and an interval. The default keyboard pulse uses F15, an uncommon function key.
+2. Click Start. The Dashboard shows the current session state and next pulse. Native input failures are reported.
+3. Click Stop to end the session. The optional system/display power request is released automatically.
+4. Closing the window hides it in the system tray. Reopen it through the tray menu or launch it again. Use Quit to exit completely.
 
-## Features
+Synthetic input can be restricted by Windows or an organization's device policies. The app reports input results, but it cannot guarantee a particular Teams or other application's presence state. Input pauses while the session is locked or suspended.
 
-<table>
-<tr>
-<td width="50%">
+Scheduling supports one future shutdown, restart, or sleep action. Choose the date from the calendar and enter a 24-hour time as `HH:mm`; the date field is read-only to prevent invalid text from silently reusing an older date. Changes apply when saved; discarding the editor leaves the existing schedule alone. Future saved actions are restored at startup. Missed actions are discarded instead of unexpectedly executing after the PC returns.
 
-### <img src="https://img.shields.io/badge/-Keep--Alive%20Engine-0078D4?style=flat-square" /> Keep-Alive Engine
+## Optional Neon account
 
-Two precision input strategies keep your session active:
+The utility works without an account. Sign-in uses the system browser, Authorization Code with PKCE, and user-protected local session storage. The desktop app never receives database passwords or Neon management credentials.
 
-- **Keyboard ping** - sends a harmless LeftShift scan code that registers as activity without affecting your work
-- **Mouse nudge** - moves the cursor by 1-5 pixels and back, invisible to the eye
+The account screen shows actual connection state and server-managed entitlements. No subscription is required for the local utility, and this version does not introduce checkout or fabricated trial status. See [backend setup](backend/README.md) and [release prerequisites](KeepMeAlive/docs/RELEASE_READINESS.md).
 
-</td>
-<td width="50%">
+## Privacy and local storage
 
-### <img src="https://img.shields.io/badge/-Smart%20Intervals-107C10?style=flat-square" /> Smart Intervals
+Automatic update checks and startup account synchronization are disabled by default. Manual sign-in, refresh, and update actions are explicit network requests. There is no telemetry or activity upload.
 
-- Configurable ping interval (60-90 seconds recommended)
-- Built-in **random jitter** (+/-15 s) to avoid robotic patterns
-- Live idle-time display so you can verify it is working
+Session material is encrypted with Windows DPAPI for the current Windows user. Moving portable files to another Windows user or PC requires signing in again. Existing license keys remain protected; storing a key does not validate a subscription.
 
-</td>
-</tr>
-<tr>
-<td>
+Preferences use atomic file replacement and recoverable backups. Storage migration copies and verifies both settings and protected data before committing the new location. Protected source copies are retained for recovery; logout clears application-owned session copies. See [Privacy and data flow](KeepMeAlive/docs/PRIVACY_DATA_FLOW.md).
 
-### <img src="https://img.shields.io/badge/-System%20Tray-5C2D91?style=flat-square" /> System Tray Integration
+Uninstall removes the installed application and its matching startup registration. Your profile preferences and protected account data are retained. Sign out before uninstalling if you want to remove the local sign-in session.
 
-- Minimal footprint - lives entirely in the tray
-- Dynamic icon reflects running / stopped state at a glance
-- Show or hide the window with a single click
+## Build and verify
 
-</td>
-<td>
+Install the .NET SDK selected by `global.json`. The desktop solution and tests require Windows. Backend checks require Node.js 24 or newer.
 
-### <img src="https://img.shields.io/badge/-Display%20Keep--Awake-D83B01?style=flat-square" /> Display & Sleep Control
-
-- Optional system keep-awake via `SetThreadExecutionState`
-- Prevents display sleep during active keep-alive sessions
-- Automatically restores normal power settings on stop
-
-</td>
-</tr>
-<tr>
-<td>
-
-### <img src="https://img.shields.io/badge/-Themes-FFB900?style=flat-square&logoColor=black" /> Dark & Light Themes
-
-- Dark, Light, and **System** (auto-follow Windows theme) modes
-- Live theme switching - no restart required
-- Clean, modern UI with Fluent-inspired aesthetics
-
-</td>
-<td>
-
-### <img src="https://img.shields.io/badge/-Windows%20Startup-0078D4?style=flat-square" /> Windows Startup Integration
-
-- Optional launch on Windows sign-in
-- Starts silently in the tray - no window shown on boot
-- One toggle in Settings - no manual registry editing
-
-</td>
-</tr>
-</table>
-
----
-
-## Screenshots
-
-Screenshot assets are being refreshed to match the current KeepMeAlive branding and layout.
-
----
-
-## Getting Started
-
-### Requirements
-
-| Requirement | Minimum |
-|-------------|---------|
-| Operating System | Windows 10 (1903) or Windows 11 |
-| Runtime | [.NET 8 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) |
-| Privileges | Standard user - no admin required |
-
-### Installation
-
-**Portable release**
-
-1. Download `KeepMeAlive-Portable.zip` from [**Releases**](https://github.com/GorangN/KeepMeAlive/releases/latest)
-2. Extract it to any folder, for example `C:\Tools\KeepMeAlive`
-3. Ensure the [.NET 8 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) is installed
-4. Run `KeepMeAlive.exe`
-
-Portable releases are `framework-dependent`, `win-x64`, and multi-file by design. By default they store settings in a local `Data` folder beside the executable. You can switch the storage mode to `%APPDATA%\KeepMeAlive` from the app preferences.
-
----
-
-## How It Works
-
-```mermaid
-flowchart LR
-    dashboard["Dashboard"] --> dashboardVm["DashboardViewModel"]
-    dashboardVm --> keepAlive["IKeepAliveStrategy"]
-    dashboardVm --> idle["IIdleMonitor"]
-    keepAlive --> keyboard["KeyboardStrategy"]
-    keepAlive --> mouse["MouseStrategy"]
-    keyboard --> sendInput["Win32 SendInput()"]
-    mouse --> sendInput
+```powershell
+dotnet restore KeepMeAlive.sln --locked-mode
+dotnet build KeepMeAlive.sln -c Release --no-restore
+dotnet test KeepMeAlive.sln -c Release --no-build
+./scripts/Audit-Dependencies.ps1
 ```
 
-1. You configure the method and interval on the **Dashboard**
-2. On **Start**, a `DispatcherTimer` fires at your chosen interval (with random jitter)
-3. The selected strategy calls `SendInput()` - a Windows API that injects a minimal, invisible input event
-4. Your system (and Teams) registers activity -> your status stays **Available**
-5. The **Idle Monitor** reads `GetLastInputInfo()` every second and shows your real idle time, confirming it is working
+```powershell
+Set-Location backend
+npm ci
+npm run check
+npm test
+npm run build
+```
 
----
+To produce the portable archive and per-user installer:
 
-## Notes
+```powershell
+./scripts/Build-Packages.ps1
+```
 
-> **Does not work on a locked PC.** Windows and Teams will still show *Away* when the session is locked - KeepMeAlive requires an active, unlocked session.
-
-> **Enterprise security policies** may block synthetic input on managed devices. Use the live idle-time display to verify your environment supports it before relying on it.
-
----
+The packaging script needs Inno Setup 6 or 7. Its compiler can be supplied with `-InnoCompiler`; CI installs the pinned compiler using `scripts/Install-InnoSetup.ps1`, which checks the official download's publisher signature. Packages, SHA-256 checksums, and a dependency inventory are written to `artifacts/packages`. The portable profile uses a separate `packages.publish.lock.json` to pin its bundled runtime patch without changing framework-dependent development requirements.
 
 ## Architecture
 
-KeepMeAlive is built on **Clean Architecture** with strict **MVVM** separation and **Dependency Injection** throughout.
+- **Core**: settings, account/session models, and service contracts.
+- **Application**: ViewModels, messages, and keep-alive coordination through interfaces.
+- **Infrastructure**: Win32 input/power, local/protected storage, scheduling, startup registration, updates, and account HTTP services.
+- **WPF Presentation**: views, resource dictionaries, visual/window adapters, and the composition root.
+- **Backend**: authenticated Neon Function API and versioned PostgreSQL migrations.
 
-```text
-KeepMeAlive/
-|-- Models/                  # Domain - AppSettings, LicenseInfo, SubscriptionTier
-|-- Services/
-|   |-- Interfaces/          # Abstractions - IKeepAwakeService, IIdleMonitorService...
-|   |-- Keyboard/            # KeyboardStrategy_ScanCodeShift, KeyboardStrategy_VirtualKey
-|   |-- Mouse/               # MouseStrategy
-|   |-- KeepAwakeService     # SetThreadExecutionState wrapper
-|   |-- IdleMonitorService   # GetLastInputInfo wrapper
-|   |-- AppRuntimeModeService # Portable marker + bootstrap-based storage selection
-|   |-- SettingsService      # JSON persistence in local or profile storage
-|   |-- SecretStore          # Credential Manager or DPAPI-protected portable secrets
-|   |-- ThemeService         # System theme detection + live switching
-|   |-- StartupService       # HKCU Run registry key management
-|   |-- StartupSyncService   # Future startup sync hook, currently local no-op
-|   `-- UpdateService        # Optional GitHub Releases API version check
-|-- ViewModels/              # MainViewModel, DashboardViewModel, SettingsViewModel
-|-- Views/                   # DashboardView.xaml, SettingsView.xaml (zero code-behind)
-|-- Messages/                # WeakReferenceMessenger message types
-|-- Helpers/                 # Interop.cs - P/Invoke declarations
-`-- Resources/
-    |-- Icons/               # tray_active.ico, tray_inactive.ico
-    `-- Themes/              # DarkTheme.xaml, LightTheme.xaml
-```
+The repository includes project-local Taste, anti-slop, and Karpathy guidelines. ECC supplies .NET, security-review, and verification guidance. Contributor instructions are in [AGENTS.md](AGENTS.md).
 
-**Key patterns:**
-- **Strategy Pattern** - swap keep-alive methods without changing the timer logic
-- **Messenger (WeakReference)** - decoupled ViewModel-to-ViewModel communication
-- **Single-Instance Enforcement** - Mutex + Named Pipe IPC; secondary launches bring the window to focus
+## Release operations
 
-**Stack:**
+Start with [Publishing step by step](KeepMeAlive/docs/PUBLISHING_STEP_BY_STEP.md) for a plain-language explanation of email delivery, signing, building and uploading a release. Pushing source code does not publish an installer automatically.
 
-| Component | Technology |
-|-----------|-----------|
-| UI Framework | WPF (.NET 8) |
-| MVVM | CommunityToolkit.Mvvm 8.4 |
-| DI Container | Microsoft.Extensions.DependencyInjection 9 |
-| System Tray | Hardcodet.NotifyIcon.Wpf 1.1 |
-| Settings | System.Text.Json |
-| IPC | System.IO.Pipes (Named Pipes) |
+[Release procedures](KeepMeAlive/docs/RELEASE.md) describe packaging, signing, backend validation, rollback, and database recovery. Current launch blockers are tracked in [Release readiness](KeepMeAlive/docs/RELEASE_READINESS.md).
 
----
+[License](LICENSE) · [Issues](https://github.com/GorangN/KeepMeAlive/issues)
 
-## Building from Source
-
-```bash
-# Clone the repository
-git clone https://github.com/GorangN/KeepMeAlive.git
-cd KeepMeAlive
-
-# Restore dependencies and build
-dotnet restore
-dotnet build -c Release
-
-# Publish the portable release layout
-dotnet publish KeepMeAlive/KeepMeAlive.csproj -c Release -p:PublishProfile=Portable
-
-# Run
-dotnet run --project KeepMeAlive/KeepMeAlive.csproj
-```
-
-> Requires the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) and Windows.
-
----
-
-## Roadmap
-
-- [x] Keyboard & mouse keep-alive strategies
-- [x] Configurable intervals with random jitter
-- [x] System tray with dynamic status icon
-- [x] Dark / Light / System theme support
-- [x] Windows startup integration
-- [x] Live idle-time display
-- [x] Single-instance enforcement with IPC
-- [x] GitHub auto-update check
-- [ ] License & subscription activation
-- [ ] Scheduled keep-alive profiles (work hours only)
-- [ ] Per-application trigger (activate only when Teams is running)
-- [ ] Notification suppression mode
-
----
-
-## Privacy
-
-KeepMeAlive is **local-first and privacy-first by default**. It does not:
-
-- Transmit any usage data, telemetry, or analytics
-- Read, capture, or log your keystrokes
-- Attempt to hide from antivirus, EDR, enterprise monitoring, or endpoint controls
-
-Network behavior is explicit:
-
-- Automatic GitHub update checks are **off by default**
-- Startup account/license sync is **off by default** and currently a local no-op stub
-- The only shipped network call is an optional unauthenticated `GET` to the GitHub Releases API for version comparison
-
-Storage behavior is explicit:
-
-- Portable releases default to `<AppFolder>\Data\settings.json`
-- Profile storage uses `%APPDATA%\KeepMeAlive\settings.json`
-- License keys are stored securely outside `settings.json`
-  - `ProfileAppData`: Windows Credential Manager
-  - `PortableLocal`: DPAPI-protected local file
-- Windows startup writes `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` only when you enable it
-
-See [PRIVACY_DATA_FLOW.md](KeepMeAlive/docs/PRIVACY_DATA_FLOW.md) for the exact data flow and storage map.
-
----
-
-## Contributing
-
-Contributions are welcome. Please follow the established code style defined in [CLAUDE.md](CLAUDE.md) - zero warnings, XML documentation on all public members, strict MVVM with no logic in code-behind.
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Commit with a descriptive message linked to the relevant issue
-4. Open a Pull Request against `main`
-
----
-
-## License
-
-Distributed under the [MIT License](LICENSE).
-
----
-
-<div align="center">
-
-Made for remote workers who just need a quick coffee break.
-
-<br/>
-
-[![GitHub Stars](https://img.shields.io/github/stars/GorangN/KeepMeAlive?style=social)](https://github.com/GorangN/KeepMeAlive/stargazers)
-&nbsp;
-[![GitHub Forks](https://img.shields.io/github/forks/GorangN/KeepMeAlive?style=social)](https://github.com/GorangN/KeepMeAlive/network/members)
-
-</div>
+Icons use [Tabler Icons](https://github.com/tabler/tabler-icons), distributed under the MIT license. Pinned source SVGs, provenance and native WPF resources are in `KeepMeAlive/Resources/Icons`; the icon license is included with portable and installed distributions.

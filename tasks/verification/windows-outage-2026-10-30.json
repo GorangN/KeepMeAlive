@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-30",
+  "method": "actual WPF account service outage and recovery",
+  "target": {
+    "projectId": "sweet-truth-01118709",
+    "branchId": "br-red-flower-b9wmbkmb"
+  },
+  "beforeDeployment": 2,
+  "outageDeployment": 3,
+  "restoredDeployment": 4,
+  "restoredStatus": "completed",
+  "restoreZipSha256": "5315e56f81a34d47610f0c12b2b71b6fb30f543c02975df5e52d069e1ad93003",
+  "faultZipSha256": "8005b100964336d836486d1d2d00af7d62ec0517b032d1ba42f4be677c89fbf9",
+  "checks": {
+    "actualWindowsBrowserSignIn": true,
+    "authenticatedRequestsReturn503": true,
+    "anonymousRequestsStill401": true,
+    "identityRetained": true,
+    "entitlementDisplayRetained": true,
+    "lastSuccessfulSyncRetainedDuringOutage": true,
+    "localUtilityStartStopDuringOutage": true,
+    "exactBundleAutomaticallyRestored": true,
+    "nativeRefreshRecoveredConnectedWithoutBrowser": true,
+    "syncTimeAdvancedAfterRecovery": true,
+    "productionUntouched": true,
+    "networkSettingsUntouched": true
+  },
+  "screenshots": [
+    "tasks/verification/windows-account-outage-2026-10-30.png",
+    "tasks/verification/windows-account-recovered-2026-10-30.png"
+  ],
+  "limitations": [
+    "Service outage is verified; a physical network disconnection is not simulated.",
+    "This is backend artifact rollback evidence, separate from database recovery rehearsal."
+  ]
+}

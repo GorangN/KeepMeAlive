@@ -1,26 +1,24 @@
 <Window x:Class="KeepMeAlive.Views.MainWindowView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="clr-namespace:KeepMeAlive.ViewModels"
-        xmlns:models="clr-namespace:KeepMeAlive.Models"
+        xmlns:vm="clr-namespace:KeepMeAlive.ViewModels;assembly=KeepMeAlive.Application"
+        xmlns:models="clr-namespace:KeepMeAlive.Models;assembly=KeepMeAlive.Core"
         xmlns:views="clr-namespace:KeepMeAlive.Views"
         Title="KeepMeAlive"
         MinWidth="860" MinHeight="580"
         Width="1020" Height="680"
         WindowStyle="None"
-        AllowsTransparency="True"
+        AllowsTransparency="False"
         ShowInTaskbar="True"
-        ResizeMode="CanResizeWithGrip"
+        ResizeMode="CanResize"
         WindowStartupLocation="CenterScreen"
-        Background="Transparent">
+        Background="{DynamicResource BackgroundBrush}">
 
-    <Border CornerRadius="14"
+    <WindowChrome.WindowChrome><WindowChrome CaptionHeight="44" ResizeBorderThickness="6" CornerRadius="0" GlassFrameThickness="0"/></WindowChrome.WindowChrome>
+    <Border CornerRadius="0"
             Background="{DynamicResource BackgroundBrush}"
             ClipToBounds="True">
-        <Border.Effect>
-            <DropShadowEffect BlurRadius="40" ShadowDepth="0" Direction="270"
-                              Color="#000000" Opacity="0.14"/>
-        </Border.Effect>
+
 
         <Grid>
             <Grid.RowDefinitions>
@@ -31,7 +29,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <!-- Sidebar -->
-                <ColumnDefinition Width="240"/>
+                <ColumnDefinition Width="220"/>
                 <!-- Content -->
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
@@ -77,6 +75,12 @@
                         <TextBlock Text="{Binding UpdateViewModel.AppVersion, StringFormat='v{0}'}"
                                    Style="{StaticResource FooterTextStyle}"
                                    Margin="4 0 0 0"/>
+                        <Button Content="_Quit KeepMeAlive"
+                                Command="{Binding ExitApplicationCommand}"
+                                Style="{StaticResource GhostButtonStyle}"
+                                AutomationProperties.Name="Quit KeepMeAlive"
+                                Margin="0 12 0 0"
+                                HorizontalAlignment="Stretch"/>
                     </StackPanel>
 
                     <!-- Nav items -->
@@ -86,6 +90,7 @@
                         <Button Margin="0 2"
                                 HorizontalAlignment="Stretch"
                                 Command="{Binding NavigateCommand}"
+                                AutomationProperties.Name="Dashboard"
                                 CommandParameter="{x:Static models:NavigationPage.Dashboard}">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource SidebarNavItemStyle}">
@@ -99,7 +104,7 @@
                                 </Style>
                             </Button.Style>
                             <StackPanel Orientation="Horizontal" Margin="4 0">
-                                <TextBlock Text="&#xE80F;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                <ContentControl Content="{StaticResource Tabler.LayoutDashboard}" Style="{StaticResource TablerIconStyle}"
                                            VerticalAlignment="Center" Margin="0 0 10 0"/>
                                 <TextBlock Text="Dashboard" VerticalAlignment="Center"/>
                             </StackPanel>
@@ -109,6 +114,7 @@
                         <Button Margin="0 2"
                                 HorizontalAlignment="Stretch"
                                 Command="{Binding NavigateCommand}"
+                                AutomationProperties.Name="Scheduling"
                                 CommandParameter="{x:Static models:NavigationPage.Scheduling}">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource SidebarNavItemStyle}">
@@ -122,7 +128,7 @@
                                 </Style>
                             </Button.Style>
                             <StackPanel Orientation="Horizontal" Margin="4 0">
-                                <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                <ContentControl Content="{StaticResource Tabler.CalendarTime}" Style="{StaticResource TablerIconStyle}"
                                            VerticalAlignment="Center" Margin="0 0 10 0"/>
                                 <TextBlock Text="Scheduling" VerticalAlignment="Center"/>
                             </StackPanel>
@@ -132,6 +138,7 @@
                         <Button Margin="0 2"
                                 HorizontalAlignment="Stretch"
                                 Command="{Binding NavigateCommand}"
+                                AutomationProperties.Name="Advanced"
                                 CommandParameter="{x:Static models:NavigationPage.Advanced}">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource SidebarNavItemStyle}">
@@ -145,7 +152,7 @@
                                 </Style>
                             </Button.Style>
                             <StackPanel Orientation="Horizontal" Margin="4 0">
-                                <TextBlock Text="&#xE9E9;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                <ContentControl Content="{StaticResource Tabler.AdjustmentsHorizontal}" Style="{StaticResource TablerIconStyle}"
                                            VerticalAlignment="Center" Margin="0 0 10 0"/>
                                 <TextBlock Text="Advanced" VerticalAlignment="Center"/>
                             </StackPanel>
@@ -155,6 +162,7 @@
                         <Button Margin="0 2"
                                 HorizontalAlignment="Stretch"
                                 Command="{Binding NavigateCommand}"
+                                AutomationProperties.Name="Account"
                                 CommandParameter="{x:Static models:NavigationPage.Account}">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource SidebarNavItemStyle}">
@@ -168,7 +176,7 @@
                                 </Style>
                             </Button.Style>
                             <StackPanel Orientation="Horizontal" Margin="4 0">
-                                <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                <ContentControl Content="{StaticResource Tabler.UserCircle}" Style="{StaticResource TablerIconStyle}"
                                            VerticalAlignment="Center" Margin="0 0 10 0"/>
                                 <TextBlock Text="Account" VerticalAlignment="Center"/>
                             </StackPanel>

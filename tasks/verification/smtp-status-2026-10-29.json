@@ -1,0 +1,84 @@
+{
+  "checkedAtUtc": "2026-10-29T22:25:22Z",
+  "scope": "Read-only production and isolated staging Neon SMTP/OAuth recheck",
+  "source": "Connected Neon plugin configuration/client/server read-back and bounded local presence checks",
+  "production": {
+    "projectId": "morning-bread-41310427",
+    "branchId": "br-fragrant-voice-b9m46w7y",
+    "emailProviderType": "shared",
+    "senderEmail": "auth@mail.myneon.app",
+    "verifyEmailOnSignUp": false,
+    "verifyEmailOnSignIn": false,
+    "requireEmailVerification": false,
+    "oauthProviderEnabled": true,
+    "publicClientId": "IzVVcdXJJGYyOblRvHhTUqUuhTdRsGSL",
+    "publicClientEnabled": true,
+    "skipConsent": false
+  },
+  "staging": {
+    "projectId": "sweet-truth-01118709",
+    "branchId": "br-red-flower-b9wmbkmb",
+    "emailProviderType": "shared",
+    "senderEmail": "auth@mail.myneon.app",
+    "verifyEmailOnSignUp": false,
+    "verifyEmailOnSignIn": false,
+    "requireEmailVerification": false,
+    "oauthProviderEnabled": true,
+    "publicClientId": "rRwBPkonGujPtDihzCtDKZJronKFaVtN",
+    "publicClientEnabled": true,
+    "skipConsent": false
+  },
+  "bothPublicClients": {
+    "redirectUris": [
+      "http://127.0.0.1:49152/callback/",
+      "http://127.0.0.1:49153/callback/",
+      "http://127.0.0.1:49154/callback/"
+    ],
+    "resources": ["https://keepmealive.app/api"],
+    "dynamicRegistration": false
+  },
+  "pluginCapabilities": {
+    "oauthServerAdministration": true,
+    "oauthClientAdministration": true,
+    "smtpProviderAdministration": false,
+    "emailVerificationPolicyAdministration": false,
+    "updateAuthConfigFields": ["project_id", "branch_id", "name"]
+  },
+  "localPresenceAudit": {
+    "scopes": ["Process", "User", "Machine"],
+    "presentEnvironmentNames": [],
+    "checkedEnvironmentNames": [
+      "SMTP_HOST", "SMTP_PORT", "SMTP_USERNAME", "SMTP_PASSWORD",
+      "SMTP_SENDER_EMAIL", "SMTP_SENDER_NAME", "SMTP_TEST_RECIPIENT",
+      "NEON_API_KEY", "RESEND_API_KEY", "SENDGRID_API_KEY", "MAILGUN_API_KEY",
+      "POSTMARK_SERVER_TOKEN", "BREVO_API_KEY", "MAILTRAP_TOKEN"
+    ],
+    "presentProjectLocations": [],
+    "checkedProjectLocations": [
+      ".env", ".env.local", ".env.production", ".env.staging", ".neon",
+      "backend/.env", "backend/.env.local", "backend/.env.production",
+      "backend/.env.staging", "backend/.neon"
+    ],
+    "neonCliAvailable": false,
+    "neonctlAvailable": false,
+    "personalMailOrBrowserCredentialsSearched": false,
+    "secretValuesRecorded": false
+  },
+  "smtpConfigured": false,
+  "smtpSendTestAccepted": false,
+  "verificationDeliveryVerified": false,
+  "passwordResetDeliveryVerified": false,
+  "cloudConfigurationChanged": false,
+  "emailSent": false,
+  "accountReleaseReady": false,
+  "activeProductionDesktopClientConfigured": false,
+  "productionBlockers": [
+    "Application-owned SMTP host, port, username, password and provider-verified sender are unavailable",
+    "Recipient mailbox and actual verification/password-reset delivery acceptance remain unverified",
+    "Require email verification only after custom SMTP acceptance; the plugin exposes neither setting",
+    "Retain production promotion and desktop activation gates until email and native acceptance are complete",
+    "Intended publicly trusted Authenticode certificate and private key remain unavailable"
+  ],
+  "officialReference": "https://neon.com/docs/auth/production-checklist",
+  "limits": "This recheck establishes configuration and credential availability, not native Windows account acceptance or inbox delivery."
+}

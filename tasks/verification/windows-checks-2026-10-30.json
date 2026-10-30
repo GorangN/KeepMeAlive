@@ -1,0 +1,103 @@
+{
+  "date": "2026-10-30",
+  "nativeServiceOutage": {
+    "status": "passed",
+    "evidence": "tasks/verification/windows-outage-2026-10-30.json",
+    "scope": "Authenticated staging API HTTP 503; cached identity/time retained, local utility works, native Refresh reconnects after exact artifact restoration."
+  },
+  "highContrast": {
+    "status": "passed",
+    "osTheme": "Night sky",
+    "liveEntryExit": true,
+    "selectedDropdownText": true,
+    "unselectedDropdownText": true,
+    "chevron": true,
+    "calendarOrdinaryAndSelectedDates": true,
+    "calendarMonthHeader": true,
+    "semanticCalendarButtons": [
+      "Open calendar",
+      "Previous month",
+      "Next month"
+    ],
+    "normalThemeRestored": true,
+    "screenshots": [
+      "tasks/verification/windows-highcontrast-dropdown-2026-10-30.png",
+      "tasks/verification/windows-highcontrast-calendar-2026-10-30.png"
+    ]
+  },
+  "scaling": {
+    "passedPercent": [
+      100,
+      150,
+      175
+    ],
+    "resolution": "1920 x 1080",
+    "primaryActionsReachable": true,
+    "maximizeRestoreAt175": true,
+    "original100Restored": true,
+    "requested200": {
+      "status": "blocked",
+      "reason": "The native display scaling menu offers only 100, 125, 150 and 175 percent. No sign-out or unsupported custom scaling was attempted."
+    },
+    "screenshot150": "tasks/verification/windows-150-account-2026-10-30.png"
+  },
+  "accessibility": {
+    "keyboardNavigationAndActivation": "passed",
+    "keyboardAccessKeysStartStopQuit": "passed",
+    "nativeCalendarAltDownReturn": "passed",
+    "calendarButtonUiAutomationNames": "passed",
+    "spokenScreenReaderOutput": {
+      "status": "unverified",
+      "reason": "The available Computer Use observation surface provides screenshots and accessibility state, not speech/audio verification."
+    }
+  },
+  "trayMenu": {
+    "status": "unverified",
+    "reason": "Notification-area shell controls were not returned as targetable windows. Win+B did not expose a targetable tray surface; no alternate UI automation or fabricated native pass was used.",
+    "previousCloseToTrayAndSecondInstanceEvidence": "KeepMeAlive/docs/RELEASE_READINESS.md"
+  },
+  "freshUserInstallUninstall": {
+    "status": "blocked",
+    "reason": "No separate Windows test account or available Sandbox/VM. Current token is not elevated; changing the install directory shares AppId/uninstall registration/profile and cannot establish fresh-user isolation.",
+    "installerAppId": "{F474B826-9E63-46B6-AB2F-2A419B8EDD73}"
+  },
+  "desktopArtifactRollback": {
+    "status": "passed",
+    "preparation": "tasks/verification/desktop-rollback-preparation-2026-10-30.json",
+    "retainedPackageLaunch": true,
+    "currentPackageReturn": true,
+    "interval67Retained": true,
+    "startStopQuitOnBoth": true,
+    "settingsNormalization": "The retained build's validated save filled omitted default fields and normalized JSON; interval and all safety/network/startup flags remained unchanged.",
+    "freshUserInstallerClaimed": false,
+    "screenshots": [
+      "tasks/verification/windows-rollback-previous-2026-10-30.png",
+      "tasks/verification/windows-rollback-current-2026-10-30.png"
+    ]
+  },
+  "cleanup": {
+    "normalProfileUnchanged": true,
+    "startupRegistrationUnchanged": true,
+    "highContrastFlagsRestored": "126",
+    "appsUseLightThemeRestored": 1,
+    "systemUsesLightThemeRestored": 0,
+    "stagingBrowserSignedOut": true,
+    "stagingDesktopSignedOut": true,
+    "qaPrimaryAndBackupRemoved": true,
+    "privateFixturePasswordCleared": true,
+    "scheduledActionArmed": false,
+    "allNativeTestProcessesExited": true,
+    "callbackListenersClosed": true
+  },
+  "automated": {
+    "desktopPassed": 107,
+    "backendPassed": 29,
+    "zeroBuildWarnings": true,
+    "typeScriptStrict": true,
+    "nugetAuditPassed": true,
+    "npmVulnerabilities": 0
+  },
+  "packages": "tasks/verification/native-packages-2026-10-30.json",
+  "productionInputs": "KeepMeAlive/docs/PRODUCTION_INPUTS.md",
+  "productionReady": false
+}

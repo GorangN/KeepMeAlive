@@ -1,103 +1,116 @@
-name: .NET Core Desktop
+name: Verify and package
 
 on:
   push:
-    branches: ["main"]
+    branches: [main]
   pull_request:
-    branches: ["main"]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      production:
+        description: Require all production release gates (does not publish a release)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        configuration: [Debug, Release]
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+        working-directory: backend
+      - run: npm run check
+        working-directory: backend
+      - run: npm test
+        working-directory: backend
+      - run: npm audit --audit-level=high
+        working-directory: backend
+      - run: npm run build
+        working-directory: backend
 
+  desktop:
     runs-on: windows-latest
-
+    needs: backend
     env:
-      Solution_Name: KeepMeAlive.sln
-
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+      DOTNET_CLI_UI_LANGUAGE: en
+      KEEP_ME_ALIVE_SMTP_VERIFIED: ${{ vars.KEEP_ME_ALIVE_SMTP_VERIFIED }}
+      KEEP_ME_ALIVE_OAUTH_VERIFIED: ${{ vars.KEEP_ME_ALIVE_OAUTH_VERIFIED }}
+      KEEP_ME_ALIVE_DEV_API_URL: ${{ vars.KEEP_ME_ALIVE_DEV_API_URL }}
+      SIGNING_CERT_BASE64: ${{ secrets.WINDOWS_SIGNING_CERT_BASE64 }}
+      SIGNING_CERT_PASSWORD: ${{ secrets.WINDOWS_SIGNING_CERT_PASSWORD }}
+    defaults:
+      run:
+        shell: pwsh
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-
-    - name: Restore the application
-      run: dotnet restore ${{ env.Solution_Name }}
-
-    - name: Build the application
-      run: dotnet build ${{ env.Solution_Name }} --configuration ${{ matrix.configuration }} --no-restore
-
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: Build Output ${{ matrix.configuration }}
-        path: '**\bin\${{ matrix.configuration }}\**\*.exe'
-
-  portable:
-    runs-on: windows-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-
-    - name: Restore the application
-      run: dotnet restore KeepMeAlive.sln
-
-    - name: Publish portable build
-      run: dotnet publish KeepMeAlive\KeepMeAlive.csproj -c Release -p:PublishProfile=Portable --no-restore
-
-    - name: Import signing certificate
-      if: ${{ secrets.WINDOWS_SIGNING_CERT_BASE64 != '' && secrets.WINDOWS_SIGNING_CERT_PASSWORD != '' }}
-      shell: pwsh
-      run: |
-        $certificatePath = Join-Path $env:RUNNER_TEMP "keepmealive-signing.pfx"
-        [System.IO.File]::WriteAllBytes(
-          $certificatePath,
-          [System.Convert]::FromBase64String("${{ secrets.WINDOWS_SIGNING_CERT_BASE64 }}"))
-        "WINDOWS_SIGNING_CERT_PATH=$certificatePath" | Out-File -FilePath $env:GITHUB_ENV -Append
-
-    - name: Sign portable executable
-      if: ${{ env.WINDOWS_SIGNING_CERT_PATH != '' && secrets.WINDOWS_SIGNING_CERT_PASSWORD != '' }}
-      shell: pwsh
-      run: |
-        $publishDir = Resolve-Path "KeepMeAlive\bin\Release\net8.0-windows\win-x64\publish"
-        $exePath = Join-Path $publishDir "KeepMeAlive.exe"
-        $signtool = "${env:ProgramFiles(x86)}\Windows Kits\10\App Certification Kit\signtool.exe"
-        if (-not (Test-Path $signtool)) {
-          $signtool = (Get-Command signtool.exe -ErrorAction Stop).Source
-        }
-        & $signtool sign `
-          /fd SHA256 `
-          /tr http://timestamp.digicert.com `
-          /td SHA256 `
-          /f "$env:WINDOWS_SIGNING_CERT_PATH" `
-          /p "${{ secrets.WINDOWS_SIGNING_CERT_PASSWORD }}" `
-          $exePath
-
-    - name: Package portable zip
-      shell: pwsh
-      run: |
-        $publishDir = Resolve-Path "KeepMeAlive\bin\Release\net8.0-windows\win-x64\publish"
-        $zipPath = Join-Path $env:RUNNER_TEMP "KeepMeAlive-Portable.zip"
-        if (Test-Path $zipPath) {
-          Remove-Item $zipPath -Force
-        }
-        Compress-Archive -Path (Join-Path $publishDir "*") -DestinationPath $zipPath
-
-    - name: Upload portable artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: KeepMeAlive-Portable
-        path: ${{ runner.temp }}\KeepMeAlive-Portable.zip
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          global-json-file: global.json
+      - name: Restore locked dependencies
+        run: dotnet restore KeepMeAlive.sln --locked-mode
+      - name: Build without warnings
+        run: dotnet build KeepMeAlive.sln -c Release --no-restore
+      - name: Test application workflows
+        run: dotnet test KeepMeAlive.sln -c Release --no-build --logger trx --results-directory artifacts/test-results
+      - name: Audit NuGet dependencies
+        run: ./scripts/Audit-Dependencies.ps1
+      - name: Verify production account packaging gates
+        run: ./scripts/Test-ProductionGates.ps1
+      - name: Verify development backend
+        if: env.KEEP_ME_ALIVE_DEV_API_URL != ''
+        run: ./scripts/Test-Backend.ps1 -BaseUrl $env:KEEP_ME_ALIVE_DEV_API_URL
+      - name: Require a tested backend for production
+        if: inputs.production
+        run: |
+          if (-not $env:KEEP_ME_ALIVE_DEV_API_URL) { throw 'Production validation requires a development API smoke test.' }
+      - name: Import release-signing certificate when configured
+        if: env.SIGNING_CERT_BASE64 != '' && env.SIGNING_CERT_PASSWORD != ''
+        run: |
+          $certificatePath = Join-Path $env:RUNNER_TEMP 'keepmealive-release.pfx'
+          [IO.File]::WriteAllBytes($certificatePath, [Convert]::FromBase64String($env:SIGNING_CERT_BASE64))
+          try {
+            $password = ConvertTo-SecureString $env:SIGNING_CERT_PASSWORD -AsPlainText -Force
+            $certificate = Import-PfxCertificate -FilePath $certificatePath -CertStoreLocation Cert:\CurrentUser\My -Password $password
+            "WINDOWS_SIGNING_CERT_THUMBPRINT=$($certificate.Thumbprint)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
+          finally { Remove-Item -LiteralPath $certificatePath -Force }
+      - name: Build and verify complete distribution packages
+        env:
+          REQUIRE_PRODUCTION: ${{ inputs.production && 'true' || 'false' }}
+        run: |
+          $compiler = ./scripts/Install-InnoSetup.ps1
+          ./scripts/Build-Packages.ps1 -InnoCompiler $compiler -RequireProduction:($env:REQUIRE_PRODUCTION -eq 'true')
+      - name: Remove imported signing material
+        if: always()
+        run: |
+          if ($env:WINDOWS_SIGNING_CERT_THUMBPRINT) {
+            Remove-Item -LiteralPath ('Cert:\CurrentUser\My\' + $env:WINDOWS_SIGNING_CERT_THUMBPRINT) -Force
+          }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: KeepMeAlive-validation
+          path: |
+            artifacts/packages/*
+            artifacts/test-results/*
+            artifacts/audit/*
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,133 @@
+{
+  "checkedAtUtc": "2026-10-30T03:09:07.1682613Z",
+  "localVerificationDate": "2026-10-30",
+  "purpose": "Unsigned validation packages containing final native-verified Windows high-contrast and accessibility fixes.",
+  "packagingCommand": "scripts/Build-Packages.ps1 -SkipBuild -InnoCompiler \"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe\"",
+  "rebuiltOrRepublished": false,
+  "testSuitesRerun": false,
+  "packageValidationPassed": true,
+  "previousCheckpoint": "artifacts/previous-before-windows-hc",
+  "previousArtifacts": [
+    {
+      "file": "packages/dependencies.json",
+      "sha256": "0ccce7fad9300f5974aa41432beffd1124774130a5fa3d0200e580e79a1c7eb0"
+    },
+    {
+      "file": "packages/KeepMeAlive-Portable.zip",
+      "sha256": "44b481898201d524f63cf2aeb1ece36e96febbe84c83ed221bc6aaa453bbb57f"
+    },
+    {
+      "file": "packages/KeepMeAlive-Setup.exe",
+      "sha256": "dc07bae10cbcfa21c8776a7020febb3674ed2aadd466bdb87d12925ab563abad"
+    },
+    {
+      "file": "packages/SHA256SUMS.txt",
+      "sha256": "ba2a76b9ea52c5c08b3d3639c153ba33271508c32e04a5784c038ca5395a637c"
+    },
+    {
+      "file": "staging-validation/KeepMeAlive-Staging-Validation.zip",
+      "sha256": "c35d09cfafc8229277d9606bc7e8095c1f717f32e3966701e5dc33e915fbeeab"
+    },
+    {
+      "file": "staging-validation/README.md",
+      "sha256": "86dcbe61bd2fd670dc43897bba70fd5da454aef517d375d4a238dae500137719"
+    },
+    {
+      "file": "staging-validation/SHA256SUMS.txt",
+      "sha256": "9fe0ec486bc417d82f30d1188a386caa0f68464b11b72ba5612fd36372c4089f"
+    }
+  ],
+  "nativeVerifiedFiles": [
+    {
+      "file": "KeepMeAlive.exe",
+      "sha256": "43206c61a3e7efc0e7a98099721431039d16f9466be06634c3d56e2211791a9a",
+      "testedNativeMatches": true
+    },
+    {
+      "file": "KeepMeAlive.dll",
+      "sha256": "29d443f7928840fd2cde6cc121397806bdc676bb30fb2e18cf3118df08b503f7",
+      "testedNativeMatches": true
+    },
+    {
+      "file": "KeepMeAlive.Core.dll",
+      "sha256": "e7c471086ab6a820c623f5b93ce1b6f269371d32470c0713f6f5bb5eba74568e",
+      "testedNativeMatches": true
+    },
+    {
+      "file": "KeepMeAlive.Application.dll",
+      "sha256": "10898abb2221cabf68ab5ac28b74250a801403696ad3d1f434147bcb8a247b87",
+      "testedNativeMatches": true
+    },
+    {
+      "file": "KeepMeAlive.Infrastructure.dll",
+      "sha256": "44d101d2080b96d9c86df00477d50c520d19c6046d876047de931eddc15e0436",
+      "testedNativeMatches": true
+    },
+    {
+      "file": "KeepMeAlive.deps.json",
+      "sha256": "945b4e6da76df1792e945dd143aeb315d541043a9b2a107c5bdd77c11dac9e1a",
+      "testedNativeMatches": true
+    },
+    {
+      "file": "KeepMeAlive.runtimeconfig.json",
+      "sha256": "7d90809b8e2f88a3e3dc8cc67bd50dcdb5b40fe5c46fdcd6bb9b468a6b3d0056",
+      "testedNativeMatches": true
+    }
+  ],
+  "archiveChecks": [
+    {
+      "path": "artifacts/packages/KeepMeAlive-Portable.zip",
+      "entryCount": 491,
+      "allEntryHashesMatchVerifiedSource": true,
+      "noLocalDataOrSecrets": true,
+      "runtimeVersion": "10.0.14",
+      "publicConfigurationOnly": true
+    },
+    {
+      "path": "artifacts/staging-validation/KeepMeAlive-Staging-Validation.zip",
+      "entryCount": 491,
+      "allEntryHashesMatchVerifiedSource": true,
+      "noLocalDataOrSecrets": true,
+      "runtimeVersion": "10.0.14",
+      "publicConfigurationOnly": true
+    }
+  ],
+  "appVersion": "1.0.0+816c9740222f12a615ac3bd870bfc3560caa9e16",
+  "fileVersion": "1.0.0.0",
+  "runtimeVersion": "10.0.14",
+  "tablerLicenseMatchesPinnedSource": true,
+  "stagingRecipe": {
+    "source": "artifacts/publish-portable",
+    "payload": "artifacts/staging-validation/app",
+    "onlyReplacement": "KeepMeAlive/neon.staging.json copied to neon.json",
+    "entryOrder": "FullName sorted",
+    "entryTimestampUtc": "2000-01-01T00:00:00Z",
+    "compression": "Optimal",
+    "containsUserData": false
+  },
+  "packages": [
+    {
+      "path": "artifacts/packages/KeepMeAlive-Portable.zip",
+      "bytes": 78329893,
+      "sha256": "aaacc2448e973a264c37ce4caff5c4de50715de8006cddb23711c562b5cbd03e"
+    },
+    {
+      "path": "artifacts/packages/KeepMeAlive-Setup.exe",
+      "bytes": 54718209,
+      "sha256": "8f235dd1f7bc062b0d3fcacb40bb3e8c563dfca8bdf6f86a5e8dffe2a46c33d7"
+    },
+    {
+      "path": "artifacts/staging-validation/KeepMeAlive-Staging-Validation.zip",
+      "bytes": 78329919,
+      "sha256": "9660c553e093ec58e606534be54fc5bfa156ce99cc647eb2d6f1e0a9f7153b4e"
+    }
+  ],
+  "dependencyInventorySha256": "0ccce7fad9300f5974aa41432beffd1124774130a5fa3d0200e580e79a1c7eb0",
+  "standardAccountClientDisabled": true,
+  "accountReleaseReady": false,
+  "productionDeploymentPerformed": false,
+  "signingPerformed": false,
+  "installerSignature": "NotSigned",
+  "executableSignature": "NotSigned",
+  "productionBlockerReference": "KeepMeAlive/docs/RELEASE_READINESS.md"
+}

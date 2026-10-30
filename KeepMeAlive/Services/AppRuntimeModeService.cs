@@ -1,102 +1,74 @@
 using KeepMeAlive.Models;
 using KeepMeAlive.Services.Interfaces;
 using System.IO;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace KeepMeAlive.Services;
 
-/// <summary>
-/// Resolves runtime-specific file locations and persists the selected storage mode beside the executable.
-/// </summary>
+/// <summary>Resolves portable/profile paths and commits storage selection atomically.</summary>
 public sealed class AppRuntimeModeService : IAppRuntimeModeService
 {
-    private const string PortableMarkerFileName = "KeepMeAlive.portable";
-    private const string BootstrapFileName = "KeepMeAlive.bootstrap.json";
-
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         WriteIndented = true,
         Converters = { new JsonStringEnumConverter() }
     };
+    private readonly string _profileDirectory;
+    private string LegacyBootstrapPath => Path.Combine(ApplicationDirectory, "KeepMeAlive.bootstrap.json");
+    private string BootstrapPath => IsPortableDistribution ? LegacyBootstrapPath : Path.Combine(_profileDirectory, "runtime.json");
 
-    /// <summary>
-    /// Gets the directory that contains the running application binaries.
-    /// </summary>
-    public string ApplicationDirectory { get; } = AppContext.BaseDirectory;
-
-    /// <summary>
-    /// Gets a value indicating whether the current distribution was published as a portable package.
-    /// </summary>
+    /// <inheritdoc/>
+    public string ApplicationDirectory { get; }
+    /// <inheritdoc/>
     public bool IsPortableDistribution { get; }
+    /// <inheritdoc/>
+    public StorageMode DefaultStorageMode => IsPortableDistribution ? StorageMode.PortableLocal : StorageMode.ProfileAppData;
 
-    /// <summary>
-    /// Gets the storage mode used when no bootstrap override exists.
-    /// </summary>
-    public StorageMode DefaultStorageMode => IsPortableDistribution
-        ? StorageMode.PortableLocal
-        : StorageMode.ProfileAppData;
+    /// <summary>Creates the runtime path resolver for this application and Windows profile.</summary>
+    public AppRuntimeModeService() : this(AppContext.BaseDirectory,
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "KeepMeAlive")) { }
 
-    private string BootstrapPath => Path.Combine(ApplicationDirectory, BootstrapFileName);
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AppRuntimeModeService"/> class.
-    /// </summary>
-    public AppRuntimeModeService()
+    /// <summary>Creates an isolated path resolver for an installation and profile directory.</summary>
+    /// <param name="applicationDirectory">The installation directory.</param>
+    /// <param name="profileDirectory">The profile data directory.</param>
+    public AppRuntimeModeService(string applicationDirectory, string profileDirectory)
     {
-        IsPortableDistribution = File.Exists(Path.Combine(ApplicationDirectory, PortableMarkerFileName));
+        ApplicationDirectory = Path.GetFullPath(applicationDirectory);
+        _profileDirectory = Path.GetFullPath(profileDirectory);
+        IsPortableDistribution = File.Exists(Path.Combine(ApplicationDirectory, "KeepMeAlive.portable"));
     }
 
     /// <inheritdoc/>
     public StorageMode GetConfiguredStorageMode()
     {
-        try
+        foreach (var path in new[] { BootstrapPath, BootstrapPath + ".bak", LegacyBootstrapPath })
         {
-            if (!File.Exists(BootstrapPath))
+            if (!File.Exists(path)) { continue; }
+            try
             {
-                return DefaultStorageMode;
+                var bootstrap = JsonSerializer.Deserialize<RuntimeBootstrap>(File.ReadAllText(path), JsonOptions);
+                if (bootstrap is not null && Enum.IsDefined(bootstrap.StorageMode)) { return bootstrap.StorageMode; }
             }
-
-            var json = File.ReadAllText(BootstrapPath);
-            var bootstrap = JsonSerializer.Deserialize<RuntimeBootstrap>(json, JsonOptions);
-
-            return bootstrap?.StorageMode ?? DefaultStorageMode;
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException) { }
         }
-        catch
-        {
-            return DefaultStorageMode;
-        }
+        return DefaultStorageMode;
     }
 
     /// <inheritdoc/>
     public void SetConfiguredStorageMode(StorageMode storageMode)
     {
-        try
-        {
-            var bootstrap = new RuntimeBootstrap
-            {
-                StorageMode = storageMode
-            };
-
-            Directory.CreateDirectory(ApplicationDirectory);
-            var json = JsonSerializer.Serialize(bootstrap, JsonOptions);
-            File.WriteAllText(BootstrapPath, json);
-        }
-        catch
-        {
-            // Ignore bootstrap write failures and fall back to runtime defaults next launch.
-        }
+        if (!Enum.IsDefined(storageMode)) { throw new ArgumentOutOfRangeException(nameof(storageMode)); }
+        var json = JsonSerializer.Serialize(new RuntimeBootstrap { StorageMode = storageMode }, JsonOptions);
+        AtomicFile.Write(BootstrapPath, Encoding.UTF8.GetBytes(json));
     }
 
     /// <inheritdoc/>
-    public string GetDataDirectory(StorageMode storageMode)
+    public string GetDataDirectory(StorageMode storageMode) => storageMode switch
     {
-        return storageMode switch
-        {
-            StorageMode.PortableLocal => Path.Combine(ApplicationDirectory, "Data"),
-            _ => Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "KeepMeAlive"),
-        };
-    }
+        StorageMode.PortableLocal => Path.Combine(ApplicationDirectory, "Data"),
+        StorageMode.ProfileAppData => _profileDirectory,
+        _ => throw new ArgumentOutOfRangeException(nameof(storageMode))
+    };
 }

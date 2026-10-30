@@ -1,0 +1,36 @@
+{
+  "desktopTestsPassed": 89,
+  "palettes": [
+    "Light",
+    "Dark",
+    "SimulatedHighContrast"
+  ],
+  "sourceCommit": "ed177a085b652fe04ec4f37ced867c94621e7840",
+  "renderWidths": [
+    860,
+    1020
+  ],
+  "tablerLicenseHashMatches": true,
+  "packages": [
+    {
+      "sha256": "166557D455C01CF811C52A1FE8D43B45D56BC4B00B65778A7862A2C0A7EBCAF4",
+      "bytes": 78327312,
+      "name": "KeepMeAlive-Portable.zip"
+    },
+    {
+      "sha256": "B69AF223F0B749FE622258BE30CD7EC2A555BF08B2E1B55A707990D7FDD76102",
+      "bytes": 54715811,
+      "name": "KeepMeAlive-Setup.exe"
+    }
+  ],
+  "validationPackagesOnly": true,
+  "previousArtifacts": "artifacts/previous-before-tabler-icons",
+  "iconSourceCount": 14,
+  "warningCount": 0,
+  "renderScales": [
+    100,
+    150,
+    200
+  ],
+  "recordedAtUtc": "2026-10-29T17:48:28.2980310+00:00"
+}

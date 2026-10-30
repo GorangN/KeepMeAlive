@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0-windows7.0": {
+      "CommunityToolkit.Mvvm": {
+        "type": "Transitive",
+        "resolved": "8.4.0",
+        "contentHash": "tqVU8yc/ADO9oiTRyTnwhFN68hCwvkliMierptWOudIAvWY1mWCh5VFh+guwHJmpMwfg0J0rY+yyd5Oy7ty9Uw=="
+      },
+      "keepmealive.application": {
+        "type": "Project",
+        "dependencies": {
+          "CommunityToolkit.Mvvm": "[8.4.0, )",
+          "KeepMeAlive.Core": "[1.0.0, )"
+        }
+      },
+      "keepmealive.core": {
+        "type": "Project"
+      }
+    }
+  }
+}

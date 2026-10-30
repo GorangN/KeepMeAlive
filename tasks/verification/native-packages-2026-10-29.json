@@ -1,0 +1,105 @@
+{
+  "checkedAtUtc": "2026-10-29T22:32:06.5591622Z",
+  "purpose": "Unsigned runnable validation packages after actual Windows Neon sign-in acceptance; no production promotion.",
+  "standardPackagingCommand": "scripts/Build-Packages.ps1 -SkipBuild -InnoCompiler \"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe\"",
+  "packageValidationPassed": true,
+  "productionGateRegressionPassed": true,
+  "productionGateCases": 8,
+  "previousCheckpoint": "artifacts/previous-before-native-accounts",
+  "previousPackages": [
+    {
+      "file": "dependencies.json",
+      "sha256": "0ccce7fad9300f5974aa41432beffd1124774130a5fa3d0200e580e79a1c7eb0"
+    },
+    {
+      "file": "KeepMeAlive-Portable.zip",
+      "sha256": "166557d455c01cf811c52a1fe8d43b45d56bc4b00b65778a7862a2c0a7ebcaf4"
+    },
+    {
+      "file": "KeepMeAlive-Setup.exe",
+      "sha256": "b69af223f0b749fe622258be30cd7ec2a555bf08b2e1b55a707990d7fdd76102"
+    },
+    {
+      "file": "SHA256SUMS.txt",
+      "sha256": "8f8736b04ee8bf3cb56d8be57183c5c081ca60b52894773c7cc469e886bed95c"
+    }
+  ],
+  "testedNativeApplicationBinaries": [
+    {
+      "file": "KeepMeAlive.exe",
+      "sha256": "43206c61a3e7efc0e7a98099721431039d16f9466be06634c3d56e2211791a9a",
+      "testedNativeMatches": true
+    },
+    {
+      "file": "KeepMeAlive.dll",
+      "sha256": "192e68d7e47b5ba143c65578a957ce96bcfd535bb381a2421108b9aa5a79ba1d",
+      "testedNativeMatches": true
+    },
+    {
+      "file": "KeepMeAlive.Core.dll",
+      "sha256": "6104bdef290df71a17f2bbf95b0291a64b5ddb25050c2ebd0d60ad6f9f40f12d",
+      "testedNativeMatches": true
+    },
+    {
+      "file": "KeepMeAlive.Application.dll",
+      "sha256": "10898abb2221cabf68ab5ac28b74250a801403696ad3d1f434147bcb8a247b87",
+      "testedNativeMatches": true
+    },
+    {
+      "file": "KeepMeAlive.Infrastructure.dll",
+      "sha256": "44d101d2080b96d9c86df00477d50c520d19c6046d876047de931eddc15e0436",
+      "testedNativeMatches": true
+    }
+  ],
+  "stagingPackaging": {
+    "source": "artifacts/publish-portable",
+    "publicConfiguration": "KeepMeAlive/neon.staging.json",
+    "onlyPayloadReplacement": "neon.json",
+    "archive": "artifacts/staging-validation/KeepMeAlive-Staging-Validation.zip",
+    "entryOrder": "FullName sorted",
+    "entryTimestampUtc": "2000-01-01T00:00:00Z",
+    "compression": "Optimal",
+    "entryCount": 491,
+    "allArchiveBytesMatchPayload": true,
+    "allOtherPayloadBytesMatchPublish": true,
+    "configurationFields": [
+      "apiBaseUrl",
+      "authIssuer",
+      "clientId",
+      "resource"
+    ],
+    "noLocalDataOrSecrets": true,
+    "tablerNoticeMatchesPinnedSource": true,
+    "bundledRuntime": "10.0.14"
+  },
+  "standardAccountClientDisabled": true,
+  "accountReleaseReady": false,
+  "productionDeploymentPerformed": false,
+  "signingPerformed": false,
+  "installerSignature": "NotSigned",
+  "executableSignature": "NotSigned",
+  "packages": [
+    {
+      "path": "artifacts/packages/KeepMeAlive-Portable.zip",
+      "bytes": 78327864,
+      "sha256": "44b481898201d524f63cf2aeb1ece36e96febbe84c83ed221bc6aaa453bbb57f"
+    },
+    {
+      "path": "artifacts/packages/KeepMeAlive-Setup.exe",
+      "bytes": 54723023,
+      "sha256": "dc07bae10cbcfa21c8776a7020febb3674ed2aadd466bdb87d12925ab563abad"
+    },
+    {
+      "path": "artifacts/staging-validation/KeepMeAlive-Staging-Validation.zip",
+      "bytes": 78327890,
+      "sha256": "c35d09cfafc8229277d9606bc7e8095c1f717f32e3966701e5dc33e915fbeeab"
+    }
+  ],
+  "remainingProductionBlockers": [
+    "Application-owned SMTP credentials, provider-verified sender and real verification/reset delivery acceptance",
+    "Controlled production API promotion, active configuration and production smoke verification",
+    "Trusted signing certificate/private key and valid intended-publisher executable/installer signatures",
+    "Actual native account network-outage verification",
+    "Remaining fresh-user install/uninstall, native DPI/high contrast, comprehensive screen-reader, tray-menu and recovery checks"
+  ]
+}

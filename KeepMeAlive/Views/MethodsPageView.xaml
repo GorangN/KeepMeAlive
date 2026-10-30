@@ -1,7 +1,7 @@
 <UserControl x:Class="KeepMeAlive.Views.MethodsPageView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="clr-namespace:KeepMeAlive.ViewModels">
+             xmlns:vm="clr-namespace:KeepMeAlive.Models;assembly=KeepMeAlive.Core">
 
     <Grid Background="{DynamicResource BackgroundBrush}">
         <ScrollViewer VerticalScrollBarVisibility="Auto"
@@ -12,7 +12,7 @@
                 <TextBlock Text="Methods" Style="{StaticResource PageHeadlineStyle}"/>
                 <TextBlock Text="Configure how KeepMeAlive simulates activity."
                            Style="{StaticResource PageSubtitleStyle}"
-                           Margin="0 6 0 32"/>
+                           Margin="0 6 0 32"/><TextBlock Text="{Binding InputError}" Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Assertive"/>
 
                 <!-- Method &amp; Interval card -->
                 <Border Style="{StaticResource CardSectionStyle}" Margin="0 0 0 20">
@@ -20,7 +20,7 @@
 
                         <!-- Card header -->
                         <StackPanel Orientation="Horizontal" Margin="0 0 0 24">
-                            <TextBlock Text="&#xE962;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                            <ContentControl Content="{StaticResource Tabler.Activity}" Style="{StaticResource TablerIconStyle}"
                                        Foreground="{DynamicResource PrimaryBrush}"
                                        VerticalAlignment="Center" Margin="0 0 10 0"/>
                             <TextBlock Text="Activity Method" Style="{StaticResource CardHeaderStyle}"/>
@@ -43,6 +43,8 @@
                                           Style="{StaticResource ComboBoxStyle}"
                                           VerticalAlignment="Center"
                                           SelectedItem="{Binding SelectedMethod, Mode=TwoWay}"
+                                          AutomationProperties.Name="Activity method"
+                                          AutomationProperties.HelpText="Choose keyboard input or a small mouse movement."
                                           IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}">
                                     <ComboBox.Items>
                                         <vm:KeepAliveMethod>Keyboard</vm:KeepAliveMethod>
@@ -68,7 +70,9 @@
                                 </StackPanel>
                                 <TextBox Grid.Column="1"
                                          Style="{StaticResource InputStyle}"
-                                         Text="{Binding IntervalSeconds, UpdateSourceTrigger=PropertyChanged}"
+                                         Text="{Binding IntervalSecondsText, UpdateSourceTrigger=PropertyChanged}"
+                                         AutomationProperties.Name="Pulse interval in seconds"
+                                         AutomationProperties.HelpText="Enter a number from 20 to 86400 seconds."
                                          IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}"
                                          VerticalAlignment="Center"/>
                                 <TextBlock Grid.Column="2" Text="s"
@@ -94,6 +98,8 @@
                                 <CheckBox Grid.Column="1"
                                           Style="{StaticResource ToggleCheckBoxStyle}"
                                           IsChecked="{Binding KeepAwakeEnabled}"
+                                          AutomationProperties.Name="Keep display and system awake"
+                                          AutomationProperties.HelpText="Prevents idle sleep while a keep-alive session is running."
                                           IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}"
                                           VerticalAlignment="Center"/>
                             </Grid>

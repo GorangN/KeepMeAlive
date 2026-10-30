@@ -1,24 +1,36 @@
-using KeepMeAlive.Helpers;
 using KeepMeAlive.Models;
 using KeepMeAlive.Services.Interfaces;
-using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 
 namespace KeepMeAlive.Services;
 
-/// <summary>
-/// Schedules a system action (shutdown, sleep, restart) to execute at a specific local time
-/// by using a <see cref="System.Threading.Timer"/>.
-/// </summary>
-/// <remarks>
-/// The timer fires on a thread-pool thread. <see cref="Schedule"/> and <see cref="Cancel"/>
-/// are protected by a lock so they are safe to call from any thread (including the UI thread).
-/// Shutdown and restart are delegated to <c>shutdown.exe</c>; sleep uses the native Windows
-/// suspend API so it performs sleep rather than hibernation.
-/// </remarks>
+/// <summary>Serializes schedule replacement/execution and refuses stale or missed actions.</summary>
 public sealed class ScheduledActionService : IScheduledActionService, IDisposable
 {
-    private System.Threading.Timer? _timer;
-    private readonly object _lock = new();
+    private readonly object _gate = new();
+    private readonly ISystemActionExecutor _executor;
+    private readonly ISettingsService _settings;
+    private readonly TimeProvider _clock;
+    private readonly TimeZoneInfo _timeZone;
+    private ITimer? _timer;
+    private long _generation;
+    private DateTimeOffset _dueAt;
+    private ScheduledAction _action;
+    private bool _disposed;
+
+    /// <summary>Creates a scheduler with isolated system actions and persistence.</summary>
+    /// <param name="executor">The native action executor.</param>
+    /// <param name="settings">The persisted schedule settings.</param>
+    /// <param name="clock">The clock and timer source.</param>
+    /// <param name="timeZone">The local schedule time zone; defaults to the operating-system zone.</param>
+    public ScheduledActionService(ISystemActionExecutor executor, ISettingsService settings, TimeProvider clock, TimeZoneInfo? timeZone = null)
+    {
+        _executor = executor;
+        _settings = settings;
+        _clock = clock;
+        _timeZone = timeZone ?? TimeZoneInfo.Local;
+    }
 
     /// <inheritdoc/>
     public bool IsScheduled { get; private set; }
@@ -27,82 +39,178 @@ public sealed class ScheduledActionService : IScheduledActionService, IDisposabl
     public DateTime? ScheduledAt { get; private set; }
 
     /// <inheritdoc/>
+    public string? LastError { get; private set; }
+
+    /// <inheritdoc/>
+    public event EventHandler? StatusChanged;
+
+    /// <inheritdoc/>
     public void Schedule(ScheduledAction action, DateTime executeAt)
     {
-        if (executeAt <= DateTime.Now)
+        DateTimeOffset dueAt = ResolveExecutionTime(executeAt);
+        if (dueAt <= _clock.GetUtcNow() || !Enum.IsDefined(action))
         {
-            throw new ArgumentException("Scheduled time must be in the future.", nameof(executeAt));
+            throw new ArgumentException("Choose a supported action and a future execution time.", nameof(executeAt));
         }
 
-        lock (_lock)
+        lock (_gate)
         {
+            ObjectDisposedException.ThrowIf(_disposed, this);
             CancelCore();
-
-            var delay = executeAt - DateTime.Now;
-
-            _timer = new System.Threading.Timer(
-                _ => Execute(action),
-                state: null,
-                dueTime: delay,
-                period: System.Threading.Timeout.InfiniteTimeSpan);
-
+            _action = action;
+            _dueAt = dueAt;
+            ScheduledAt = TimeZoneInfo.ConvertTime(dueAt, _timeZone).DateTime;
             IsScheduled = true;
-            ScheduledAt = executeAt;
+            LastError = null;
+            long generation = _generation;
+            _timer = _clock.CreateTimer(_ => OnTimer(generation), null, GetNextDelay(), Timeout.InfiniteTimeSpan);
         }
+
+        StatusChanged?.Invoke(this, EventArgs.Empty);
     }
 
     /// <inheritdoc/>
     public void Cancel()
     {
-        lock (_lock)
+        lock (_gate)
         {
             CancelCore();
+            LastError = null;
         }
+
+        StatusChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    /// <summary>Releases all resources used by the service and cancels any pending schedule.</summary>
+    /// <inheritdoc/>
+    public void Restore()
+    {
+        Cancel();
+        var settings = _settings.Current;
+        if (!settings.ScheduledActionEnabled)
+        {
+            return;
+        }
+
+        if (DateTime.TryParseExact(settings.ScheduledActionTime, "dd:MM:yyyy:HH:mm:ss",
+            CultureInfo.InvariantCulture, DateTimeStyles.None, out var executeAt))
+        {
+            try
+            {
+                Schedule(settings.ScheduledActionType, executeAt);
+                return;
+            }
+            catch (ArgumentException)
+            {
+            }
+        }
+
+        lock (_gate)
+        {
+            CancelCore();
+            LastError = "The saved action was missed or its time is invalid. It has been disarmed.";
+            TryPersistDisarmed();
+        }
+
+        StatusChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>Cancels pending callbacks and releases timer resources.</summary>
     public void Dispose()
     {
-        lock (_lock)
+        lock (_gate)
         {
+            _disposed = true;
             CancelCore();
         }
     }
 
-    /// <summary>
-    /// Cancels and disposes the timer. Must be called inside <c>_lock</c>.
-    /// </summary>
+    private void OnTimer(long generation)
+    {
+        lock (_gate)
+        {
+            if (_disposed || !IsScheduled || generation != _generation)
+            {
+                return;
+            }
+
+            if (_clock.GetUtcNow() < _dueAt)
+            {
+                _timer?.Change(GetNextDelay(), Timeout.InfiniteTimeSpan);
+                return;
+            }
+
+            bool missed = _clock.GetUtcNow() - _dueAt > TimeSpan.FromSeconds(30);
+            ScheduledAction action = _action;
+            CancelCore();
+            if (!TryPersistDisarmed())
+            {
+                LastError = "The action was cancelled because its completion state could not be saved.";
+            }
+            else if (missed)
+            {
+                LastError = "The scheduled time was missed while the computer was unavailable. The action was skipped.";
+            }
+            else
+            {
+                try
+                {
+                    _executor.Execute(action);
+                    LastError = null;
+                }
+                catch (Exception exception) when (exception is System.ComponentModel.Win32Exception or InvalidOperationException or IOException)
+                {
+                    LastError = "Windows could not complete the scheduled action. It has been disarmed.";
+                }
+            }
+        }
+
+        StatusChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private bool TryPersistDisarmed()
+    {
+        try
+        {
+            var settings = _settings.Current;
+            settings.ScheduledActionEnabled = false;
+            _settings.Save(settings);
+            return true;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or InvalidOperationException)
+        {
+            return false;
+        }
+    }
+
+    private TimeSpan GetNextDelay()
+    {
+        TimeSpan remaining = _dueAt - _clock.GetUtcNow();
+        return remaining <= TimeSpan.Zero ? TimeSpan.Zero
+            : remaining > TimeSpan.FromMinutes(1) ? TimeSpan.FromMinutes(1) : remaining;
+    }
+
     private void CancelCore()
     {
+        _generation++;
         _timer?.Dispose();
         _timer = null;
         IsScheduled = false;
         ScheduledAt = null;
     }
 
-    /// <summary>Executes the specified system action.</summary>
-    /// <param name="action">The action to execute.</param>
-    private static void Execute(ScheduledAction action)
+    private DateTimeOffset ResolveExecutionTime(DateTime time)
     {
-        if (action == ScheduledAction.Sleep)
+        if (time.Kind == DateTimeKind.Utc)
         {
-            Interop.SetSuspendState(hibernate: false, forceCritical: false, disableWakeEvent: false);
-            return;
+            return new DateTimeOffset(time);
         }
 
-        var arguments = action switch
+        DateTime localTime = DateTime.SpecifyKind(time, DateTimeKind.Unspecified);
+        if (_timeZone.IsInvalidTime(localTime) || _timeZone.IsAmbiguousTime(localTime))
         {
-            ScheduledAction.Shutdown => "/s /t 0",
-            ScheduledAction.Restart  => "/r /t 0",
-            _                        => throw new ArgumentOutOfRangeException(nameof(action))
-        };
+            throw new ArgumentException("Choose a time outside the daylight-saving clock transition.", nameof(time));
+        }
 
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = "shutdown",
-            Arguments = arguments,
-            CreateNoWindow = true,
-            UseShellExecute = false
-        });
+        return new DateTimeOffset(localTime, _timeZone.GetUtcOffset(localTime)).ToUniversalTime();
     }
 }

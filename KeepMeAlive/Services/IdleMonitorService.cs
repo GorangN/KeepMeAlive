@@ -1,45 +1,45 @@
 using KeepMeAlive.Services.Interfaces;
-using System.Windows.Threading;
+using System.Runtime.InteropServices;
 using static KeepMeAlive.Helpers.Interop;
 
 namespace KeepMeAlive.Services;
 
-public class IdleMonitorService : IIdleMonitorService, IDisposable
+/// <summary>Samples Windows last-input time without owning a WPF timer.</summary>
+public sealed class IdleMonitorService : IIdleMonitorService, IDisposable
 {
-    private readonly DispatcherTimer _timer;
-    private int _idleSeconds;
+    private Timer? _timer;
+    private int _idleSeconds = -1;
 
-    public int IdleSeconds
-    {
-        get => _idleSeconds;
-        private set
-        {
-            if (_idleSeconds != value)
-            {
-                _idleSeconds = value;
-                IdleUpdated?.Invoke(this, EventArgs.Empty);
-            }
-        }
-    }
+    /// <inheritdoc/>
+    public int IdleSeconds => Volatile.Read(ref _idleSeconds);
 
+    /// <inheritdoc/>
     public event EventHandler? IdleUpdated;
 
-    public IdleMonitorService()
+    /// <inheritdoc/>
+    public void Start()
     {
-        _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-        _timer.Tick += (_, _) => IdleSeconds = GetIdleSeconds();
+        _timer ??= new Timer(_ => Sample(), null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
     }
 
-    public void Start() => _timer.Start();
-    public void Stop() => _timer.Stop();
-
-    private static int GetIdleSeconds()
+    /// <inheritdoc/>
+    public void Stop()
     {
-        var lii = new LASTINPUTINFO { cbSize = (uint)System.Runtime.InteropServices.Marshal.SizeOf<LASTINPUTINFO>() };
-        if (!GetLastInputInfo(ref lii)) return -1;
-        uint tick = (uint)Environment.TickCount;
-        return (int)((tick - lii.dwTime) / 1000);
+        Interlocked.Exchange(ref _timer, null)?.Dispose();
     }
 
-    public void Dispose() => _timer.Stop();
+    /// <summary>Stops background sampling.</summary>
+    public void Dispose() => Stop();
+
+    private void Sample()
+    {
+        var information = new LASTINPUTINFO { cbSize = (uint)Marshal.SizeOf<LASTINPUTINFO>() };
+        int seconds = GetLastInputInfo(ref information)
+            ? (int)(unchecked((uint)Environment.TickCount - information.dwTime) / 1000)
+            : -1;
+        if (Interlocked.Exchange(ref _idleSeconds, seconds) != seconds)
+        {
+            IdleUpdated?.Invoke(this, EventArgs.Empty);
+        }
+    }
 }

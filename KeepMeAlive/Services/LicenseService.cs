@@ -3,27 +3,28 @@ using KeepMeAlive.Services.Interfaces;
 
 namespace KeepMeAlive.Services;
 
-/// <summary>
-/// Subscription stub — all features unlocked.
-/// When the paid subscription launches: single plan, free trial month.
-/// No free tier. Replace this implementation with real license validation.
-/// </summary>
-public class LicenseService : ILicenseService
+/// <summary>Reports entitlements fetched from the authenticated backend.</summary>
+public sealed class LicenseService(IAccountService accountService) : ILicenseService
 {
-    public LicenseInfo GetLicense() => new()
+    /// <inheritdoc/>
+    public LicenseInfo GetLicense()
     {
-        Key = "",
-        ExpiresAt = null,
-        Tier = SubscriptionTier.Trial   // TODO: validate against licensing API
-    };
-
-    public bool IsActivated() => false; // TODO: real license key validation
-
-    public bool IsTrialExpired() => false; // TODO: check ExpiresAt against DateTime.UtcNow
-
-    public Task<bool> ValidateAsync(string key)
+        var entitlement = accountService.Current?.Entitlements.FirstOrDefault();
+        return entitlement is null ? new LicenseInfo() : new LicenseInfo
+        {
+            ExpiresAt = entitlement.ExpiresAt?.UtcDateTime,
+            Tier = entitlement.ExpiresAt is { } expiry && expiry <= DateTimeOffset.UtcNow
+                ? SubscriptionTier.Expired : SubscriptionTier.Active,
+        };
+    }
+    /// <inheritdoc/>
+    public bool IsActivated() => GetLicense().Tier == SubscriptionTier.Active;
+    /// <inheritdoc/>
+    public bool IsTrialExpired() => GetLicense().Tier == SubscriptionTier.Expired;
+    /// <inheritdoc/>
+    public async Task<bool> ValidateAsync(string key)
     {
-        // TODO: call licensing API endpoint
-        return Task.FromResult(false);
+        await accountService.GetCurrentAsync().ConfigureAwait(false);
+        return IsActivated();
     }
 }

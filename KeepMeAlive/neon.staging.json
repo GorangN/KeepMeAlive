@@ -1,0 +1,6 @@
+{
+  "apiBaseUrl": "https://br-red-flower-b9wmbkmb-keepmealive.compute.c-7.eu-central-1.aws.neon.tech/",
+  "authIssuer": "https://ep-red-rain-b9c8tumi.neonauth.c-7.eu-central-1.aws.neon.tech/neondb/auth",
+  "resource": "https://keepmealive.app/api",
+  "clientId": "rRwBPkonGujPtDihzCtDKZJronKFaVtN"
+}

@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "@neon/functions": "0.11.0",
+    "hono": "4.13.14",
+    "jose": "6.2.13",
+    "pg": "8.23.1"
+  },
+  "devDependencies": {
+    "@neon/config-runtime": "1.10.4",
+    "@types/node": "26.6.6",
+    "@types/pg": "8.23.1",
+    "esbuild": "0.28.2",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
+  },
+  "name": "keepmealive-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts tests/*.test.mjs",
+    "build": "node scripts/build.mjs"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

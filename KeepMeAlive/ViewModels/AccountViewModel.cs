@@ -1,156 +1,132 @@
+using System.Net.Http;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
-using KeepMeAlive.Messages;
 using KeepMeAlive.Models;
 using KeepMeAlive.Services.Interfaces;
 
 namespace KeepMeAlive.ViewModels;
 
-/// <summary>ViewModel for the account and license area.</summary>
-public partial class AccountViewModel : ObservableObject, IRecipient<StorageChangedMessage>
+/// <summary>Coordinates explicit account actions and exposes honest offline and signed-out states.</summary>
+public partial class AccountViewModel : ObservableObject, IAsyncDisposable
 {
-    private readonly IAccountService _accountService;
-    private readonly ISettingsService _settingsService;
-    private readonly ISecretStore _secretStore;
+    private readonly IAccountService _accounts;
+    private readonly IAuthenticationService _authentication;
+    private CancellationTokenSource? _signInCancellation;
+    private readonly CancellationTokenSource _lifetime = new();
 
-    [ObservableProperty]
-    private string _displayName = "Local User";
+    [ObservableProperty] private string _displayName = string.Empty;
+    [ObservableProperty] private string _email = "Sign in to connect your account";
+    [ObservableProperty] private string _accountStatus = "Signed out";
+    [ObservableProperty] private string _lastSyncedDisplay = "Never";
+    [ObservableProperty] private string _planName = "No subscription linked";
+    [ObservableProperty] private string _licenseAccessStatus = "Local utility available";
+    [ObservableProperty] private string _licenseExpiryDisplay = "No subscription linked";
+    [ObservableProperty] private string _statusMessage = "Your keep-alive sessions work without an account.";
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSignIn))] private bool _isSignedIn;
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSignIn))] private bool _isRefreshing;
 
-    [ObservableProperty]
-    private string _email = "Available after Supabase sign-in";
+    /// <summary>Gets the account workspace label.</summary>
+    public string WorkspaceName => "Personal account";
+    /// <summary>Gets the identity provider label.</summary>
+    public string AuthProvider => "Neon";
+    /// <summary>Gets whether another browser sign-in may start.</summary>
+    public bool CanSignIn => _authentication.IsConfigured && !IsSignedIn && !IsRefreshing;
 
-    [ObservableProperty]
-    private string _workspaceName = "Preview workspace";
-
-    [ObservableProperty]
-    private string _authProvider = "Local preview";
-
-    [ObservableProperty]
-    private string _planName = "Starter Preview";
-
-    [ObservableProperty]
-    private string _accountStatus = "Not connected";
-
-    [ObservableProperty]
-    private string _lastSyncedDisplay = "Never";
-
-    [ObservableProperty]
-    private string _licenseKey = string.Empty;
-
-    [ObservableProperty]
-    private string _licenseStatus = "No license key stored";
-
-    [ObservableProperty]
-    private string _licenseStorageLocation = "Windows Credential Manager";
-
-    [ObservableProperty]
-    private string _licenseAccessStatus = "Preview access";
-
-    [ObservableProperty]
-    private string _licenseExpiryDisplay = "Available after billing sync";
-
-    [ObservableProperty]
-    private bool _isRefreshing;
-
-    /// <summary>Gets the production hand-off note shown in the UI.</summary>
-    public string IntegrationHint =>
-        "This page already uses an account service abstraction, so you can swap the local stub for Supabase auth and profile data later.";
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AccountViewModel"/> class.
-    /// </summary>
-    /// <param name="accountService">The account data service.</param>
-    /// <param name="settingsService">The settings persistence service.</param>
-    /// <param name="secretStore">The secure secret store.</param>
-    /// <param name="messenger">The messenger used to observe storage mode changes.</param>
-    public AccountViewModel(
-        IAccountService accountService,
-        ISettingsService settingsService,
-        ISecretStore secretStore,
-        IMessenger messenger)
+    /// <summary>Creates the account page without initiating network access.</summary>
+    /// <param name="accounts">Authenticated account operations.</param>
+    /// <param name="authentication">Browser-based authentication and session persistence.</param>
+    public AccountViewModel(IAccountService accounts, IAuthenticationService authentication)
     {
-        _accountService = accountService;
-        _settingsService = settingsService;
-        _secretStore = secretStore;
+        _accounts = accounts;
+        _authentication = authentication;
+        if (!authentication.IsConfigured)
+        {
+            StatusMessage = "Account sign-in is being prepared for this release. You can use all local utility features.";
+        }
+    }
 
-        messenger.RegisterAll(this);
+    [RelayCommand]
+    private async Task SignInAsync()
+    {
+        if (!CanSignIn) { return; }
+        IsRefreshing = true;
+        _signInCancellation = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token);
+        AccountStatus = "Waiting for browser";
+        StatusMessage = "Complete sign-in in your browser, or cancel to return.";
+        try
+        {
+            await _authentication.SignInAsync(_signInCancellation.Token).ConfigureAwait(false);
+            Apply(await _accounts.GetCurrentAsync(_signInCancellation.Token).ConfigureAwait(false));
+        }
+        catch (OperationCanceledException) { AccountStatus = "Signed out"; StatusMessage = "Sign-in was cancelled. Your local utility is ready."; }
+        catch (Exception error) when (IsAccountError(error)) { AccountStatus = "Connection error"; StatusMessage = UserMessage(error); }
+        finally { IsRefreshing = false; _signInCancellation.Dispose(); _signInCancellation = null; }
+    }
 
-        LicenseKey = _secretStore.GetLicenseKey();
-        UpdateLicenseState();
+    [RelayCommand]
+    private void CancelSignIn() => _signInCancellation?.Cancel();
 
-        _ = RefreshAsync();
+    [RelayCommand]
+    private async Task SignOutAsync()
+    {
+        _signInCancellation?.Cancel();
+        IsRefreshing = true;
+        try { await _authentication.SignOutAsync(_lifetime.Token).ConfigureAwait(false); _accounts.Clear(); Apply(null); }
+        catch (Exception error) when (IsAccountError(error)) { StatusMessage = UserMessage(error); }
+        finally { IsRefreshing = false; }
     }
 
     [RelayCommand]
     private async Task RefreshAsync()
     {
-        if (IsRefreshing)
-        {
-            return;
-        }
-
+        if (IsRefreshing) { return; }
         IsRefreshing = true;
-
-        try
+        try { Apply(await _accounts.GetCurrentAsync(_lifetime.Token).ConfigureAwait(false)); }
+        catch (Exception error) when (IsAccountError(error))
         {
-            var profile = await _accountService.GetCurrentAsync();
-            DisplayName = profile.DisplayName;
-            Email = profile.Email;
-            WorkspaceName = profile.WorkspaceName;
-            AuthProvider = profile.AuthProvider;
-            PlanName = profile.PlanName;
-            AccountStatus = profile.StatusLabel;
-            LastSyncedDisplay = profile.LastSyncedAtUtc.ToLocalTime().ToString("dd MMM yyyy, HH:mm");
-
-            LicenseKey = _secretStore.GetLicenseKey();
-            UpdateLicenseState();
+            AccountStatus = _accounts.Current is null ? "Connection error" : "Offline · cached account";
+            StatusMessage = UserMessage(error) + " Your local session can continue.";
         }
-        finally
-        {
-            IsRefreshing = false;
-        }
+        finally { IsRefreshing = false; }
     }
 
     [RelayCommand]
-    private void SaveLicense()
+    private async Task SaveProfileAsync()
     {
-        _secretStore.SaveLicenseKey(LicenseKey);
-        LicenseKey = _secretStore.GetLicenseKey();
-        UpdateLicenseState();
+        if (!IsSignedIn || IsRefreshing) { return; }
+        IsRefreshing = true;
+        try { Apply(await _accounts.UpdateProfileAsync(DisplayName, _lifetime.Token).ConfigureAwait(false)); StatusMessage = "Profile saved."; }
+        catch (Exception error) when (IsAccountError(error)) { StatusMessage = UserMessage(error); }
+        finally { IsRefreshing = false; }
     }
 
-    /// <inheritdoc/>
-    public void Receive(StorageChangedMessage message)
+    private void Apply(UserAccountProfile? profile)
     {
-        LicenseKey = _secretStore.GetLicenseKey(message.StorageMode);
-        UpdateLicenseState(message.StorageMode);
+        IsSignedIn = profile is not null;
+        DisplayName = profile?.DisplayName ?? string.Empty;
+        Email = profile?.Email ?? "Sign in to connect your account";
+        AccountStatus = profile is null ? "Signed out" : "Connected";
+        LastSyncedDisplay = profile is null ? "Never" : profile.LastSyncedAtUtc.ToLocalTime().ToString("dd MMM yyyy, HH:mm");
+        var entitlement = profile?.Entitlements.FirstOrDefault();
+        PlanName = entitlement is null ? "No subscription linked" : "Subscription linked";
+        LicenseAccessStatus = entitlement is null ? "Local utility available" : "Server-verified access";
+        LicenseExpiryDisplay = entitlement?.ExpiresAt?.ToLocalTime().ToString("dd MMM yyyy") ?? (entitlement is null ? "No subscription linked" : "No expiration");
+        StatusMessage = profile is null ? "Your keep-alive sessions work without an account." : "Account details are up to date.";
     }
+    /// <summary>Refreshes the bound profile after an explicitly enabled startup synchronization.</summary>
+    public void RefreshFromCache() => Apply(_accounts.Current);
 
-    private void UpdateLicenseState()
+    /// <summary>Cancels and awaits account operations before authentication resources are released.</summary>
+    /// <returns>A task completing when no account command is running.</returns>
+    public async ValueTask DisposeAsync()
     {
-        UpdateLicenseState(_settingsService.CurrentStorageMode);
+        _lifetime.Cancel();
+        _signInCancellation?.Cancel();
+        var tasks = new[] { SignInCommand.ExecutionTask, SignOutCommand.ExecutionTask, RefreshCommand.ExecutionTask, SaveProfileCommand.ExecutionTask }.OfType<Task>().ToArray();
+        try { await Task.WhenAll(tasks).ConfigureAwait(false); }
+        catch (OperationCanceledException) { }
+        _lifetime.Dispose();
     }
-
-    private void UpdateLicenseState(StorageMode storageMode)
-    {
-        bool hasLicenseKey = !string.IsNullOrWhiteSpace(LicenseKey);
-        LicenseStorageLocation = storageMode switch
-        {
-            StorageMode.PortableLocal => "local protected storage",
-            _ => "Windows Credential Manager"
-        };
-
-        LicenseStatus = hasLicenseKey
-            ? $"Stored securely in {LicenseStorageLocation}."
-            : $"No license key stored. New keys are saved to {LicenseStorageLocation}.";
-
-        LicenseAccessStatus = hasLicenseKey
-            ? "License key on file"
-            : "Preview access";
-
-        LicenseExpiryDisplay = hasLicenseKey
-            ? "Validation starts after backend sync"
-            : "Available after billing sync";
-    }
+    private static bool IsAccountError(Exception error) => error is HttpRequestException or InvalidOperationException or ArgumentException or System.IO.IOException or UnauthorizedAccessException or System.Security.Cryptography.CryptographicException or System.Text.Json.JsonException or OperationCanceledException;
+    private static string UserMessage(Exception error) => error is ArgumentException ? "Enter a display name between 1 and 100 characters." : error is HttpRequestException ? "The account service could not be reached. Check your connection and try again." : error is InvalidOperationException ? error.Message : "Your account could not be updated. Please try again.";
 }

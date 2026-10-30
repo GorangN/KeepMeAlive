@@ -1,46 +1,19 @@
+using KeepMeAlive.Models;
 using KeepMeAlive.Services.Interfaces;
-using KeepMeAlive.Views;
 using System.Windows;
-
 namespace KeepMeAlive.Services;
-
-/// <summary>Shows application modal dialogs using custom WPF windows.</summary>
+/// <summary>Hosts accessible native confirmation dialogs.</summary>
 public sealed class DialogService : IDialogService
 {
     /// <inheritdoc/>
-    public bool ShowUnsavedChangesDialog()
+    public UnsavedChangesChoice ShowUnsavedChangesDialog()
     {
-        var owner = Application.Current.Windows
-            .OfType<MainWindowView>()
-            .FirstOrDefault();
-
-        var dialog = new UnsavedChangesDialog { Owner = owner };
-
-        // Size and position the overlay to exactly cover the owner window
-        // so the semi-transparent backdrop aligns with the app chrome.
-        if (owner != null)
-        {
-            dialog.Left = owner.Left;
-            dialog.Top = owner.Top;
-            dialog.Width = owner.ActualWidth;
-            dialog.Height = owner.ActualHeight;
-        }
-
-        dialog.ShowDialog();
-        return dialog.SaveChosen;
+        var result = MessageBox.Show(System.Windows.Application.Current.MainWindow,
+            "Save your changes before leaving this page?", "Unsaved changes", MessageBoxButton.YesNoCancel,
+            MessageBoxImage.None, MessageBoxResult.Cancel);
+        return result switch { MessageBoxResult.Yes => UnsavedChangesChoice.Save, MessageBoxResult.No => UnsavedChangesChoice.Discard, _ => UnsavedChangesChoice.Cancel };
     }
-
     /// <inheritdoc/>
-    public bool ShowConfirmation(string title, string message)
-    {
-        var owner = Application.Current.Windows
-            .OfType<MainWindowView>()
-            .FirstOrDefault();
-
-        var result = owner is null
-            ? MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Warning)
-            : MessageBox.Show(owner, message, title, MessageBoxButton.YesNo, MessageBoxImage.Warning);
-
-        return result == MessageBoxResult.Yes;
-    }
+    public bool ShowConfirmation(string title, string message) =>
+        MessageBox.Show(System.Windows.Application.Current.MainWindow, message, title, MessageBoxButton.YesNo, MessageBoxImage.None, MessageBoxResult.No) == MessageBoxResult.Yes;
 }

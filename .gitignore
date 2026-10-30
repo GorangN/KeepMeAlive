@@ -361,3 +361,10 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# Local account configuration and credentials
+.env
+.env.*
+!.env.example
+**/neon.local.json
+**/Data/
+.taste-skill/

@@ -1,0 +1,108 @@
+{
+  "preparedAtUtc": "2026-10-30T03:15:03.0255157Z",
+  "localVerificationDate": "2026-10-30",
+  "purpose": "Preparation for native desktop artifact rollback and forward compatibility rehearsal; not fresh-user installation evidence.",
+  "preparationOnly": true,
+  "nativeLaunchPerformed": false,
+  "sourceArchive": "artifacts/previous-before-windows-hc/staging-validation/KeepMeAlive-Staging-Validation.zip",
+  "sourceArchiveSha256": "c35d09cfafc8229277d9606bc7e8095c1f717f32e3966701e5dc33e915fbeeab",
+  "sourceEntryCount": 491,
+  "sourceArchiveMatchesPreviousNativeEvidence": true,
+  "sourceArchiveMatchesCurrentCheckpoint": true,
+  "extractedTo": "artifacts/rollback-validation-20261030",
+  "targetCreatedNew": true,
+  "priorFiles": [
+    {
+      "file": "KeepMeAlive.exe",
+      "sha256": "43206c61a3e7efc0e7a98099721431039d16f9466be06634c3d56e2211791a9a"
+    },
+    {
+      "file": "KeepMeAlive.dll",
+      "sha256": "192e68d7e47b5ba143c65578a957ce96bcfd535bb381a2421108b9aa5a79ba1d"
+    },
+    {
+      "file": "KeepMeAlive.Core.dll",
+      "sha256": "6104bdef290df71a17f2bbf95b0291a64b5ddb25050c2ebd0d60ad6f9f40f12d"
+    },
+    {
+      "file": "KeepMeAlive.Application.dll",
+      "sha256": "10898abb2221cabf68ab5ac28b74250a801403696ad3d1f434147bcb8a247b87"
+    },
+    {
+      "file": "KeepMeAlive.Infrastructure.dll",
+      "sha256": "44d101d2080b96d9c86df00477d50c520d19c6046d876047de931eddc15e0436"
+    },
+    {
+      "file": "KeepMeAlive.deps.json",
+      "sha256": "945b4e6da76df1792e945dd143aeb315d541043a9b2a107c5bdd77c11dac9e1a"
+    },
+    {
+      "file": "KeepMeAlive.runtimeconfig.json",
+      "sha256": "7d90809b8e2f88a3e3dc8cc67bd50dcdb5b40fe5c46fdcd6bb9b468a6b3d0056"
+    }
+  ],
+  "currentFiles": [
+    {
+      "file": "KeepMeAlive.exe",
+      "sha256": "43206c61a3e7efc0e7a98099721431039d16f9466be06634c3d56e2211791a9a",
+      "matchesCurrentNativeEvidence": true
+    },
+    {
+      "file": "KeepMeAlive.dll",
+      "sha256": "29d443f7928840fd2cde6cc121397806bdc676bb30fb2e18cf3118df08b503f7",
+      "matchesCurrentNativeEvidence": true
+    },
+    {
+      "file": "KeepMeAlive.Core.dll",
+      "sha256": "e7c471086ab6a820c623f5b93ce1b6f269371d32470c0713f6f5bb5eba74568e",
+      "matchesCurrentNativeEvidence": true
+    },
+    {
+      "file": "KeepMeAlive.Application.dll",
+      "sha256": "10898abb2221cabf68ab5ac28b74250a801403696ad3d1f434147bcb8a247b87",
+      "matchesCurrentNativeEvidence": true
+    },
+    {
+      "file": "KeepMeAlive.Infrastructure.dll",
+      "sha256": "44d101d2080b96d9c86df00477d50c520d19c6046d876047de931eddc15e0436",
+      "matchesCurrentNativeEvidence": true
+    },
+    {
+      "file": "KeepMeAlive.deps.json",
+      "sha256": "945b4e6da76df1792e945dd143aeb315d541043a9b2a107c5bdd77c11dac9e1a",
+      "matchesCurrentNativeEvidence": true
+    },
+    {
+      "file": "KeepMeAlive.runtimeconfig.json",
+      "sha256": "7d90809b8e2f88a3e3dc8cc67bd50dcdb5b40fe5c46fdcd6bb9b468a6b3d0056",
+      "matchesCurrentNativeEvidence": true
+    }
+  ],
+  "isolatedSettings": {
+    "StorageMode": "PortableLocal",
+    "KeepAliveMethod": "Keyboard",
+    "IntervalSeconds": 67,
+    "KeepAwakeEnabled": false,
+    "VirtualKeyCode": 126,
+    "MousePixelDelta": 2,
+    "Theme": "Light",
+    "StartOnBoot": false,
+    "ShowNotifications": false,
+    "EnableAutomaticUpdateChecks": false,
+    "EnableStartupAccountSync": false,
+    "StartMinimizedToTray": false,
+    "ScheduledActionEnabled": false,
+    "ScheduledActionTime": ""
+  },
+  "settingsSha256": "04acf8a8c1186cc2084bc840c61201b898d5d8d965c1b2ebcaea0e168e04bd0d",
+  "copiedUserData": false,
+  "copiedSecrets": false,
+  "copiedBootstrap": false,
+  "protectedDirectoryExists": false,
+  "sourceBootstrapExists": false,
+  "expectedNextSteps": [
+    "Root launches prior executable through native Computer Use and verifies interval 67, Start/Stop and Quit.",
+    "Root replaces application files from current verified publish output while preserving Data/settings.json, launches native current executable and verifies interval 67, Start/Stop and Quit.",
+    "Record observed native results separately; this preparation does not establish execution or installation acceptance."
+  ]
+}

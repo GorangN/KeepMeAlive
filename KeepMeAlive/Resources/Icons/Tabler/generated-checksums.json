@@ -1,0 +1,25 @@
+{
+    "sourceCommit":  "ed177a085b652fe04ec4f37ced867c94621e7840",
+    "outputs":  [
+                    {
+                        "file":  "Tabler.xaml",
+                        "sha256":  "842f3d451407f7594b0998b18ddc2f1e6adee62e7cf938c5196bceeee713bd6e"
+                    },
+                    {
+                        "file":  "tray_inactive.ico",
+                        "sha256":  "d54b7b32d514aea011f96a3bf6e50b14d6147075cf6eeff016e9ae4ea590a0a3"
+                    },
+                    {
+                        "file":  "tray_active.ico",
+                        "sha256":  "b53e9d288cca3bedd7cc444073d0d3cacaccdf254f4ad4495ac0ee1e137bf2da"
+                    },
+                    {
+                        "file":  "wizard_small.bmp",
+                        "sha256":  "4cdc3283ce350b44794fcae9d5114503b17c26e129f541cbbc1a3cf3ea11ca05"
+                    },
+                    {
+                        "file":  "wizard_large.bmp",
+                        "sha256":  "47c2fcadaee5b545cce9082fabd7bc0b7ce9b4202ada3e5a83751902b49ea45e"
+                    }
+                ]
+}

@@ -1,0 +1,173 @@
+{
+  "target": "staging",
+  "projectId": "sweet-truth-01118709",
+  "branchId": "br-red-flower-b9wmbkmb",
+  "checkedAtUtc": "2026-10-29T17:07:42.553Z",
+  "protocolOnly": true,
+  "actualSmtpVerified": false,
+  "nativeBrowserVerified": false,
+  "syntheticAccountsRetained": 2,
+  "checks": [
+    {
+      "name": "discovery pins the exact staging issuer",
+      "passed": true
+    },
+    {
+      "name": "authorization_endpoint stays under the configured issuer",
+      "passed": true
+    },
+    {
+      "name": "token_endpoint stays under the configured issuer",
+      "passed": true
+    },
+    {
+      "name": "A synthetic reserved-domain account created without requesting email",
+      "passed": true
+    },
+    {
+      "name": "A email-password session established",
+      "passed": true
+    },
+    {
+      "name": "A browser-cookie session restored",
+      "passed": true
+    },
+    {
+      "name": "unregistered redirect is rejected",
+      "passed": true
+    },
+    {
+      "name": "public-client authorization without PKCE is rejected",
+      "passed": true
+    },
+    {
+      "name": "authorization returns a hosted continuation",
+      "passed": true
+    },
+    {
+      "name": "authorization continuation uses the hosted staging origin",
+      "passed": true
+    },
+    {
+      "name": "public desktop client requires consent",
+      "passed": true
+    },
+    {
+      "name": "consent metadata identifies the registered public client",
+      "passed": true
+    },
+    {
+      "name": "signed consent request accepted",
+      "passed": true
+    },
+    {
+      "name": "callback pins redirect state and authorization code",
+      "passed": true
+    },
+    {
+      "name": "S256 authorization code exchanges for access and refresh tokens",
+      "passed": true
+    },
+    {
+      "name": "API accepts staging token for its authenticated account",
+      "passed": true
+    },
+    {
+      "name": "authenticated profile update persists",
+      "passed": true
+    },
+    {
+      "name": "B synthetic reserved-domain account created without requesting email",
+      "passed": true
+    },
+    {
+      "name": "B email-password session established",
+      "passed": true
+    },
+    {
+      "name": "B browser-cookie session restored",
+      "passed": true
+    },
+    {
+      "name": "authorization returns a hosted continuation",
+      "passed": true
+    },
+    {
+      "name": "authorization continuation uses the hosted staging origin",
+      "passed": true
+    },
+    {
+      "name": "public desktop client requires consent",
+      "passed": true
+    },
+    {
+      "name": "consent metadata identifies the registered public client",
+      "passed": true
+    },
+    {
+      "name": "signed consent request accepted",
+      "passed": true
+    },
+    {
+      "name": "callback pins redirect state and authorization code",
+      "passed": true
+    },
+    {
+      "name": "second independent account obtains its own access token",
+      "passed": true
+    },
+    {
+      "name": "two real accounts remain isolated",
+      "passed": true
+    },
+    {
+      "name": "caller-supplied alternate account ownership is rejected",
+      "passed": true
+    },
+    {
+      "name": "alternate account remains unchanged after forged update",
+      "passed": true
+    },
+    {
+      "name": "refresh credential rotates and returns a new access token",
+      "passed": true
+    },
+    {
+      "name": "rotated access token remains authorized",
+      "passed": true
+    },
+    {
+      "name": "revocation endpoint remains pinned to staging issuer",
+      "passed": true
+    },
+    {
+      "name": "rotated refresh credential revoked",
+      "passed": true
+    },
+    {
+      "name": "revoked refresh credential cannot obtain another token",
+      "passed": true
+    },
+    {
+      "name": "authorization code reuse is rejected",
+      "passed": true
+    },
+    {
+      "name": "browser-cookie session signed out",
+      "passed": true
+    },
+    {
+      "name": "signed-out browser session is no longer restored",
+      "passed": true
+    },
+    {
+      "name": "browser-cookie session signed out",
+      "passed": true
+    },
+    {
+      "name": "signed-out browser session is no longer restored",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

@@ -1,16 +1,33 @@
-﻿using static KeepMeAlive.Helpers.Interop;
+using static KeepMeAlive.Helpers.Interop;
 
 namespace KeepMeAlive.Services;
-public class KeyboardStrategy_VirtualKey : IKeepAliveStrategy
-{
-    private readonly ushort _vk;
-    public KeyboardStrategy_VirtualKey(ushort vk) { _vk = vk; }
 
+/// <summary>Sends one balanced F13–F24 key pulse.</summary>
+public sealed class KeyboardStrategy_VirtualKey : IKeepAliveStrategy
+{
+    private readonly ushort _virtualKey;
+
+    /// <summary>Creates an input strategy for a supported function key.</summary>
+    /// <param name="virtualKey">The F13–F24 virtual-key value.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The key is outside F13–F24.</exception>
+    public KeyboardStrategy_VirtualKey(ushort virtualKey)
+    {
+        if (virtualKey is < 124 or > 135)
+        {
+            throw new ArgumentOutOfRangeException(nameof(virtualKey));
+        }
+
+        _virtualKey = virtualKey;
+    }
+
+    /// <inheritdoc/>
     public void Pulse()
     {
-        var inputs = new INPUT[2];
-        inputs[0] = new INPUT { type = INPUT_KEYBOARD, U = new InputUnion { ki = new KEYBDINPUT { wVk = _vk, dwFlags = 0 } } };
-        inputs[1] = new INPUT { type = INPUT_KEYBOARD, U = new InputUnion { ki = new KEYBDINPUT { wVk = _vk, dwFlags = KEYEVENTF_KEYUP } } };
-        SendInput((uint)inputs.Length, inputs, INPUT.Size);
+        INPUT[] inputs =
+        [
+            new() { type = INPUT_KEYBOARD, U = new InputUnion { ki = new KEYBDINPUT { wVk = _virtualKey } } },
+            new() { type = INPUT_KEYBOARD, U = new InputUnion { ki = new KEYBDINPUT { wVk = _virtualKey, dwFlags = KEYEVENTF_KEYUP } } }
+        ];
+        NativeInputWriter.Send(inputs);
     }
 }

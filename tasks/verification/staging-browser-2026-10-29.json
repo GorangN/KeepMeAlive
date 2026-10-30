@@ -1,0 +1,18 @@
+{
+  "target": "staging",
+  "projectId": "sweet-truth-01118709",
+  "checkedAtUtc": "2026-10-29T17:12:25.909Z",
+  "passed": true,
+  "browserCallbackReceived": true,
+  "callbackStateMatched": true,
+  "pkceExchangePassed": true,
+  "authenticatedApiPassed": true,
+  "refreshRevoked": true,
+  "nativeWpfVerified": false,
+  "actualSmtpVerified": false,
+  "browserCookieSignedOut": true,
+  "browserLogoutLimitation": "Managed RP-initiated logout is unavailable for this client. The supported consent-page Use another account action cleared the staging cookie, returned to the login form, and browser GET /get-session displayed null.",
+  "browserLogoutMethod": "consent-use-another-account",
+  "browserAccountSwitchVerified": true,
+  "browserAccountSwitchRecordedAtUtc": "2026-10-29T17:24:13.3281317+00:00"
+}

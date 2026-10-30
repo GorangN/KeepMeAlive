@@ -1,4 +1,4 @@
-# Codex Rules for EasyBluetoothAudio
+# Codex Rules for KeepMeAlive
 
 ## Workflow Orchestration
 
@@ -121,3 +121,16 @@ Strict Clean Architecture layers. Circular dependencies are strictly forbidden.
 - **DataBindings**: UI communicates with application logic exclusively via DataBindings. GUI controls handle visual states only.
 - **Commands**: User actions (Buttons, Menus, Toolbars) must trigger `ICommand` / `RelayCommand` in the ViewModel.
 - **Code-Behind**: `.xaml.cs` files must remain completely empty except for `InitializeComponent()`. **No business logic in code-behind.**
+
+
+## Project skills and precedence
+- Read `.agents/skills/karpathy-guidelines/SKILL.md` for implementation and review. Surgical changes take priority over unrelated adjacent-code cleanup.
+- Read `DESIGN.md`, `.agents/skills/design-taste-frontend/SKILL.md` and its app-screen reference for interface work.
+- Read `.agents/skills/antislop/SKILL.md` and the UI, human, copywriting and code skills relevant to the work. Apply during implementation for this approved production-readiness task.
+- ECC is installed as the native `ecc@ecc` Codex plugin. Apply dotnet-patterns, csharp-testing, security-review and verification-loop.
+- The user's explicit no-questions instruction overrides optional skill questionnaires. Record reasonable assumptions; never invent credentials or claim unverified production readiness.
+
+## Icons
+- Use only official [Tabler Icons](https://github.com/tabler/tabler-icons) outline assets for application icons, including navigation, window controls, control affordances, notifications, tray/executable and installer artwork.
+- Reuse the pinned sources and native vector resources under `KeepMeAlive/Resources/Icons`; keep their MIT notice in distribution packages. Regenerate derived assets with `scripts/Generate-TablerIcons.ps1`.
+- Do not introduce emoji, Segoe/MDL2 symbol glyphs, another icon library, or hand-drawn icon paths. Preserve accessible text labels and command bindings; decorative icons must not become separate focus targets.

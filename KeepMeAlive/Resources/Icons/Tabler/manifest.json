@@ -1,0 +1,89 @@
+{
+  "repository": "https://github.com/tabler/tabler-icons",
+  "commit": "ed177a085b652fe04ec4f37ced867c94621e7840",
+  "variant": "outline",
+  "viewBox": "0 0 24 24",
+  "strokeWidth": 2,
+  "license": "MIT",
+  "icons": [
+    {
+      "key": "Tabler.Activity",
+      "file": "activity.svg",
+      "sha256": "2279e7a64688d1e730e42a7b277792350fbfade1fd3b992ad3971737e88ccde8"
+    },
+    {
+      "key": "Tabler.LayoutDashboard",
+      "file": "layout-dashboard.svg",
+      "sha256": "8210661405d0e6b7b5ea671a136c59e3e8fcc5e708a9fa332601bbf4a3d2b91a"
+    },
+    {
+      "key": "Tabler.CalendarTime",
+      "file": "calendar-time.svg",
+      "sha256": "4d9b70807803de811d97a8988e46618e6faea354aca30795dcb95c5ce515040f"
+    },
+    {
+      "key": "Tabler.Calendar",
+      "file": "calendar.svg",
+      "sha256": "4861f170e9b1fa72eaa7cdefc3c7ca64ca6a10b9c2e3a13e1aceb4725f266d8d"
+    },
+    {
+      "key": "Tabler.AdjustmentsHorizontal",
+      "file": "adjustments-horizontal.svg",
+      "sha256": "51c876babc598cf69ad1146f0fb621919a975758df0cc7abf45052006358a353"
+    },
+    {
+      "key": "Tabler.UserCircle",
+      "file": "user-circle.svg",
+      "sha256": "e3c4ab455255b68a305cd8a9e805e710d95775c27a15936338d0ee472b992be1"
+    },
+    {
+      "key": "Tabler.AlertTriangle",
+      "file": "alert-triangle.svg",
+      "sha256": "25b1f0c39f34647017df84a0cdc9e691c697737094a5956c360ab448a7fd5bef"
+    },
+    {
+      "key": "Tabler.Minus",
+      "file": "minus.svg",
+      "sha256": "a6556d9c556316b946c28af277be016b4d56ad8618dc2a731ce455100438c0ea"
+    },
+    {
+      "key": "Tabler.Square",
+      "file": "square.svg",
+      "sha256": "03f16281a365e8e68f5d084342c9f7b0c04b02f0ddf79668adb3247f83f662d4"
+    },
+    {
+      "key": "Tabler.X",
+      "file": "x.svg",
+      "sha256": "9350785360414c39450c3505f17d1745e55a7534edace8548e30cf49e3727d43"
+    },
+    {
+      "key": "Tabler.ChevronDown",
+      "file": "chevron-down.svg",
+      "sha256": "5a2e5c2a155ce06264a3f7299073ed636142dfd0b324b747387d9cfbf9fb5e3e"
+    },
+    {
+      "key": "Tabler.ChevronLeft",
+      "file": "chevron-left.svg",
+      "sha256": "889174801ca4213379fe4e6a574546793a72ab22be35bc2f177e3d8d24576dbd"
+    },
+    {
+      "key": "Tabler.ChevronRight",
+      "file": "chevron-right.svg",
+      "sha256": "83733bb6e03e1d20fd2674d06a493642c8ea6eef76c44ebb2239b9ef17dedff7"
+    },
+    {
+      "key": "Tabler.Check",
+      "file": "check.svg",
+      "sha256": "e206067a7d570997b5b3a7d30ab287c0b15a492787649a8b96dff8fad2862fbe"
+    }
+  ],
+  "licenseFile": "LICENSE.txt",
+  "licenseSha256": "b740a1d46122672da62833e97f7e7c8a13fa85cbc7445b584b297cc00dde93db",
+  "derivedResources": [
+    {
+      "key": "ComboBoxDownArrowGeometry",
+      "source": "Tabler.ChevronDown",
+      "method": "WPF widened path with 2-unit round-cap, round-join pen"
+    }
+  ]
+}
