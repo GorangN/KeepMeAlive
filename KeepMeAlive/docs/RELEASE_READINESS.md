@@ -122,14 +122,25 @@ The retry also completed cleanup: native Sign out displayed Signed out and remov
 
 ## CI enforcement
 
-Push and pull-request workflows build, test, audit dependencies, and produce validation packages. They do not publish a public release.
+Push and pull-request workflows build, test, audit dependencies, and produce unsigned **KeepMeAlive-validation** packages. These jobs receive no signing secrets and do not publish a public release.
 
-A manual production validation run additionally requires:
+A separate production job runs only for a manual `production=true` dispatch on `main`, after backend and desktop validation pass. It references the GitHub `production` environment, which is restricted to the `main` branch. It requires:
 
 - `KEEP_ME_ALIVE_DEV_API_URL` repository variable pointing to the tested development API.
-- `KEEP_ME_ALIVE_SMTP_VERIFIED=true` and `KEEP_ME_ALIVE_OAUTH_VERIFIED=true`, set only after the acceptance evidence above is recorded.
-- `WINDOWS_SIGNING_CERT_BASE64` and `WINDOWS_SIGNING_CERT_PASSWORD` repository secrets for the intended publicly trusted certificate.
+- `KEEP_ME_ALIVE_SMTP_VERIFIED=true` and `KEEP_ME_ALIVE_OAUTH_VERIFIED=true` production environment variables, set only after the acceptance evidence above is recorded.
+- `WINDOWS_SIGNING_CERT_BASE64` and `WINDOWS_SIGNING_CERT_PASSWORD` production environment secrets for a policy-permitted exportable trusted certificate/key.
+- `WINDOWS_SIGNING_PUBLISHER` production environment variable matching the complete public certificate Subject exactly.
 
-Missing production gates fail the production packaging run. The SMTP/OAuth variables record completed operational acceptance; they do not perform email delivery or substitute for the staging tests.
+Missing production inputs fail before production restore/package work. The SMTP/OAuth variables record completed operational acceptance; they do not perform email delivery or substitute for the staging tests. The production artifact is **KeepMeAlive-production**. Signature checks cover both the final installer and the executable extracted from the portable ZIP, requiring trusted embedded signatures, the expected publisher and timestamps. Checksums must cover every distribution asset and match the final bytes.
 
 Production packaging additionally requires recorded backend acceptance and a nonempty shipped public client ID that exactly matches the production client, issuer, API, and audience. `scripts/Test-ProductionGates.ps1` checks that absent acceptance, an empty client, and each environment mismatch fail before packaging; CI runs these checks.
+
+## Production sender/signing setup follow-up (2026-11-02)
+
+Resend was rechecked through the authorized Brave session and still showed **No domains yet**. The Add domain form requires an owned name; its advanced defaults were Ireland (`eu-west-1`) and return-path label `send`. No domain or DNS records were created because an owned name and DNS authorization are unavailable. The existing staging SMTP key and successful mail/native acceptance remain intact. Production should use a dedicated transactional subdomain, the exact provider-generated DNS records and disabled open/click tracking, preserving existing root-mail routing.
+
+The bounded signing audit found only the unrelated self-signed current-user certificate, no machine-store signing certificate and no configured GitHub signing credentials. Windows SDK SignTool is available. No key was exported and no signing service was enrolled or purchased. Signing identity validation and authorized trusted-key access remain external prerequisites; the local self-signed certificate cannot substitute for them. Microsoft Artifact Signing's current Public Trust eligibility includes EU organizations but limits individual applicants to the USA/Canada; do not infer eligibility from the user's time zone. See `PRODUCTION_INPUTS.md` for the exact identity and provider inputs.
+
+Configured GitHub's `production` environment with exactly one allowed deployment rule: `main`, type `branch`. Set the public development API variable after a live readiness/anonymous-denial smoke check. No signing secrets, publisher value or production SMTP/OAuth acceptance flags were invented. Production Function lookup returned HTTP 404/not visible; no production backend was deployed or client activated.
+
+Prepared consistent application/file/assembly/informational version metadata for 1.1.0; `v1.1.0` was unused at verification and no tag or release was created. A fresh Release build has zero warnings/errors and all 107 desktop tests pass. Signing hardening passed 18 production-preflight cases, 21 signature/archive/checksum cases, PowerShell parsing and workflow linting. The real Windows validator accepted a trusted, timestamped SDK reference and rejected the unsigned KeepMeAlive artifacts. These tests validate enforcement, not possession of a signing credential or a signed production build. Evidence is `tasks/verification/production-setup-2026-11-02.json`.

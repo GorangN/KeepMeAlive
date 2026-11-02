@@ -201,3 +201,20 @@ The user explicitly authorized this retry, native verification, test-app cleanup
 - Native Sign out displayed Signed out and removed both primary/backup session files. A cleanup-only authorization exposed Use another account, which signed out the retained browser SSO session; its issuer session page displayed `null`. Cancel sign-in returned Signed out, Quit exited the app and both owned authorization tabs were closed.
 - At 2026-11-02 19:08:49 UTC, final checks found zero isolated test processes, saved session files or callback listeners and confirmed the specifically authorized temporary verification file absent. No protected credential was decrypted, and no production/SMTP configuration was changed. The earlier cleanup rejection is resolved by this authorized retry.
 - This is evidence/documentation work only; existing application/backend code and previously passing tests are unchanged. Verified-domain production email, trusted signing, full reset-form UI interaction and the other open Windows/database gates retain their existing status.
+
+# Production sender and Windows signing setup (2026-11-02)
+
+- [x] Recheck Resend and available DNS access; preserve working staging email. Owned domain name and DNS authorization remain unavailable, so registration/verification is pending.
+- [x] Audit current signing certificates, runner credentials and existing cloud access without exporting keys or exposing secrets. Trusted publisher enrollment/key access remain unavailable.
+- [x] Complete supported release configuration where available, verify the changes, and retain production gates for missing external inputs.
+- [x] Record the exact domain/DNS and publisher/signing inputs still needed in plain language.
+
+Assumptions: the existing account/API audience hostname is not evidence of domain ownership. Do not invent or purchase a domain, signing identity or service subscription. Prefer available provider access and prepare concrete release configuration before describing any remaining hand-off.
+
+## Production setup review
+
+- Resend still has no domains; the blank setup form defaults to Ireland and requires an owned name before generating verification records. Relevant DNS credential-presence checks and CLI/browser/tool discovery found no available authorization. No domain was guessed from the API audience, no DNS/mail routing was changed and no extra key/service purchase was made.
+- Created GitHub environment `production` restricted to exactly branch `main`; added the known development API variable after live smoke acceptance. The separate manual main-only production job receives signing secrets only in its protected environment steps; ordinary validation jobs remain unsigned. Both final installer and ZIP-contained executable require the expected publisher, trusted embedded signature and timestamp. Checksums reject omissions, duplicates and stale bytes.
+- Prepared version 1.1.0 across all four metadata fields after confirming the tag unused and the latest published release v1.0.1. No release/tag was created. The desktop solution builds with zero warnings/errors and all 107 tests pass. Eighteen production-gate and 21 signing/archive/checksum cases, real Windows signature acceptance/rejection, PowerShell parsing and workflow linting pass. Previous local packages remain unchanged.
+- Actual production email, actual application signing and backend promotion remain gated. The exact operator inputs are an owned domain plus DNS authorization, and legal publisher type/name/country plus a trusted issued certificate or enrolled service with authorized signing access. Do not send passwords, keys or identity documents through chat; use the provider and GitHub environment secret fields.
+- Redacted evidence is `tasks/verification/production-setup-2026-11-02.json`; publishing/setup docs match the production environment, expected-publisher input and separate production artifact.

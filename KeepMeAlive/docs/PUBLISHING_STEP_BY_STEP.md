@@ -1,6 +1,6 @@
 # Publishing KeepMeAlive, step by step
 
-Checked against this repository and vendor documentation on 2026-10-30.
+Updated against this repository and current provider guidance on 2026-11-02.
 
 Progress on 2026-11-02: Resend test SMTP and required verification links are configured in isolated staging. Real test, verification and reset emails reached the owner's mailbox; verification and the API password-reset/sign-in checks passed. After resetting Computer Use, the native Account screen showed Connected, the expected staging account and No subscription linked. Refresh succeeded without reopening the browser, and Sign out removed both protected session files. Browser sign-out was confirmed by an empty login form and a null issuer session; the temporary verification file was deleted. Complete browser reset-form interaction remains unverified. Resend has no verified domain yet, so public production sending is still blocked. The steps below still apply to production; do not treat the restricted test sender as production acceptance.
 
@@ -8,13 +8,15 @@ Pushing `main` saves the source code on GitHub. Publishing a release makes a dow
 
 **SMTP means the email delivery connection.** Neon uses it to send “verify your email” and “reset your password” messages. You can use an email service instead of running your own mail server. The missing input is an application-owned sender account, not your personal Gmail password or your Neon database password.
 
+**The missing inputs are your owned domain name and authorized DNS-provider access, plus the signing publisher's type (individual/organization), legal name, country and trusted signing access.** The SMTP host, port, username and staging inbox are already known. Once domain access exists, the setup can generate the exact DNS records and separate production sending key. Put private identity documents directly into the signing provider, and credentials directly into the provider/secret store or GitHub production environment. No key needs to be pasted into chat.
+
 ## 1. Set up an email sender
 
 One supported example is [Resend](https://resend.com/docs/send-with-smtp). Another provider is fine if it supports Neon's SMTP requirements.
 
-Create the provider account, add a domain you own in its **Domains** area, and verify it. Your domain is the address you control, such as `your-domain.tld`; the Neon database hostname is not your sender domain. Copy the provider's exact verification, SPF and DKIM records into the DNS settings at your domain host. Follow its applicable DMARC instructions too. Wait for verification to succeed. [Resend domain instructions](https://resend.com/docs/dashboard/domains/introduction)
+The connected Resend account currently has no domains. Once you supply an owned domain and authorized DNS access, add a transactional subdomain such as `notify.<owned-domain>` in **Domains**. Neither the API audience `keepmealive.app` nor `resend.dev` proves domain ownership. Copy Resend's generated DKIM, SPF and return-path records into the DNS provider, preserve existing root-mail MX records, and follow applicable DMARC instructions. Disable open and click tracking for authentication email, then confirm the saved settings and successful domain verification. [Resend domain instructions](https://resend.com/docs/dashboard/domains/manage-domains), [tracking settings](https://resend.com/docs/dashboard/domains/tracking)
 
-Create a **Sending access** key restricted to that verified domain and choose a From address on it. Use separate staging and production keys; replace the current staging test key after verifying the new sender. With Resend, the SMTP values are:
+Create a **Sending access** key restricted to that verified domain and choose a From address on it. Use separate staging and production keys; preserve the current staging key until a replacement passes delivery tests. With Resend, the already known SMTP values are:
 
 | Neon field | Value |
 | --- | --- |
@@ -45,7 +47,9 @@ Repeat the SMTP configuration and required verification policy for production pr
 
 Signing lets Windows identify the application's publisher. Provide a publicly trusted code-signing service or certificate for the intended KeepMeAlive publisher, and authorized access to its signing key on the build runner. A certificate file without access to its private key cannot sign.
 
-The current GitHub workflow imports a permitted PFX using secrets **`WINDOWS_SIGNING_CERT_BASE64`** and **`WINDOWS_SIGNING_CERT_PASSWORD`**. Many modern signing keys stay in hardware or a cloud service and cannot be exported. If your provider uses that model, supply its signing profile/account details and authorize the runner; the workflow needs the provider integration before release. Microsoft Artifact Signing is one managed signing option; its certificate management differs from importing a long-lived PFX. [Microsoft documentation](https://learn.microsoft.com/en-us/azure/artifact-signing/concept-certificate-management)
+The current production job imports a permitted PFX from the GitHub **production environment** secrets **`WINDOWS_SIGNING_CERT_BASE64`** and **`WINDOWS_SIGNING_CERT_PASSWORD`**. It also requires environment variable **`WINDOWS_SIGNING_PUBLISHER`**, containing the intended certificate's exact full Subject. It verifies the final installer's and portable executable's trusted signatures, publisher and timestamps.
+
+Many modern signing keys stay in hardware or a cloud service and cannot be exported. For that route, provide the selected service, enrolled legal publisher and scoped runner access; the workflow needs a verified provider integration before release. Check eligibility for your actual publisher type/country before enrolling. The detailed inputs and Microsoft eligibility limits are in [PRODUCTION_INPUTS.md](PRODUCTION_INPUTS.md).
 
 Do not reuse the unrelated local self-signed EasyBluetoothAudio certificate. Exact supported inputs and acceptance checks are in [PRODUCTION_INPUTS.md](PRODUCTION_INPUTS.md).
 
@@ -66,21 +70,22 @@ The technical deployment and recovery procedure is in [RELEASE.md](RELEASE.md). 
 
 ## 7. Prepare a new version and GitHub settings
 
-The latest public release checked on 2026-10-30 is [v1.0.1](https://github.com/GorangN/KeepMeAlive/releases/tag/v1.0.1). The project currently declares `1.0.0`. Choose a higher unused version, such as `1.1.0` if still available. In `KeepMeAlive/KeepMeAlive.csproj`, update **Version**, **AssemblyVersion**, **FileVersion** and **InformationalVersion** together (`1.1.0`, `1.1.0.0`, `1.1.0.0`, `1.1.0` respectively). Commit and push this before building the release.
+The latest public release checked on 2026-11-02 is [v1.0.1](https://github.com/GorangN/KeepMeAlive/releases/tag/v1.0.1). The project is prepared for `1.1.0`: **Version**, **AssemblyVersion**, **FileVersion** and **InformationalVersion** are `1.1.0`, `1.1.0.0`, `1.1.0.0` and `1.1.0`. No `v1.1.0` tag or release has been created. Recheck that the tag is unused before publishing. For a later version, update all four properties together before building.
 
-On GitHub, open **Settings → Secrets and variables → Actions**. Put signing credentials under **Secrets**, according to step 4. Under **Variables**, set these only after their checks pass:
+On GitHub, **Settings → Environments → production** is already restricted to `main`. Add the two signing **Environment secrets** and the publisher **Environment variable** from step 4 there. Normal validation jobs cannot access these signing secrets. Record these acceptance variables in that environment only after their checks pass:
 
 | Variable | Value |
 | --- | --- |
 | `KEEP_ME_ALIVE_SMTP_VERIFIED` | `true` after verified-domain production verification/reset delivery and link tests; the restricted staging test sender does not qualify. |
 | `KEEP_ME_ALIVE_OAUTH_VERIFIED` | `true` after account/native acceptance. |
-| `KEEP_ME_ALIVE_DEV_API_URL` | The tested development URL from `backend/neon.json`, currently `https://br-fancy-star-b98qz19k-keepmealive.compute.c-7.eu-central-1.aws.neon.tech/`. |
+
+The repository variable **`KEEP_ME_ALIVE_DEV_API_URL`** is already set under **Settings → Secrets and variables → Actions → Variables** to the development URL from `backend/neon.json`, following a successful live smoke test. That public URL is separate from the production environment's private signing credentials.
 
 ## 8. Build the production packages
 
-Open the repository's **Actions → Verify and package → Run workflow**. Choose `main`, enable **production**, and run it. Wait for both jobs to succeed. A failed gate must be resolved before publishing.
+Open the repository's **Actions → Verify and package → Run workflow**. Choose `main`, enable **production**, and run it. Wait for the backend and desktop validation jobs and then the separate production job to succeed. Production signing runs only for this manual request on `main`, using the `production` environment. A failed gate must be resolved before publishing.
 
-Download and extract the run's **KeepMeAlive-validation** artifact. It contains the installer, portable ZIP, checksums and dependency inventory, plus verification reports. Confirm the final signed packages work on the clean test machine and correspond to the commit shown by this successful run. Keep the previous release artifacts for rollback.
+Download and extract **KeepMeAlive-production** from the successful run. It contains the signed installer, portable ZIP, checksums and dependency inventory. **KeepMeAlive-validation** is the ordinary validation artifact, which is also produced by the earlier desktop job. Confirm the final signed production packages work on the clean test machine and correspond to the commit shown by the successful run. Keep the previous release artifacts for rollback. The workflow still does not publish a GitHub release.
 
 ## 9. Publish the downloads
 

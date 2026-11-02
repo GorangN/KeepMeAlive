@@ -3,7 +3,8 @@ param(
     [string]$Version,
     [string]$InnoCompiler,
     [switch]$SkipBuild,
-    [switch]$RequireProduction
+    [switch]$RequireProduction,
+    [switch]$ValidateOnly
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -36,6 +37,43 @@ if ($RequireProduction) {
         throw 'The shipped desktop configuration must match the verified production OAuth client, issuer, API and audience.'
     }
 }
+$signingCertificate = $null
+$signToolPath = $null
+if ($RequireProduction -or -not [string]::IsNullOrWhiteSpace($env:WINDOWS_SIGNING_CERT_THUMBPRINT)) {
+    if ([string]::IsNullOrWhiteSpace($env:WINDOWS_SIGNING_CERT_THUMBPRINT)) {
+        throw 'Production packages require WINDOWS_SIGNING_CERT_THUMBPRINT for a trusted signing certificate.'
+    }
+    if ([string]::IsNullOrWhiteSpace($env:WINDOWS_SIGNING_PUBLISHER)) {
+        throw 'Signing requires WINDOWS_SIGNING_PUBLISHER with the exact expected certificate subject.'
+    }
+    if ($env:WINDOWS_SIGNING_CERT_THUMBPRINT -notmatch '^[0-9A-Fa-f]{40}$') {
+        throw 'WINDOWS_SIGNING_CERT_THUMBPRINT must be a SHA-1 certificate thumbprint.'
+    }
+    $signingCertificate = Get-Item -LiteralPath ('Cert:\CurrentUser\My\' + $env:WINDOWS_SIGNING_CERT_THUMBPRINT)
+    if ($signingCertificate.Subject -eq $signingCertificate.Issuer -or -not $signingCertificate.HasPrivateKey -or
+        $signingCertificate.NotBefore -gt (Get-Date) -or $signingCertificate.NotAfter -lt (Get-Date) -or
+        $signingCertificate.EnhancedKeyUsageList.ObjectId -notcontains '1.3.6.1.5.5.7.3.3') {
+        throw 'The configured signing certificate must be current, non-self-issued, code-signing enabled and have its private key.'
+    }
+    if (-not [string]::Equals($signingCertificate.Subject, $env:WINDOWS_SIGNING_PUBLISHER, [StringComparison]::Ordinal)) {
+        throw 'The configured signing certificate does not match WINDOWS_SIGNING_PUBLISHER.'
+    }
+    $signTool = Get-Command signtool.exe -ErrorAction SilentlyContinue
+    if ($signTool) { $signToolPath = $signTool.Source }
+    else {
+        $sdkBin = Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\bin'
+        if (Test-Path -LiteralPath $sdkBin) {
+            $signToolPath = Get-ChildItem -LiteralPath $sdkBin -Filter signtool.exe -Recurse |
+                Where-Object FullName -Match '\\x64\\signtool.exe$' | Sort-Object FullName -Descending | Select-Object -First 1 -ExpandProperty FullName
+        }
+    }
+    if (-not $signToolPath) { throw 'Windows SDK signtool.exe was not found.' }
+}
+if ($ValidateOnly) {
+    if (-not $RequireProduction) { throw '-ValidateOnly requires -RequireProduction.' }
+    Write-Output 'Production account configuration and signing prerequisites passed validation.'
+    return
+}
 function Invoke-Checked([string]$Program, [string[]]$Arguments) {
     & $Program @Arguments
     if ($LASTEXITCODE -ne 0) { throw "$Program failed with exit code $LASTEXITCODE." }
@@ -54,23 +92,9 @@ function Assert-ArtifactPath([string]$Path) {
     }
 }
 function Sign-Artifact([string]$Path) {
-    if (-not $env:WINDOWS_SIGNING_CERT_THUMBPRINT) {
-        if ($RequireProduction) { throw 'Production packages require a trusted signing certificate.' }
-        return
-    }
-    $certificate = Get-Item -LiteralPath ('Cert:\CurrentUser\My\' + $env:WINDOWS_SIGNING_CERT_THUMBPRINT)
-    if ($certificate.Subject -eq $certificate.Issuer -or -not $certificate.HasPrivateKey -or $certificate.NotAfter -lt (Get-Date)) {
-        throw 'The configured certificate is self-issued, expired, or lacks its private key.'
-    }
-    $signTool = Get-Command signtool.exe -ErrorAction SilentlyContinue
-    if ($signTool) { $signToolPath = $signTool.Source }
-    else {
-        $signToolPath = Get-ChildItem -LiteralPath "${env:ProgramFiles(x86)}\Windows Kits\10\bin" -Filter signtool.exe -Recurse |
-            Where-Object FullName -Match '\\x64\\signtool.exe$' | Sort-Object FullName -Descending | Select-Object -First 1 -ExpandProperty FullName
-    }
-    if (-not $signToolPath) { throw 'Windows SDK signtool.exe was not found.' }
-    Invoke-Checked $signToolPath @('sign','/sha1',$certificate.Thumbprint,'/s','My','/fd','SHA256','/tr','http://timestamp.digicert.com','/td','SHA256',$Path)
-    if ((Get-AuthenticodeSignature -LiteralPath $Path).Status -ne 'Valid') { throw "Signature validation failed: $Path" }
+    if (-not $signingCertificate) { return }
+    Invoke-Checked $signToolPath @('sign','/sha1',$signingCertificate.Thumbprint,'/s','My','/fd','SHA256','/tr','http://timestamp.digicert.com','/td','SHA256',$Path)
+    & (Join-Path $PSScriptRoot 'Assert-ArtifactSignature.ps1') -Path $Path -ExpectedPublisher $env:WINDOWS_SIGNING_PUBLISHER
 }
 Assert-ArtifactPath $publishDirectory
 Assert-ArtifactPath $packageDirectory

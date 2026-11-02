@@ -1,0 +1,126 @@
+{
+  "verifiedAtUtc": "2026-11-02T20:27:49Z",
+  "scope": "Production sender/signing preparation; public release remains gated",
+  "resend": {
+    "authorizedSessionRechecked": true,
+    "domainInventory": "No domains yet",
+    "ownedDomainNameProvided": false,
+    "dnsAuthorizationAvailable": false,
+    "addDomainForm": {
+      "nameEmpty": true,
+      "region": "eu-west-1",
+      "regionLabel": "Ireland",
+      "returnPath": "send"
+    },
+    "domainCreated": false,
+    "dnsRecordsChanged": false,
+    "existingStagingKeyPreserved": true,
+    "productionSendingKeyCreated": false,
+    "requiredOperatorInputs": [
+      "Owned domain name",
+      "Authorized DNS-provider session or scoped DNS access"
+    ],
+    "plannedTransactionalDefaults": [
+      "Dedicated sending subdomain",
+      "Exact provider-generated DKIM/SPF/return-path records",
+      "Open and click tracking disabled",
+      "Preserve root mailbox MX routing"
+    ]
+  },
+  "dnsAccessAudit": {
+    "knownCloudflareAwsCredentialPresence": false,
+    "existingDnsCliAvailable": false,
+    "relevantDnsProviderBrowserSessionFound": false,
+    "relevantConnectedManagementToolAvailable": false,
+    "credentialValuesRead": false
+  },
+  "signingAudit": {
+    "currentUserCodeSigningCertificateCount": 1,
+    "availableCertificateSelfSignedAndUnrelated": true,
+    "localMachineCodeSigningCertificateCount": 0,
+    "windowsSdkSignToolAvailable": true,
+    "azureCliAvailable": false,
+    "githubSigningCredentialsAvailable": false,
+    "privateKeysExported": false,
+    "certificatePurchased": false,
+    "providerEnrolled": false,
+    "actualKeepMeAliveSigningPerformed": false,
+    "requiredOperatorInputs": [
+      "Publisher type: individual or organization",
+      "Legal publisher name and country",
+      "Issued publicly trusted code-signing certificate or enrolled signing-service profile",
+      "Authorized signing-key/runner access"
+    ],
+    "eligibilityNote": "Microsoft Public Trust currently supports eligible EU organizations but individual applicants must be in USA or Canada; legal eligibility was not inferred"
+  },
+  "github": {
+    "repository": "GorangN/KeepMeAlive",
+    "productionEnvironmentCreated": true,
+    "deploymentBranchPolicies": [
+      {
+        "name": "main",
+        "type": "branch"
+      }
+    ],
+    "additionalReviewerOrWaitGateAdded": false,
+    "repositoryVariablesConfigured": [
+      "KEEP_ME_ALIVE_DEV_API_URL"
+    ],
+    "developmentApiSmokePassed": true,
+    "productionSigningSecretNamesRequired": [
+      "WINDOWS_SIGNING_CERT_BASE64",
+      "WINDOWS_SIGNING_CERT_PASSWORD"
+    ],
+    "productionEnvironmentVariableRequired": "WINDOWS_SIGNING_PUBLISHER",
+    "signingSecretsAvailableToValidationJobs": false,
+    "productionWorkflowCondition": "workflow_dispatch, production=true, refs/heads/main",
+    "validationArtifact": "KeepMeAlive-validation",
+    "productionArtifact": "KeepMeAlive-production",
+    "smtpAcceptanceFlagSet": false,
+    "oauthAcceptanceFlagSet": false
+  },
+  "releaseMetadata": {
+    "version": "1.1.0",
+    "assemblyVersion": "1.1.0.0",
+    "fileVersion": "1.1.0.0",
+    "informationalVersion": "1.1.0",
+    "latestPublishedTagChecked": "v1.0.1",
+    "proposedTagUnusedAtCheck": true,
+    "tagCreated": false,
+    "releasePublished": false
+  },
+  "verification": {
+    "releaseBuildWarnings": 0,
+    "releaseBuildErrors": 0,
+    "desktopTestsPassed": 107,
+    "productionGateCasesPassed": 18,
+    "signingGateCasesPassed": 21,
+    "powershellParsingPassed": true,
+    "workflowLintPassed": true,
+    "realWindowsTrustedSdkSignatureAccepted": true,
+    "unsignedKeepMeAliveArtifactsRejected": true,
+    "existingUnsignedPackageValidationPassed": true,
+    "retainedLocalPackageHashesUnchanged": true,
+    "unconfiguredProductionPreflightRejected": true
+  },
+  "production": {
+    "accountReleaseReady": false,
+    "desktopPublicClientStillDisabled": true,
+    "functionLookup": "HTTP 404: function not visible on branch",
+    "backendDeploymentChanged": false,
+    "smtpChanged": false
+  },
+  "remainingGates": [
+    "Owned-domain DNS verification and actual production verification/reset email acceptance",
+    "Trusted publisher enrollment and authorized signing access; managed-provider integration if the selected key is nonexportable",
+    "Production backend deployment and acceptance before public client activation",
+    "Complete reset-form UI interaction and remaining Windows/fresh-user/200%-scale/accessibility/tray checks",
+    "Database recovery rehearsal"
+  ],
+  "sources": [
+    "https://resend.com/docs/dashboard/domains/introduction",
+    "https://learn.microsoft.com/en-us/azure/artifact-signing/quickstart",
+    "https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments",
+    "https://learn.microsoft.com/en-us/windows/win32/seccrypto/signtool"
+  ]
+}

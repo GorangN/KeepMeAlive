@@ -1,5 +1,7 @@
 # Release procedures
 
+Version `1.1.0` is prepared in all four explicit desktop version properties. The latest public release checked on 2026-11-02 remains `v1.0.1`; no `v1.1.0` tag or public release has been created. Production accounts and signing remain gated. The beginner publication path is in `PUBLISHING_STEP_BY_STEP.md`; exact missing inputs are in `PRODUCTION_INPUTS.md`.
+
 ## Validation build
 
 1. Restore locked dependencies and run the Release build, all desktop tests, backend type checks/tests, and dependency audits.
@@ -7,9 +9,9 @@
 3. Inspect `artifacts/packages`: complete self-contained portable ZIP, per-user installer, SHA-256 checksums, and dependency inventory.
 4. Run `scripts/Test-Package.ps1` and complete the native UI/fresh-user checks in `RELEASE_READINESS.md`.
 
-Native checks have already exercised all pages in light/dark appearance, calendar/dropdown controls, invalid scheduling and numeric input, accessible labels, Cancel/Discard, Tab/Space, minimum-size resizing, minimizing, secondary-instance restoration, close-to-tray behavior, and Quit during a running keep-awake session. Repeat these against the exact release binaries. Fresh-user installer/uninstaller testing, actual OS high-contrast and DPI switching, screen-reader coverage, and native tray-menu actions still require acceptance.
+Native checks have already exercised all pages in light/dark appearance, calendar/dropdown controls, invalid scheduling and numeric input, accessible labels, Cancel/Discard, Tab/Space, minimum-size resizing, minimizing, secondary-instance restoration, close-to-tray behavior, and Quit during a running keep-awake session. Actual Windows high contrast and 100%, 150% and 175% scaling were also exercised. Repeat these against the exact release binaries. Fresh-user installer/uninstaller testing, actual 200% scaling, spoken screen-reader coverage and native tray-menu actions still require acceptance.
 
-Calendar-only selection is also verified natively after enabling the schedule: attempted date typing leaves the value unchanged, Alt+Down opens the calendar, Return closes it, and Discard leaves the action disarmed. Verify maximize/restore against the monitor work area and taskbar before release; the focused window-bounds correction includes eight geometry regression cases, with native acceptance still required.
+Calendar-only selection is also verified natively after enabling the schedule: attempted date typing leaves the value unchanged, Alt+Down opens the calendar, Return closes it, and Discard leaves the action disarmed. The monitor-work-area maximize/restore correction passed eight geometry regression cases and native acceptance with the taskbar/footer visible. Repeat it against the release binaries.
 
 The portable ZIP sorts file names and normalizes entry timestamps for repeatable output from identical publish files. .NET builds use deterministic compilation and pinned dependency lockfiles. Authenticode timestamping necessarily changes signed bytes. Retain the exact verified artifacts and their checksums instead of rebuilding after acceptance.
 
@@ -19,17 +21,24 @@ When intentionally updating dependencies or the bundled runtime patch, regenerat
 
 ## Production validation and signing
 
-Complete every release-readiness gate. Import the intended certificate into the release runner's current-user certificate store and set `WINDOWS_SIGNING_CERT_THUMBPRINT`. The packaging script signs the main executable before creating the archive, signs the installer, and checks trusted Authenticode status. It rejects self-issued, expired, or private-key-less certificates.
+Complete every release-readiness gate. The repository's `production` GitHub environment exists and permits only `main`. The workflow's separate production job runs only on a manual `workflow_dispatch` with `production=true` on `main`, after backend and desktop validation. Ordinary validation jobs receive no signing secrets.
 
-Set `KEEP_ME_ALIVE_SMTP_VERIFIED=true` and `KEEP_ME_ALIVE_OAUTH_VERIFIED=true` only after recording real staging acceptance. Then run:
+For the current policy-permitted PFX route, set `WINDOWS_SIGNING_CERT_BASE64` and `WINDOWS_SIGNING_CERT_PASSWORD` as **production environment secrets** and `WINDOWS_SIGNING_PUBLISHER` as a **production environment variable**, matching the certificate's full Subject exactly. The production job imports the authorized certificate into CurrentUser My and selects its thumbprint. For local packaging, provide the authorized certificate/key in that store and set both `WINDOWS_SIGNING_CERT_THUMBPRINT` and `WINDOWS_SIGNING_PUBLISHER`.
+
+No trusted signing key is available yet. Do not reuse the unrelated self-signed certificate. Nonexportable token/HSM/cloud keys require a selected, eligible enrolled publisher and a verified runner integration rather than attempting to export a PFX. See `PRODUCTION_INPUTS.md` for the missing identity/access inputs and provider eligibility limits.
+
+Keep `KEEP_ME_ALIVE_SMTP_VERIFIED` and `KEEP_ME_ALIVE_OAUTH_VERIFIED` unset until real verified-domain production email and account/native acceptance are recorded. The restricted staging test sender does not qualify. The repository variable `KEEP_ME_ALIVE_DEV_API_URL` is already set after a successful live development smoke test. Once all acceptance is complete, set the SMTP/OAuth flags to `true` in the production environment. Local production validation and packaging use:
 
 ```powershell
+./scripts/Build-Packages.ps1 -RequireProduction -ValidateOnly
 ./scripts/Build-Packages.ps1 -RequireProduction
 ```
 
 The script also requires `accountReleaseReady: true` in `backend/neon.json` and checks that the active desktop configuration matches that file's production public client, API, issuer, and audience. Flags alone cannot release a package with disabled sign-in or development endpoints. `scripts/Test-ProductionGates.ps1` exercises these rejection paths without producing packages or changing real account configuration.
 
-CI imports configured PFX secrets into an ephemeral runner and removes imported signing material after the job. Never commit PFX files, passwords, management credentials, database URLs, or session tokens. The current workflow produces reviewable artifacts and does not create a GitHub release automatically.
+Signing checks reject missing publisher identity, a mismatched certificate Subject, self-issued/expired certificates and inaccessible keys. The package checks verify a trusted embedded Authenticode signature, exact publisher and timestamp on both the final installer and the executable extracted from the final portable ZIP, plus all required checksums. `scripts/Test-SigningGates.ps1` exercises rejection paths with isolated fixtures; those tests do not establish possession of a trusted certificate.
+
+CI removes imported signing material after the production job. Never commit PFX files, passwords, management credentials, database URLs, or session tokens. A successful production job uploads `KeepMeAlive-production`; ordinary desktop validation uploads `KeepMeAlive-validation`. Use the four verified production files for a manual GitHub release. The workflow does not create a release or tag automatically.
 
 ## Backend promotion
 
@@ -43,7 +52,7 @@ Before applying a production migration, record the production branch ID, current
 
 To reproduce, package a fresh clean portable publish directory, replacing only `neon.json` with `KeepMeAlive/neon.staging.json`. Include the portable marker, pinned runtimes and Tabler license; exclude Data, Secrets, bootstrap files, settings, logs and environment files. Keep the normal production package and repository's active configuration unchanged. `tasks/verification/native-packages-2026-10-30.json` records the validation archive's current checksums and checks.
 
-Actual Windows staging acceptance and screenshots are recorded in `tasks/verification/windows-neon-2026-10-29.json` and `tasks/verification/windows-checks-2026-10-30.json`. Browser callback, profile save, DPAPI session storage, explicit restart restoration, sign-out, account switching, cancellation and native service-outage/recovery passed. High-contrast control fixes and desktop/backend artifact rollback were verified natively. Custom SMTP receipt, trusted signing, database recovery and the remaining environment-specific Windows gates still require acceptance. Exact credential and signing-runner inputs are in `PRODUCTION_INPUTS.md`.
+Actual Windows staging acceptance and screenshots are recorded in `tasks/verification/windows-neon-2026-10-29.json` and `tasks/verification/windows-checks-2026-10-30.json`. Browser callback, profile save, DPAPI session storage, explicit restart restoration, sign-out, account switching, cancellation and native service-outage/recovery passed. High-contrast control fixes and desktop/backend artifact rollback were verified natively. The 2026-11-02 SMTP follow-up also verified actual test/verification/reset receipt, verification, API password reset and new-password sign-in, native Connected/Refresh and desktop/browser sign-out cleanup; safe evidence is in `tasks/verification/resend-smtp-2026-11-02.json`. Full browser reset-form interaction remains unverified. Verified-domain production email, trusted signing, database recovery and the remaining environment-specific Windows gates remain open. Exact credential and signing-runner inputs are in `PRODUCTION_INPUTS.md`.
 
 ## Rollback and recovery
 

@@ -49,11 +49,7 @@ jobs:
       DOTNET_CLI_TELEMETRY_OPTOUT: '1'
       DOTNET_NOLOGO: '1'
       DOTNET_CLI_UI_LANGUAGE: en
-      KEEP_ME_ALIVE_SMTP_VERIFIED: ${{ vars.KEEP_ME_ALIVE_SMTP_VERIFIED }}
-      KEEP_ME_ALIVE_OAUTH_VERIFIED: ${{ vars.KEEP_ME_ALIVE_OAUTH_VERIFIED }}
       KEEP_ME_ALIVE_DEV_API_URL: ${{ vars.KEEP_ME_ALIVE_DEV_API_URL }}
-      SIGNING_CERT_BASE64: ${{ secrets.WINDOWS_SIGNING_CERT_BASE64 }}
-      SIGNING_CERT_PASSWORD: ${{ secrets.WINDOWS_SIGNING_CERT_PASSWORD }}
     defaults:
       run:
         shell: pwsh
@@ -74,36 +70,15 @@ jobs:
         run: ./scripts/Audit-Dependencies.ps1
       - name: Verify production account packaging gates
         run: ./scripts/Test-ProductionGates.ps1
+      - name: Verify release signatures and portable archive gates
+        run: ./scripts/Test-SigningGates.ps1
       - name: Verify development backend
         if: env.KEEP_ME_ALIVE_DEV_API_URL != ''
         run: ./scripts/Test-Backend.ps1 -BaseUrl $env:KEEP_ME_ALIVE_DEV_API_URL
-      - name: Require a tested backend for production
-        if: inputs.production
-        run: |
-          if (-not $env:KEEP_ME_ALIVE_DEV_API_URL) { throw 'Production validation requires a development API smoke test.' }
-      - name: Import release-signing certificate when configured
-        if: env.SIGNING_CERT_BASE64 != '' && env.SIGNING_CERT_PASSWORD != ''
-        run: |
-          $certificatePath = Join-Path $env:RUNNER_TEMP 'keepmealive-release.pfx'
-          [IO.File]::WriteAllBytes($certificatePath, [Convert]::FromBase64String($env:SIGNING_CERT_BASE64))
-          try {
-            $password = ConvertTo-SecureString $env:SIGNING_CERT_PASSWORD -AsPlainText -Force
-            $certificate = Import-PfxCertificate -FilePath $certificatePath -CertStoreLocation Cert:\CurrentUser\My -Password $password
-            "WINDOWS_SIGNING_CERT_THUMBPRINT=$($certificate.Thumbprint)" | Out-File -FilePath $env:GITHUB_ENV -Append
-          }
-          finally { Remove-Item -LiteralPath $certificatePath -Force }
       - name: Build and verify complete distribution packages
-        env:
-          REQUIRE_PRODUCTION: ${{ inputs.production && 'true' || 'false' }}
         run: |
           $compiler = ./scripts/Install-InnoSetup.ps1
-          ./scripts/Build-Packages.ps1 -InnoCompiler $compiler -RequireProduction:($env:REQUIRE_PRODUCTION -eq 'true')
-      - name: Remove imported signing material
-        if: always()
-        run: |
-          if ($env:WINDOWS_SIGNING_CERT_THUMBPRINT) {
-            Remove-Item -LiteralPath ('Cert:\CurrentUser\My\' + $env:WINDOWS_SIGNING_CERT_THUMBPRINT) -Force
-          }
+          ./scripts/Build-Packages.ps1 -InnoCompiler $compiler
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
@@ -112,5 +87,82 @@ jobs:
             artifacts/packages/*
             artifacts/test-results/*
             artifacts/audit/*
+          if-no-files-found: error
+          retention-days: 14
+
+  production:
+    if: github.event_name == 'workflow_dispatch' && inputs.production && github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    needs: [backend, desktop]
+    environment: production
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+      DOTNET_CLI_UI_LANGUAGE: en
+      KEEP_ME_ALIVE_SMTP_VERIFIED: ${{ vars.KEEP_ME_ALIVE_SMTP_VERIFIED }}
+      KEEP_ME_ALIVE_OAUTH_VERIFIED: ${{ vars.KEEP_ME_ALIVE_OAUTH_VERIFIED }}
+      KEEP_ME_ALIVE_DEV_API_URL: ${{ vars.KEEP_ME_ALIVE_DEV_API_URL }}
+      WINDOWS_SIGNING_PUBLISHER: ${{ vars.WINDOWS_SIGNING_PUBLISHER }}
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Require production acceptance and authorized signing inputs
+        env:
+          SIGNING_CERT_BASE64: ${{ secrets.WINDOWS_SIGNING_CERT_BASE64 }}
+          SIGNING_CERT_PASSWORD: ${{ secrets.WINDOWS_SIGNING_CERT_PASSWORD }}
+        run: |
+          if ($env:KEEP_ME_ALIVE_SMTP_VERIFIED -ne 'true' -or $env:KEEP_ME_ALIVE_OAUTH_VERIFIED -ne 'true') {
+            throw 'Production requires verified email delivery and completed OAuth acceptance.'
+          }
+          if (-not $env:KEEP_ME_ALIVE_DEV_API_URL) { throw 'Production requires a tested development API URL.' }
+          if (-not $env:WINDOWS_SIGNING_PUBLISHER) { throw 'Production requires the expected public WINDOWS_SIGNING_PUBLISHER subject.' }
+          if (-not $env:SIGNING_CERT_BASE64 -or -not $env:SIGNING_CERT_PASSWORD) {
+            throw 'Production requires an authorized exportable PFX and its password in the production environment secrets.'
+          }
+      - name: Import authorized production-signing certificate
+        env:
+          SIGNING_CERT_BASE64: ${{ secrets.WINDOWS_SIGNING_CERT_BASE64 }}
+          SIGNING_CERT_PASSWORD: ${{ secrets.WINDOWS_SIGNING_CERT_PASSWORD }}
+        run: |
+          $certificatePath = Join-Path $env:RUNNER_TEMP 'keepmealive-release.pfx'
+          try {
+            [IO.File]::WriteAllBytes($certificatePath, [Convert]::FromBase64String($env:SIGNING_CERT_BASE64))
+            $password = ConvertTo-SecureString $env:SIGNING_CERT_PASSWORD -AsPlainText -Force
+            $imported = @(Import-PfxCertificate -FilePath $certificatePath -CertStoreLocation Cert:\CurrentUser\My -Password $password)
+            "WINDOWS_SIGNING_IMPORTED_THUMBPRINTS=$($imported.Thumbprint -join ';')" | Out-File -FilePath $env:GITHUB_ENV -Append
+            $certificates = @($imported | Where-Object { $_.HasPrivateKey -and $_.EnhancedKeyUsageList.ObjectId -contains '1.3.6.1.5.5.7.3.3' })
+            if ($certificates.Count -ne 1) { throw 'The PFX must contain exactly one code-signing certificate with its authorized private key.' }
+            "WINDOWS_SIGNING_CERT_THUMBPRINT=$($certificates[0].Thumbprint)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
+          finally {
+            if (Test-Path -LiteralPath $certificatePath) { Remove-Item -LiteralPath $certificatePath -Force }
+          }
+      - name: Validate production configuration and signer before building
+        run: ./scripts/Build-Packages.ps1 -RequireProduction -ValidateOnly
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          global-json-file: global.json
+      - name: Verify development backend
+        run: ./scripts/Test-Backend.ps1 -BaseUrl $env:KEEP_ME_ALIVE_DEV_API_URL
+      - name: Build signed production packages and verify final artifacts
+        run: |
+          $compiler = ./scripts/Install-InnoSetup.ps1
+          ./scripts/Build-Packages.ps1 -InnoCompiler $compiler -RequireProduction
+      - name: Remove imported production-signing material
+        if: always()
+        run: |
+          foreach ($thumbprint in ($env:WINDOWS_SIGNING_IMPORTED_THUMBPRINTS -split ';')) {
+            if ($thumbprint -and (Test-Path -LiteralPath ('Cert:\CurrentUser\My\' + $thumbprint))) {
+              Remove-Item -LiteralPath ('Cert:\CurrentUser\My\' + $thumbprint) -Force
+            }
+          }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: KeepMeAlive-production
+          path: artifacts/packages/*
           if-no-files-found: error
           retention-days: 14
