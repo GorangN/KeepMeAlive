@@ -168,9 +168,10 @@ The user explicitly requested a direct commit and push to main. This authorizes 
 
 - [x] Inspect the authorized Brave Resend session, verified domains and application sending access without extracting unrelated credentials.
 - [x] Configure sending-only Resend test SMTP in Neon staging; verify actual inbox delivery, required verification and password reset through the API.
-- [ ] Visually confirm native Connected after required verification and complete password-reset form acceptance; the callback wrote a protected session, but Computer Use ended before the screen could be observed.
+- [x] Visually confirm native Connected after required verification and a successful explicit Refresh; completed on the authorized Computer Use retry.
+- [ ] Complete password-reset browser-form acceptance; actual reset-email/link/API acceptance has passed separately.
 - [ ] Configure verified-domain production email and complete production acceptance; blocked by the absent owned domain/DNS configuration. Production remains untouched and gated.
-- [ ] Finish isolated app/browser/temp-link cleanup; automatic approval rejected process termination and temporary-file removal.
+- [x] Finish isolated app/browser/temp-link cleanup on the explicitly authorized retry; native sign-out/Quit, browser logout, file removal and absence checks passed.
 - [x] Resolve newly reported build-tool dependency advisories without a breaking runtime downgrade; verify the resulting bundle.
 - [x] Record redacted setup/acceptance evidence and exact remaining blockers; verify relevant code/configuration changes.
 - [x] Commit and push the reviewed follow-up to main; verify clean local/remote state and GitHub validation.
@@ -184,3 +185,19 @@ The user authorized completing setup through their logged-in Brave account witho
 - Production remains untouched and gated because Resend has no verified owned domain/DNS setup. Native Connected-screen confirmation stopped at the Computer Use URL-policy check; read-only metadata proves callback/code exchange and a new DPAPI-protected session, with no credential decryption and no remaining loopback listener. Automatic approval rejected isolated process termination and temporary-link removal with only **blocked by policy**; no equivalent cleanup bypass was attempted. The separate API test session was signed out and temporary API credential references were cleared.
 - Evidence is `tasks/verification/resend-smtp-2026-11-02.json`; it excludes personal recipient addresses, raw mail, keys, passwords, cookies and email tokens. Public production SMTP acceptance variables remain unset, no client was activated and no release/tag was published.
 - Pushed implementation `60c3026cfaf713abe435e725a097d4d25000e695` to `main`, verified local/remote equality and a clean source tree, and passed both jobs in [GitHub run 41376895125](https://github.com/GorangN/KeepMeAlive/actions/runs/41376895125), including installer/portable packaging. This follow-up documentation records that completed run; production-only SMTP/OAuth/live-backend/signing gates were not enabled.
+
+# Native Connected verification and cleanup retry (2026-11-02)
+
+- [x] Reset Computer Use after explicit user reauthorization and select the exact isolated test app from fresh inventory.
+- [x] Verify the actual Connected screen and current account refresh without reading protected credentials.
+- [x] Sign out the isolated desktop/browser test sessions and close the test app; verify credentials and callback listeners are gone.
+- [x] Remove the specifically authorized temporary verification file; record private visual evidence and update the readiness record.
+
+The user explicitly authorized this retry, native verification, test-app cleanup and removal of the temporary verification file without questions. Preserve unrelated apps, browser tabs, profile files and the Resend staging SMTP configuration.
+
+## Connected retry review
+
+- Reset Computer Use and raised the exact isolated app. Its live Account screen showed Connected, the expected owner test account, No subscription linked and the previous successful sync. Explicit Refresh succeeded without a browser and advanced the displayed sync to 20:06 Europe/Berlin on 2026-11-02. Private proof is `artifacts/smtp-native-validation-20261102/connected-verified.png`; no personal address or screenshot is committed.
+- Native Sign out displayed Signed out and removed both primary/backup session files. A cleanup-only authorization exposed Use another account, which signed out the retained browser SSO session; its issuer session page displayed `null`. Cancel sign-in returned Signed out, Quit exited the app and both owned authorization tabs were closed.
+- At 2026-11-02 19:08:49 UTC, final checks found zero isolated test processes, saved session files or callback listeners and confirmed the specifically authorized temporary verification file absent. No protected credential was decrypted, and no production/SMTP configuration was changed. The earlier cleanup rejection is resolved by this authorized retry.
+- This is evidence/documentation work only; existing application/backend code and previously passing tests are unchanged. Verified-domain production email, trusted signing, full reset-form UI interaction and the other open Windows/database gates retain their existing status.

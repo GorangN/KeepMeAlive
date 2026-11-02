@@ -6,6 +6,7 @@
 
 - After UI restyling work, re-check dashboard CTAs for responsive layout regressions. Avoid absolute margins or `Grid.ColumnSpan` hacks for primary action columns when the original grid alignment can express the layout.
 - After the user explicitly reauthorizes Computer Use following an accidental Escape, reset the node_repl kernel before retrying; the stopped helper state can persist across requests. Re-select the application from fresh returned windows.
+- A newly selected native window can initially return stale accessibility text. Raise the exact window and obtain a fresh screenshot before concluding that asynchronous account work is still pending. Prefer browser-tab controls for browser pages; avoid binding the whole browser window during account cleanup.
 - After a browser interruption, use a fresh desktop authorization request when the signed OAuth context has expired. Reset Computer Use only after user reauthorization, and verify the app's Connected screen before claiming native sign-in success.
 - For WPF template validation, enable the control before checking read-only and editing behavior. A disabled control can satisfy an offscreen assertion while the enabled native control still accepts text; verify the actual keyboard path as well.
 - When the user selects an icon library, audit explicit glyphs, implicit control affordances, tray/executable icons and installer artwork. Pin the source and license, and use shared theme-aware vectors throughout; do not mix font symbols or stock pictograms into the application.
