@@ -13,6 +13,11 @@
     "tsx": "4.23.15",
     "typescript": "5.9.3"
   },
+  "overrides": {
+    "@vercel/nft": {
+      "glob": "14.0.3"
+    }
+  },
   "name": "keepmealive-backend",
   "version": "1.0.0",
   "private": true,

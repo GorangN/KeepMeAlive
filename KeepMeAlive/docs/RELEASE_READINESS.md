@@ -4,8 +4,10 @@ This file records prerequisites that cannot be replaced by a successful compile 
 
 ## Account service
 
-- [ ] Application-owned SMTP is configured in Neon Auth.
-- [ ] Real verification and password-reset messages are received through that SMTP provider.
+- [ ] Application-owned production SMTP with a verified owned sender domain is configured in Neon Auth.
+- [ ] Real production verification and password-reset messages and links pass acceptance through that sender.
+- [x] Isolated staging Resend test SMTP delivers actual verification/reset emails to the account owner; verification, API password reset and new-password sign-in are verified (2026-11-02).
+- [ ] Visually confirm the native Connected screen after required email verification; the callback wrote a protected session, but Computer Use stopped before the screen could be observed.
 - [x] Production and isolated staging OAuth Providers/public desktop clients are configured with exact loopback redirects, consent enabled, and S256 PKCE advertised.
 - [x] Hosted login and consent pages complete sign-in in a supported system browser, with the exact loopback callback and S256 exchange verified against staging.
 - [x] Staging protocol acceptance verifies callback state, token refresh rotation, logout, two-user isolation, and invalid/expired/wrong-issuer/wrong-audience rejection.
@@ -105,6 +107,18 @@ The rebuilt package passed native date verification: the date child no longer ex
 Native maximizing revealed footer clipping where the maximized window extended beneath the taskbar. The monitor-work-area correction passed eight geometry regression cases and fresh native verification: maximize used 1920 x 1032 with the footer fully visible, restore returned to 1020 x 680, and Alt+Q exited the final process cleanly.
 
 Fresh-user installation/uninstall, actual OS high contrast and DPI switching, comprehensive screen-reader/focus testing, and the tray-menu interactions remain pending. Offscreen rendering and targeted keyboard checks are recorded above with their narrower scope.
+
+## Resend staging acceptance (2026-11-02)
+
+Resend's authorized Brave account had no domains or sending keys. A sending-only key named **KeepMeAlive staging SMTP** is now stored in isolated staging's managed SMTP configuration. It uses `smtp.resend.com:465`, username `resend` and test sender `onboarding@resend.dev`. The key was transferred privately through the provider's copy control, retained only in Neon's server-side email configuration and cleared from the clipboard and temporary credential variable. An unused key from a masked-field capture retry was revoked before the final key was created.
+
+Neon's send test succeeded and the actual message arrived in the owner's connected inbox. Required verification links are enabled. Real registration produced a verification email; sign-in before verification returned **Email not verified**. Opening the received link returned to the exact native OAuth continuation, reached consent and set the staging account's verified flag. A real reset email also arrived; its link redirected only to the staging reset page, the API accepted a fresh generated password, sign-in returned the verified account, and the separate API test session was signed out. No personal mailbox address, password, email token, session cookie or SMTP key is included in committed evidence.
+
+Staging deployment 5 contains the hosted-page fixes for preserving sign-in verification callbacks and handling invalid/expired links safely. Service health and anonymous account rejection still pass. The native app was launched from a separate portable directory with startup, scheduling and automatic synchronization disabled; it reached browser consent after verification. Read-only file metadata then confirmed a newly written DPAPI session at 2026-11-02 02:02:46 UTC, proving the callback and authorization-code exchange completed. Its credentials were not decrypted, and the loopback listener is closed. Computer Use stopped before the Connected screen could be observed because it could not reliably determine the current Brave URL. This turn therefore does not complete that visual check or the full password-reset browser interaction.
+
+Resend has no verified owned sender domain. Its test sender can deliver only to the exact Resend account owner's inbox, so production email remains gated and production configuration was left untouched. A provider-verified domain and DNS access, a restricted production sender/key, production acceptance, trusted signing and the other open Windows/database checks remain necessary. The presence of staging SMTP must not set the production acceptance variables.
+
+The isolated test app may remain open and its browser session was not confirmed signed out. Automatic approval review rejected stopping that process and deleting `%TEMP%\keepmealive-verification-20261102.json`, stating only **blocked by policy**. The temporary file contains the already-used verification link and is outside Git/distribution outputs; it remains a cleanup item. The reset flow wrote no token/password file. See `tasks/verification/resend-smtp-2026-11-02.json` for redacted evidence.
 
 ## CI enforcement
 

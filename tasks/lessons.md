@@ -1,5 +1,7 @@
 # Lessons Learned
 
+- One-time secret dialogs may expose a literal masked placeholder through DOM reads. Use the provider's copy control, validate the captured credential privately before closing the dialog, transfer it only to its authorized service, and clear the clipboard and temporary memory. Revoke an unused key created during a failed capture.
+
 - Explain unfamiliar release terms before listing technical fields. SMTP is the email-delivery service for verification and reset emails; give a beginner a numbered setup path and distinguish source pushes, validation builds and public releases.
 
 - After UI restyling work, re-check dashboard CTAs for responsive layout regressions. Avoid absolute margins or `Grid.ColumnSpan` hacks for primary action columns when the original grid alignment can express the layout.

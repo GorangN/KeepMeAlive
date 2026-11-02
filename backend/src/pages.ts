@@ -60,14 +60,16 @@ if(path==='/consent'){
   switchButton.onclick=async()=>{if(pending){return;}setPending(true);say('Signing out…');try{await call('/sign-out',{});location.assign(continuation('/login'));}catch(error){say(error.message);}finally{setPending(false);}};
 }else{
   const form=document.getElementById('auth'),button=document.getElementById('submit'),email=document.getElementById('email'),password=document.getElementById('password');
-  if(path==='/reset-password'&&params.has('token')){document.getElementById('email-label').hidden=true;email.required=false;document.getElementById('password-label').hidden=false;password.required=true;password.autocomplete='new-password';}
+  const callbackError=params.has('error'),resetToken=callbackError?null:params.get('token');
+  if(callbackError&&['/login','/verify-email'].includes(path)){say('This email verification link is invalid or has expired. Select Verify email to request a new link.');}
+  if(path==='/reset-password'){document.getElementById('email-label').hidden=Boolean(resetToken);email.required=!resetToken;document.getElementById('password-label').hidden=!resetToken;password.required=Boolean(resetToken);password.autocomplete='new-password';if(callbackError){say('This password reset link is invalid or has expired. Enter your email to request a new link.');}}
   form.onsubmit=async(event)=>{event.preventDefault();button.disabled=true;say('Working…');try{
-    if(path==='/login'){const data=await call('/sign-in/email',{email:email.value,password:password.value,...(query?{oauth_query:query}:{})});if(!go(data)&&query){go(await call('/oauth2/continue',{selected:true,oauth_query:query}));}else if(!data.url){say('Signed in. You can return to KeepMeAlive.');}}
+    if(path==='/login'){const data=await call('/sign-in/email',{email:email.value,password:password.value,callbackURL:continuation('/login'),...(query?{oauth_query:query}:{})});if(!go(data)&&query){go(await call('/oauth2/continue',{selected:true,oauth_query:query}));}else if(!data.url){say('Signed in. You can return to KeepMeAlive.');}}
     if(path==='/register'){await call('/sign-up/email',{name:document.getElementById('name').value.trim(),email:email.value,password:password.value,callbackURL:continuation('/login')});password.value='';say('Account created. Check your email for verification, then sign in.');}
     if(path==='/verify-email'){await call('/send-verification-email',{email:email.value,callbackURL:continuation('/login')});say('If this account needs verification, an email has been sent.');}
-    if(path==='/reset-password'){if(params.has('token')){await call('/reset-password',{token:params.get('token'),newPassword:password.value});password.value='';say('Password changed. You can sign in.');}else{await call('/request-password-reset',{email:email.value,redirectTo:continuation('/reset-password')});say('If an account exists, a password reset email has been sent.');}}
+    if(path==='/reset-password'){if(resetToken){await call('/reset-password',{token:resetToken,newPassword:password.value});password.value='';say('Password changed. You can sign in.');}else{await call('/request-password-reset',{email:email.value,redirectTo:continuation('/reset-password')});say('If an account exists, a password reset email has been sent.');}}
   }catch(error){say(error.message);}finally{button.disabled=false;}};
-  if(path==='/login'&&query){call('/get-session').then(async(data)=>{if(data?.session){go(await call('/oauth2/continue',{selected:true,oauth_query:query}));}}).catch(()=>{});}
+  if(path==='/login'&&query&&!callbackError){call('/get-session').then(async(data)=>{if(data?.session){go(await call('/oauth2/continue',{selected:true,oauth_query:query}));}}).catch(()=>{});}
 }
 </script></html>`;
   return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer', 'Content-Security-Policy': `default-src 'none'; script-src 'nonce-${nonce}'; style-src 'nonce-${nonce}'; connect-src ${new URL(issuer).origin}; base-uri 'none'; frame-ancestors 'none'; form-action 'none'` } });

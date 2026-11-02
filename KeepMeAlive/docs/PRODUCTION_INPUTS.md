@@ -1,10 +1,12 @@
 # Production credentials and signing inputs
 
-Checked 2026-10-30 against the setup scripts, release workflow and current vendor documentation. These inputs are still unavailable. Supply secrets through the provider Console, an approved secret manager, protected process environment or GitHub Actions secrets; do not paste them into chat, commit them, or include them in desktop packages.
+Updated 2026-11-02. Resend test SMTP is configured in isolated staging, and actual SMTP-test, verification and reset messages reached the account owner's connected mailbox. The verification link worked; the reset link, password change and new-password sign-in passed through the staging API. The native app completed its callback/code exchange and wrote a DPAPI-protected session, but the final Connected screen remains unverified after Computer Use stopped. Production still needs a verified owned sender domain, a production-scoped sending key, final acceptance and trusted signing. Supply secrets through the provider Console, an approved secret manager, protected process environment or GitHub Actions secrets; do not paste them into chat, commit them, or include them in desktop packages.
 
 ## SMTP
 
-The application needs an application-owned transactional SMTP account. Neon's shared `auth@mail.myneon.app` sender remains suitable only for development; verification links require custom SMTP. [Neon production checklist](https://neon.com/docs/auth/production-checklist)
+Production needs an application-owned transactional sender. Resend currently has no verified domain. Staging uses a sending-only key stored in Neon's managed SMTP settings with `smtp.resend.com`, port `465`, username `resend`, and the test From address `onboarding@resend.dev`. That address can send only to the exact Resend account owner's email; it is not a public production sender. No production email configuration was changed. [Resend test-domain restriction](https://resend.com/docs/knowledge-base/403-error-resend-dev-domain)
+
+Neon's shared `auth@mail.myneon.app` sender remains suitable only for development; verification links require custom SMTP. [Neon production checklist](https://neon.com/docs/auth/production-checklist)
 
 | Required input | Script environment name | Value to provide |
 | --- | --- | --- |

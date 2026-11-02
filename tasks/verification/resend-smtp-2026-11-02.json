@@ -1,0 +1,107 @@
+{
+  "verifiedAtUtc": "2026-11-02T02:08:27Z",
+  "target": "isolated staging only",
+  "projectId": "sweet-truth-01118709",
+  "branchId": "br-red-flower-b9wmbkmb",
+  "smtp": {
+    "provider": "Resend",
+    "host": "smtp.resend.com",
+    "port": 465,
+    "username": "resend",
+    "sender": "onboarding@resend.dev",
+    "senderName": "KeepMeAlive Staging",
+    "keyName": "KeepMeAlive staging SMTP",
+    "keyPermission": "sending_access",
+    "keyDomainScope": "All domains; no domains are verified",
+    "keyStoredIn": "Neon managed SMTP configuration only",
+    "keyNotPrintedOrCommitted": true,
+    "clipboardCleared": true,
+    "unusedCaptureRetryKeyRevoked": true,
+    "productionSender": false,
+    "recipient": "Exact Resend account owner; matches connected mailbox; address omitted"
+  },
+  "acceptance": {
+    "neonSendTestAccepted": true,
+    "testEmailActuallyReceived": true,
+    "verificationEmailActuallyReceived": true,
+    "requiredVerificationLinksEnabled": true,
+    "unverifiedSignInRejected": true,
+    "receivedVerificationLinkOpened": true,
+    "verifiedFlagConfirmedByReadOnlyDatabaseQuery": true,
+    "signedNativeOAuthContinuationReachedConsent": true,
+    "resetEmailActuallyReceived": true,
+    "resetLinkHttpStatus": 302,
+    "resetCallbackMatchedStaging": true,
+    "passwordResetViaApi": true,
+    "newPasswordSignInReturnedVerifiedUser": true,
+    "apiTestSessionSignedOut": true,
+    "stagingHealthPassed": true,
+    "anonymousAccountRequestRejected": true
+  },
+  "deployment": {
+    "id": 5,
+    "status": "completed",
+    "bundleSha256": "e9647311410b136f9648c6318cf774e674765765ce03e2cdd47ac91f169554d0",
+    "environmentInherited": true,
+    "fixes": [
+      "Preserve native OAuth continuation in automatic sign-in verification email",
+      "Fixed recovery messages for invalid or expired verification/reset links; no untrusted token use"
+    ]
+  },
+  "buildToolValidation": {
+    "backendTestsPassed": 32,
+    "strictTypeScriptPassed": true,
+    "cleanInstallPassed": true,
+    "npmVulnerabilities": 0,
+    "scopedOverride": "@vercel/nft -> glob 14.0.3 -> minimatch 11.0.3",
+    "dynamicAssetTracingPassed": true,
+    "rebuiltBundleSha256": "225ba2169c4b5912e90f7d23e60150b7153d80128cce6df3d247b66ca5b07cc7",
+    "uncompressedEntryMatchesDeployment5": true,
+    "repeatDeploymentNeeded": false
+  },
+  "native": {
+    "appDirectory": "artifacts/smtp-native-validation-20261102",
+    "systemBrowserOpenedByActualWindowsApp": true,
+    "verifiedEmailFlowReachedConsent": true,
+    "nativeCallbackAndCodeExchangeCompleted": true,
+    "nativeConnectedScreenVisuallyVerified": false,
+    "resetFormBrowserCompletionVerified": false,
+    "computerUseStoppedReason": "Could not determine current browser URL on Windows confidently enough to enforce policy",
+    "testProcessStillRunningAtLastCheck": true,
+    "browserSessionSignedOutConfirmed": false,
+    "desktopSessionFilesObserved": true,
+    "dpapiSessionHeaderVerified": true,
+    "sessionCredentialDecrypted": false,
+    "sessionWrittenAtUtc": "2026-11-02T02:02:46.6049504Z",
+    "remainingLoopbackListeners": 0
+  },
+  "production": {
+    "changed": false,
+    "verifiedSenderDomainAvailable": false,
+    "publicAccountsActivated": false,
+    "accountReleaseReady": false,
+    "smtpAcceptanceFlagSet": false,
+    "trustedSigningVerified": false
+  },
+  "cleanup": {
+    "smtpKeyTemporaryVariableCleared": true,
+    "clipboardCleared": true,
+    "resetPasswordAndApiCookiesTemporaryVariablesCleared": true,
+    "verificationLinkTemporaryFile": "%TEMP%\\keepmealive-verification-20261102.json",
+    "verificationLinkAlreadyUsed": true,
+    "temporaryFileRemoval": "Automatic approval review rejected with blocked by policy; not removed",
+    "isolatedProcessTermination": "Automatic approval review rejected with blocked by policy; not terminated"
+  },
+  "limitations": [
+    "Resend test domain can send only to the exact account-owner address",
+    "Public production delivery needs an owned verified domain and DNS access",
+    "Native Connected screen and complete reset-form interaction remain visually unverified in this turn",
+    "Trusted signing, remaining Windows acceptance, database recovery and controlled production promotion remain open"
+  ],
+  "sources": [
+    "https://resend.com/docs/send-with-smtp",
+    "https://resend.com/docs/knowledge-base/403-error-resend-dev-domain",
+    "https://neon.com/docs/auth/production-checklist",
+    "https://better-auth.com/docs/authentication/email-password"
+  ]
+}

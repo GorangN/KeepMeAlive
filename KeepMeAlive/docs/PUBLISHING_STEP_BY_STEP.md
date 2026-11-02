@@ -2,6 +2,8 @@
 
 Checked against this repository and vendor documentation on 2026-10-30.
 
+Progress on 2026-11-02: Resend test SMTP and required verification links are configured in isolated staging. Real test, verification and reset emails reached the owner's mailbox; verification and the API password-reset/sign-in checks passed. Resend has no verified domain yet, so public production sending is still blocked. The native callback wrote a protected session, but the Connected screen could not be confirmed after Computer Use stopped. The steps below still apply to production; do not treat the restricted test sender as production acceptance.
+
 Pushing `main` saves the source code on GitHub. Publishing a release makes a downloadable installer available to users. The current workflow builds validation packages; it does **not** publish a release automatically. Production accounts remain disabled until the checks below pass. The core keep-alive utility works without an account.
 
 **SMTP means the email delivery connection.** Neon uses it to send “verify your email” and “reset your password” messages. You can use an email service instead of running your own mail server. The missing input is an application-owned sender account, not your personal Gmail password or your Neon database password.
@@ -12,7 +14,7 @@ One supported example is [Resend](https://resend.com/docs/send-with-smtp). Anoth
 
 Create the provider account, add a domain you own in its **Domains** area, and verify it. Your domain is the address you control, such as `your-domain.tld`; the Neon database hostname is not your sender domain. Copy the provider's exact verification, SPF and DKIM records into the DNS settings at your domain host. Follow its applicable DMARC instructions too. Wait for verification to succeed. [Resend domain instructions](https://resend.com/docs/dashboard/domains/introduction)
 
-Create a sending key and choose a From address on that verified domain. With Resend, the SMTP values are:
+Create a **Sending access** key restricted to that verified domain and choose a From address on it. Use separate staging and production keys; replace the current staging test key after verifying the new sender. With Resend, the SMTP values are:
 
 | Neon field | Value |
 | --- | --- |
@@ -70,7 +72,7 @@ On GitHub, open **Settings → Secrets and variables → Actions**. Put signing 
 
 | Variable | Value |
 | --- | --- |
-| `KEEP_ME_ALIVE_SMTP_VERIFIED` | `true` after real verification/reset delivery and link tests. |
+| `KEEP_ME_ALIVE_SMTP_VERIFIED` | `true` after verified-domain production verification/reset delivery and link tests; the restricted staging test sender does not qualify. |
 | `KEEP_ME_ALIVE_OAUTH_VERIFIED` | `true` after account/native acceptance. |
 | `KEEP_ME_ALIVE_DEV_API_URL` | The tested development URL from `backend/neon.json`, currently `https://br-fancy-star-b98qz19k-keepmealive.compute.c-7.eu-central-1.aws.neon.tech/`. |
 

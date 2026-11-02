@@ -23,7 +23,7 @@
   },
   "accountReleaseReady": false,
   "remainingGates": [
-    "Configure application-owned SMTP and verify actual verification/reset delivery",
+    "Configure verified-domain production SMTP and verify production verification/reset delivery",
     "Complete remaining Windows environment-specific acceptance and trusted release signing",
     "Promote validated backend and activate the production desktop client"
   ]

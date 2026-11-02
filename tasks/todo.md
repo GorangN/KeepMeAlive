@@ -163,3 +163,23 @@ The user explicitly requested a direct commit and push to main. This authorizes 
 - A fresh local Release build reports zero warnings/errors; all 107 desktop tests pass. GitHub [Verify and package run 41043405430](https://github.com/GorangN/KeepMeAlive/actions/runs/41043405430) passed both backend and Windows jobs, including tests, audits, production-guard regression and complete installer/portable packaging. The unsigned validation artifact was uploaded. Production-only email, live-backend and signing steps were not enabled by this source push.
 - Added `KeepMeAlive/docs/PUBLISHING_STEP_BY_STEP.md` and linked it from README. It explains SMTP as email delivery, gives verified provider/Neon setup instructions, documents signing and remaining acceptance, and distinguishes committing, building and manually publishing downloads.
 - No public release or version tag was created. Production accounts remain disabled until real email delivery/link acceptance, trusted signing, controlled production promotion and the documented remaining Windows/database checks pass. The existing project version is 1.0.0 while the previous public release is v1.0.1; the guide requires a higher unused version and a build from its exact tested commit before release.
+
+# Resend email setup and account acceptance (2026-11-02)
+
+- [x] Inspect the authorized Brave Resend session, verified domains and application sending access without extracting unrelated credentials.
+- [x] Configure sending-only Resend test SMTP in Neon staging; verify actual inbox delivery, required verification and password reset through the API.
+- [ ] Visually confirm native Connected after required verification and complete password-reset form acceptance; the callback wrote a protected session, but Computer Use ended before the screen could be observed.
+- [ ] Configure verified-domain production email and complete production acceptance; blocked by the absent owned domain/DNS configuration. Production remains untouched and gated.
+- [ ] Finish isolated app/browser/temp-link cleanup; automatic approval rejected process termination and temporary-file removal.
+- [x] Resolve newly reported build-tool dependency advisories without a breaking runtime downgrade; verify the resulting bundle.
+- [x] Record redacted setup/acceptance evidence and exact remaining blockers; verify relevant code/configuration changes.
+- [ ] Commit and push the reviewed follow-up to main; verify clean local/remote state and GitHub validation.
+
+The user authorized completing setup through their logged-in Brave account without questions. Use existing authorized resources, separate staging and production, and record missing domain, mailbox or signing capabilities rather than inventing them. Do not purchase services or reuse unrelated certificates.
+
+## Resend follow-up review
+
+- Configured a sending-only Resend staging key in Neon's managed SMTP settings and enabled required verification links. Real SMTP-test, verification and reset emails reached the matching owner inbox. Unverified sign-in was rejected; verification reached the native consent page and the verified flag was checked through read-only SQL. Reset link, API password reset, new-password sign-in and API-session logout passed.
+- Staging deployment 5 contains the two hosted-email fixes, with regression cases that failed before implementation. All 32 backend tests, strict TypeScript, clean installation, Function build and dependency audit pass. New build-tool advisories were resolved with a scoped NFT/glob override, including a real dynamic-asset tracing check. The new bundle's uncompressed entry is byte-identical to the deployed bundle; its retained archive and new archive differ only in metadata.
+- Production remains untouched and gated because Resend has no verified owned domain/DNS setup. Native Connected-screen confirmation stopped at the Computer Use URL-policy check; read-only metadata proves callback/code exchange and a new DPAPI-protected session, with no credential decryption and no remaining loopback listener. Automatic approval rejected isolated process termination and temporary-link removal with only **blocked by policy**; no equivalent cleanup bypass was attempted. The separate API test session was signed out and temporary API credential references were cleared.
+- Evidence is `tasks/verification/resend-smtp-2026-11-02.json`; it excludes personal recipient addresses, raw mail, keys, passwords, cookies and email tokens. Public production SMTP acceptance variables remain unset, no client was activated and no release/tag was published.
