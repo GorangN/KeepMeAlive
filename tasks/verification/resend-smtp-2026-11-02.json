@@ -1,5 +1,5 @@
 {
-  "verifiedAtUtc": "2026-11-02T02:08:27Z",
+  "verifiedAtUtc": "2026-11-02T02:17:35Z",
   "target": "isolated staging only",
   "projectId": "sweet-truth-01118709",
   "branchId": "br-red-flower-b9wmbkmb",
@@ -58,6 +58,14 @@
     "rebuiltBundleSha256": "225ba2169c4b5912e90f7d23e60150b7153d80128cce6df3d247b66ca5b07cc7",
     "uncompressedEntryMatchesDeployment5": true,
     "repeatDeploymentNeeded": false
+  },
+  "githubValidation": {
+    "implementationCommit": "60c3026cfaf713abe435e725a097d4d25000e695",
+    "runUrl": "https://github.com/GorangN/KeepMeAlive/actions/runs/41376895125",
+    "backendJob": "success",
+    "windowsJob": "success",
+    "validationPackagesUploaded": true,
+    "productionReleaseGatesEnabled": false
   },
   "native": {
     "appDirectory": "artifacts/smtp-native-validation-20261102",
