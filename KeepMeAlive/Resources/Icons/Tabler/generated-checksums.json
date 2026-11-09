@@ -3,23 +3,23 @@
     "outputs":  [
                     {
                         "file":  "Tabler.xaml",
-                        "sha256":  "842f3d451407f7594b0998b18ddc2f1e6adee62e7cf938c5196bceeee713bd6e"
+                        "sha256":  "395925cf31f6a4eabe763cd26bf7bed640dff0da96e05ce0c736a7ff79cbcaed"
                     },
                     {
                         "file":  "tray_inactive.ico",
-                        "sha256":  "d54b7b32d514aea011f96a3bf6e50b14d6147075cf6eeff016e9ae4ea590a0a3"
+                        "sha256":  "0df461d99e1ee5844c7d2b556aef61f1dda351b557e069cf7c804320074bbf02"
                     },
                     {
                         "file":  "tray_active.ico",
-                        "sha256":  "b53e9d288cca3bedd7cc444073d0d3cacaccdf254f4ad4495ac0ee1e137bf2da"
+                        "sha256":  "7309c470e90e1a9ae859b282d92c7af961a0b7b860bbd76fcafa4c8d67db61f6"
                     },
                     {
                         "file":  "wizard_small.bmp",
-                        "sha256":  "4cdc3283ce350b44794fcae9d5114503b17c26e129f541cbbc1a3cf3ea11ca05"
+                        "sha256":  "00f354f4103a5f8156a4b8841f67bd97c4b73bde3407a0b090e9f575992241db"
                     },
                     {
                         "file":  "wizard_large.bmp",
-                        "sha256":  "47c2fcadaee5b545cce9082fabd7bc0b7ce9b4202ada3e5a83751902b49ea45e"
+                        "sha256":  "e632db76e90b6783b8eaf8a0e4ac0543f7d1939fbc53f36dbc25151630078813"
                     }
                 ]
 }

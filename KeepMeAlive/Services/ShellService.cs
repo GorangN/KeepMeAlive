@@ -17,6 +17,7 @@ public sealed class ShellService : IShellService
         _window = window;
         _tray = tray;
         WindowWorkArea.Attach(window);
+        WindowMaterial.Attach(window);
     }
     /// <inheritdoc/>
     public void Show() => Dispatch(() => { _window?.Show(); if (_window != null) { _window.WindowState = WindowState.Normal; _window.Activate(); } });

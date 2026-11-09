@@ -1,69 +1,51 @@
-<UserControl x:Class="KeepMeAlive.Views.DashboardView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:models="clr-namespace:KeepMeAlive.Models;assembly=KeepMeAlive.Core">
-<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-<StackPanel Margin="32 28">
-    <TextBlock Text="Dashboard" Style="{StaticResource PageHeadlineStyle}"/>
-    <TextBlock Text="A quiet companion for your working day." Style="{StaticResource PageSubtitleStyle}" Margin="0 6 0 24"/>
-    <Border Style="{StaticResource CardSectionStyle}" DataContext="{Binding DashboardViewModel}">
-    <StackPanel>
-        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-            <StackPanel Margin="0 0 16 0">
-                <TextBlock Text="KEEP-ALIVE" Style="{StaticResource FieldLabelStyle}" Margin="0 0 0 8"/>
-                <TextBlock Text="{Binding StatusText}" Style="{StaticResource HeroStatusStyle}" AutomationProperties.LiveSetting="Polite"/>
-                <TextBlock Text="{Binding NextPulseDisplay}" Style="{StaticResource PageSubtitleStyle}" Margin="0 10 0 0"/>
-            </StackPanel>
-            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                <Button Content="_Start" Command="{Binding StartCommand}" Style="{StaticResource PrimaryButtonStyle}" MinWidth="116" Visibility="{Binding IsRunning, Converter={StaticResource InverseBoolToVisibilityConverter}}" AutomationProperties.Name="Start keep-alive"/>
-                <Button Content="S_top" Command="{Binding StopCommand}" Style="{StaticResource DangerButtonStyle}" MinWidth="116" Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibilityConverter}}" AutomationProperties.Name="Stop keep-alive"/>
-            </StackPanel>
-        </Grid>
-        <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap" Margin="0 12 0 0" AutomationProperties.LiveSetting="Assertive"/><TextBlock Text="{Binding InputError}" Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Assertive"/>
-        <Border Height="1" Background="{DynamicResource OutlineVariantBrush}" Margin="0 20"/>
-        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="190"/></Grid.ColumnDefinitions>
-            <StackPanel VerticalAlignment="Center"><TextBlock Text="Activity method" Style="{StaticResource SettingLabelStyle}"/><TextBlock Text="Choose how to keep this PC active." Style="{StaticResource SettingDescriptionStyle}"/></StackPanel>
-            <ComboBox Grid.Column="1" Style="{StaticResource ComboBoxStyle}" SelectedItem="{Binding SelectedMethod}" IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}" AutomationProperties.Name="Activity method">
-                <x:Static Member="models:KeepAliveMethod.Keyboard"/><x:Static Member="models:KeepAliveMethod.Mouse"/>
-            </ComboBox>
-        </Grid>
-        <Grid Margin="0 16 0 0"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="190"/></Grid.ColumnDefinitions>
-            <StackPanel VerticalAlignment="Center"><TextBlock Text="Pulse interval" Style="{StaticResource SettingLabelStyle}"/><TextBlock Text="Seconds between inputs, with a small variation." Style="{StaticResource SettingDescriptionStyle}"/></StackPanel>
-            <TextBox Grid.Column="1" Text="{Binding IntervalSecondsText, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" Style="{StaticResource InputStyle}" IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}" AutomationProperties.Name="Pulse interval in seconds"/>
-        </Grid>
-        <Grid Margin="0 18 0 0"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-            <StackPanel><TextBlock Text="Keep display awake" Style="{StaticResource SettingLabelStyle}"/><TextBlock Text="Prevent display and system sleep during a session." Style="{StaticResource SettingDescriptionStyle}"/></StackPanel>
-            <CheckBox Grid.Column="1" IsChecked="{Binding KeepAwakeEnabled}" Style="{StaticResource ToggleCheckBoxStyle}" AutomationProperties.Name="Keep display and system awake"/>
-        </Grid>
-    </StackPanel>
-    </Border>
-    <Grid Margin="4 18 4 20"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-        <TextBlock Text="{Binding DashboardViewModel.IdleTimeDisplay}" Style="{StaticResource IdleTextStyle}"/>
-        <TextBlock Grid.Column="1" Text="LOCAL ON THIS PC" Style="{StaticResource FieldLabelStyle}"/>
-    </Grid>
-    <Expander Header="Preferences" IsExpanded="False">
-        <StackPanel DataContext="{Binding SettingsViewModel}" Margin="0 16 0 0">
-            <Border Style="{StaticResource CardSectionStyle}">
-            <StackPanel>
-                <TextBlock Text="Appearance" Style="{StaticResource CardHeaderStyle}" Margin="0 0 0 12"/>
-                <ComboBox Style="{StaticResource ComboBoxStyle}" SelectedValuePath="Content" SelectedValue="{Binding SelectedTheme}" AutomationProperties.Name="Appearance"><ComboBoxItem Content="Light"/><ComboBoxItem Content="Dark"/><ComboBoxItem Content="System"/></ComboBox>
-                <CheckBox Content="Launch on Windows sign-in" IsChecked="{Binding StartOnBoot}" Margin="0 18 0 0"/>
-                <CheckBox Content="Start in the system tray" IsChecked="{Binding StartMinimizedToTray}" Margin="0 14 0 0"/>
-                <CheckBox Content="Show session notifications" IsChecked="{Binding ShowNotifications}" Margin="0 14 0 0"/>
-                <TextBlock Text="Storage" Style="{StaticResource CardHeaderStyle}" Margin="0 24 0 12"/>
-                <ComboBox Style="{StaticResource ComboBoxStyle}" SelectedValuePath="Tag" SelectedValue="{Binding SelectedStorageMode}" AutomationProperties.Name="Settings storage location">
-                    <ComboBoxItem Tag="{x:Static models:StorageMode.ProfileAppData}" Content="Windows user profile"/>
-                    <ComboBoxItem Tag="{x:Static models:StorageMode.PortableLocal}" Content="Beside the application"/>
-                </ComboBox>
-                <TextBlock Text="{Binding StorageModeDescription}" Style="{StaticResource SettingDescriptionStyle}" Margin="0 8 0 0"/>
-                <TextBlock Text="{Binding StorageLocationDisplay}" Style="{StaticResource FooterTextStyle}" Margin="0 8 0 0"/>
-                <TextBlock Text="Network preferences" Style="{StaticResource CardHeaderStyle}" Margin="0 24 0 12"/>
-                <CheckBox Content="Check for updates at startup" IsChecked="{Binding EnableAutomaticUpdateChecks}" Margin="0 0 0 14"/>
-                <CheckBox Content="Refresh my saved account at startup" IsChecked="{Binding EnableStartupAccountSync}"/>
-                <TextBlock Text="These checks are optional. No activity telemetry is collected." Style="{StaticResource SettingDescriptionStyle}" Margin="0 8 0 0"/>
-                <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap" Margin="0 14 0 0"/>
-                <WrapPanel Margin="0 16 0 0"><Button Content="Save preferences" Command="{Binding SaveCommand}" Style="{StaticResource SaveButtonStyle}" Margin="0 0 8 0"/><Button Content="Discard" Command="{Binding DiscardCommand}" Style="{StaticResource GhostButtonStyle}"/></WrapPanel>
-            </StackPanel></Border>
+<UserControl x:Class="KeepMeAlive.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="clr-namespace:KeepMeAlive.Models;assembly=KeepMeAlive.Core"
+             xmlns:controls="clr-namespace:KeepMeAlive.Controls">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Style="{StaticResource PageContentStyle}" DataContext="{Binding DashboardViewModel}">
+            <Border Style="{StaticResource TimerCardStyle}" MaxWidth="396" HorizontalAlignment="Center" Width="396" Margin="0 8 0 12">
+                <Grid>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                    <TextBlock Text="{Binding StatusText}" FontWeight="SemiBold" AutomationProperties.LiveSetting="Polite"/>
+                    <Grid Grid.Row="1" Width="210" Height="210" Margin="0 16 0 16">
+                        <controls:PulseRing Value="{Binding PulseProgress}">
+                            <controls:PulseRing.Style><Style TargetType="controls:PulseRing"><Setter Property="Foreground" Value="{DynamicResource OnSurfaceVariantBrush}"/><Style.Triggers><DataTrigger Binding="{Binding HasPulseCountdown}" Value="True"><Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/></DataTrigger></Style.Triggers></Style></controls:PulseRing.Style>
+                        </controls:PulseRing>
+                        <TextBlock Text="{Binding PulseCountdownDisplay}" FontSize="36" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" AutomationProperties.Name="Next input countdown">
+                            <TextBlock.Style><Style TargetType="TextBlock" BasedOn="{StaticResource BodyTextStyle}"><Setter Property="Foreground" Value="{DynamicResource OnSurfaceVariantBrush}"/><Style.Triggers><DataTrigger Binding="{Binding HasPulseCountdown}" Value="True"><Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}"/></DataTrigger></Style.Triggers></Style></TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                    <Grid Grid.Row="2" HorizontalAlignment="Center">
+                        <Button Command="{Binding StartCommand}" Style="{StaticResource RoundActionButtonStyle}" Visibility="{Binding IsRunning, Converter={StaticResource InverseBoolToVisibilityConverter}}" ToolTip="Start keep-alive" AutomationProperties.Name="Start keep-alive"><ContentControl Content="{StaticResource Tabler.PlayerPlay}" Style="{StaticResource TablerIconStyle}" Width="18" Height="18"/></Button>
+                        <Button Command="{Binding StopCommand}" Style="{StaticResource RoundActionButtonStyle}" Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibilityConverter}}" ToolTip="Stop keep-alive" AutomationProperties.Name="Stop keep-alive"><ContentControl Content="{StaticResource Tabler.PlayerStop}" Style="{StaticResource TablerIconStyle}" Width="18" Height="18"/></Button>
+                    </Grid>
+                </Grid>
+            </Border>
+            <TextBlock Text="{Binding NextPulseDisplay}" Style="{StaticResource SettingDescriptionStyle}" HorizontalAlignment="Center" Margin="0 0 0 16"/>
+            <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ValidationTextStyle}" Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Assertive"/>
+            <TextBlock Text="{Binding InputError}" Style="{StaticResource ValidationTextStyle}" Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Assertive"/>
+            <Border Style="{StaticResource SettingRowStyle}" Margin="0 0 0 4">
+                <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="160"/></Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center" Margin="0 0 16 0"><TextBlock Text="Activity method" Style="{StaticResource SettingLabelStyle}"/><TextBlock Text="How this PC stays active." Style="{StaticResource SettingDescriptionStyle}"/></StackPanel>
+                    <ComboBox Grid.Column="1" Style="{StaticResource ComboBoxStyle}" SelectedItem="{Binding SelectedMethod}" IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}" AutomationProperties.Name="Activity method"><x:Static Member="models:KeepAliveMethod.Keyboard"/><x:Static Member="models:KeepAliveMethod.Mouse"/></ComboBox>
+                </Grid>
+            </Border>
+            <Border Style="{StaticResource SettingRowStyle}" Margin="0 0 0 4">
+                <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="120"/></Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center" Margin="0 0 16 0"><TextBlock Text="Pulse interval" Style="{StaticResource SettingLabelStyle}"/><TextBlock Text="Seconds between inputs, with a small variation." Style="{StaticResource SettingDescriptionStyle}"/></StackPanel>
+                    <TextBox Grid.Column="1" Text="{Binding IntervalSecondsText, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" Style="{StaticResource InputStyle}" IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}" AutomationProperties.Name="Pulse interval in seconds"/>
+                </Grid>
+            </Border>
+            <Border Style="{StaticResource SettingRowStyle}">
+                <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center" Margin="0 0 16 0"><TextBlock Text="Keep display awake" Style="{StaticResource SettingLabelStyle}"/><TextBlock Text="Prevent display and system sleep during a session." Style="{StaticResource SettingDescriptionStyle}"/></StackPanel>
+                    <CheckBox Grid.Column="1" IsChecked="{Binding KeepAwakeEnabled}" Style="{StaticResource ToggleCheckBoxStyle}" AutomationProperties.Name="Keep display and system awake"/>
+                </Grid>
+            </Border>
+            <TextBlock Text="{Binding IdleTimeDisplay}" Style="{StaticResource FooterTextStyle}" Margin="0 20 0 6"/>
+            <TextBlock Text="Locked sessions pause automatically." Style="{StaticResource FooterTextStyle}"/>
         </StackPanel>
-    </Expander>
-    <WrapPanel Margin="0 18 0 0"><Button Content="Check for updates" Command="{Binding UpdateViewModel.CheckCommand}" Style="{StaticResource GhostButtonStyle}" Margin="0 0 12 0"/><TextBlock Text="{Binding UpdateViewModel.UpdateLabel}" Style="{StaticResource FooterTextStyle}" VerticalAlignment="Center"/></WrapPanel>
-    <TextBlock Text="Input simulation depends on Windows and application policies. Locked sessions pause automatically." Style="{StaticResource FooterTextStyle}" Margin="0 20 0 0"/>
-</StackPanel>
-</ScrollViewer></UserControl>
+    </ScrollViewer>
+</UserControl>

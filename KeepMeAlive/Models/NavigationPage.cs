@@ -17,4 +17,7 @@ public enum NavigationPage
 
     /// <summary>Account — user account overview and license management.</summary>
     Account,
+
+    /// <summary>Settings for appearance, startup, storage, notifications and network preferences.</summary>
+    Settings,
 }

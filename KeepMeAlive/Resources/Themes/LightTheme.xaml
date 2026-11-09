@@ -1,23 +1,24 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Color x:Key="BackgroundColor">#F2F2F7</Color>
-    <Color x:Key="SurfaceColor">#EDEFF5</Color>
-    <Color x:Key="SurfaceContainerLowColor">#FFFFFF</Color>
-    <Color x:Key="SurfaceContainerLowestColor">#F7F7FA</Color>
-    <Color x:Key="SurfaceContainerColor">#E8E8EF</Color>
-    <Color x:Key="SurfaceContainerHighColor">#DEDEE6</Color>
-    <Color x:Key="SurfaceContainerHighestColor">#727278</Color>
-    <Color x:Key="PrimaryColor">#0066CC</Color>
-    <Color x:Key="PrimaryDimColor">#004F9E</Color>
-    <Color x:Key="PrimaryContainerColor">#DCEBFF</Color>
-    <Color x:Key="OnSurfaceColor">#1C1C1E</Color>
-    <Color x:Key="OnSurfaceVariantColor">#636366</Color>
+    <Color x:Key="BackgroundColor">#F4FAF8</Color>
+    <Color x:Key="SurfaceColor">#ECF5F0</Color>
+    <Color x:Key="SurfaceContainerLowColor">#FCFEFD</Color>
+    <Color x:Key="SurfaceContainerLowestColor">#FFFFFF</Color>
+    <Color x:Key="SurfaceContainerColor">#F0F4F2</Color>
+    <Color x:Key="SurfaceContainerHighColor">#E5EDEA</Color>
+    <Color x:Key="SurfaceContainerHighestColor">#606663</Color>
+    <Color x:Key="PrimaryColor">#007632</Color>
+    <Color x:Key="PrimaryDimColor">#006329</Color>
+    <Color x:Key="PrimaryContainerColor">#E5EDEA</Color>
+    <Color x:Key="OnSurfaceColor">#1B1D1C</Color>
+    <Color x:Key="OnSurfaceVariantColor">#606663</Color>
     <Color x:Key="OnPrimaryColor">#FFFFFF</Color>
-    <Color x:Key="OutlineVariantColor">#D1D1D8</Color>
-    <Color x:Key="OutlineColor">#77777F</Color>
+    <Color x:Key="OutlineVariantColor">#E2E8E4</Color>
+    <Color x:Key="OutlineColor">#8A938D</Color>
     <Color x:Key="ErrorColor">#B42318</Color>
     <Color x:Key="ErrorContainerColor">#FEE4E2</Color>
-    <Color x:Key="RunningColor">#207A3D</Color>
+    <Color x:Key="RunningColor">#007632</Color>
     <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}"/>
+    <SolidColorBrush x:Key="ChromeBrush" Color="{StaticResource BackgroundColor}"/>
     <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}"/>
     <SolidColorBrush x:Key="SurfaceContainerLowBrush" Color="{StaticResource SurfaceContainerLowColor}"/>
     <SolidColorBrush x:Key="SurfaceContainerLowestBrush" Color="{StaticResource SurfaceContainerLowestColor}"/>
@@ -44,9 +45,13 @@
     <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource ErrorColor}"/>
     <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource OutlineVariantColor}"/>
     <SolidColorBrush x:Key="InputBgBrush" Color="{StaticResource SurfaceContainerLowestColor}"/>
-    <SolidColorBrush x:Key="ToggleOffBrush" Color="{StaticResource OutlineColor}"/>
+    <SolidColorBrush x:Key="ToggleOffBrush" Color="{StaticResource SurfaceContainerColor}"/>
     <SolidColorBrush x:Key="StoppedBrush" Color="{StaticResource OnSurfaceVariantColor}"/>
     <SolidColorBrush x:Key="NavItemActiveBgBrush" Color="{StaticResource PrimaryContainerColor}"/>
     <SolidColorBrush x:Key="OverlayBrush" Color="#66000000"/>
     <SolidColorBrush x:Key="ToggleThumbBrush" Color="White"/>
+    <SolidColorBrush x:Key="SelectedBackgroundBrush" Color="{StaticResource PrimaryColor}"/>
+    <SolidColorBrush x:Key="SelectedForegroundBrush" Color="{StaticResource OnPrimaryColor}"/>
+    <SolidColorBrush x:Key="ControlHoverBrush" Color="{StaticResource SurfaceContainerHighColor}"/>
+    <SolidColorBrush x:Key="RingTrackBrush" Color="#F0F3F1"/>
 </ResourceDictionary>

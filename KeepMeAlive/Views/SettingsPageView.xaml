@@ -1,0 +1,78 @@
+<UserControl x:Class="KeepMeAlive.Views.SettingsPageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="clr-namespace:KeepMeAlive.Models;assembly=KeepMeAlive.Core"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Style="{StaticResource PageContentStyle}">
+            <TextBlock Text="Settings" Style="{StaticResource PageHeadlineStyle}" Margin="0 0 0 48"/>
+            <StackPanel DataContext="{Binding SettingsViewModel}">
+                <TextBlock Text="General" Style="{StaticResource CardHeaderStyle}" Margin="0 0 0 8"/>
+                <Border Style="{StaticResource SettingRowStyle}" Margin="0 0 0 4">
+                    <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="36"/><ColumnDefinition/><ColumnDefinition Width="150"/></Grid.ColumnDefinitions>
+                        <ContentControl Content="{StaticResource Tabler.Palette}" Style="{StaticResource TablerIconStyle}" HorizontalAlignment="Left"/>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0 0 16 0"><TextBlock Text="App theme" Style="{StaticResource SettingLabelStyle}"/><TextBlock Text="Choose your preferred appearance." Style="{StaticResource SettingDescriptionStyle}"/></StackPanel>
+                        <ComboBox Grid.Column="2" Style="{StaticResource ComboBoxStyle}" SelectedValuePath="Content" SelectedValue="{Binding SelectedTheme}" AutomationProperties.Name="Appearance"><ComboBoxItem Content="Light"/><ComboBoxItem Content="Dark"/><ComboBoxItem Content="System"/></ComboBox>
+                    </Grid>
+                </Border>
+                <Border Style="{StaticResource SettingRowStyle}" Margin="0 0 0 4">
+                    <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="36"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <ContentControl Content="{StaticResource Tabler.Power}" Style="{StaticResource TablerIconStyle}" HorizontalAlignment="Left"/>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0 0 16 0"><TextBlock Text="Launch on Windows sign-in" Style="{StaticResource SettingLabelStyle}"/><TextBlock Text="{Binding StartOnBootDescription}" Style="{StaticResource SettingDescriptionStyle}"/></StackPanel>
+                        <CheckBox Grid.Column="2" IsChecked="{Binding StartOnBoot}" Style="{StaticResource ToggleCheckBoxStyle}" AutomationProperties.Name="Launch on Windows sign-in"/>
+                    </Grid>
+                </Border>
+                <Border Style="{StaticResource SettingRowStyle}" Margin="0 0 0 4">
+                    <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="36"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <ContentControl Content="{StaticResource Tabler.WindowMinimize}" Style="{StaticResource TablerIconStyle}" HorizontalAlignment="Left"/>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0 0 16 0"><TextBlock Text="Start in the system tray" Style="{StaticResource SettingLabelStyle}"/><TextBlock Text="Keep the main window hidden at startup." Style="{StaticResource SettingDescriptionStyle}"/></StackPanel>
+                        <CheckBox Grid.Column="2" IsChecked="{Binding StartMinimizedToTray}" Style="{StaticResource ToggleCheckBoxStyle}" AutomationProperties.Name="Start in the system tray"/>
+                    </Grid>
+                </Border>
+                <Border Style="{StaticResource SettingRowStyle}">
+                    <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="36"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <ContentControl Content="{StaticResource Tabler.Bell}" Style="{StaticResource TablerIconStyle}" HorizontalAlignment="Left"/>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0 0 16 0"><TextBlock Text="Session notifications" Style="{StaticResource SettingLabelStyle}"/><TextBlock Text="Show important session updates." Style="{StaticResource SettingDescriptionStyle}"/></StackPanel>
+                        <CheckBox Grid.Column="2" IsChecked="{Binding ShowNotifications}" Style="{StaticResource ToggleCheckBoxStyle}" AutomationProperties.Name="Show session notifications"/>
+                    </Grid>
+                </Border>
+                <TextBlock Text="Storage" Style="{StaticResource CardHeaderStyle}" Margin="0 32 0 8"/>
+                <Border Style="{StaticResource SettingRowStyle}">
+                    <StackPanel>
+                        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="190"/></Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center" Margin="0 0 16 0"><TextBlock Text="Settings location" Style="{StaticResource SettingLabelStyle}"/><TextBlock Text="{Binding StorageModeDescription}" Style="{StaticResource SettingDescriptionStyle}"/></StackPanel>
+                            <ComboBox Grid.Column="1" Style="{StaticResource ComboBoxStyle}" SelectedValuePath="Tag" SelectedValue="{Binding SelectedStorageMode}" AutomationProperties.Name="Settings storage location"><ComboBoxItem Tag="{x:Static models:StorageMode.ProfileAppData}" Content="Windows user profile"/><ComboBoxItem Tag="{x:Static models:StorageMode.PortableLocal}" Content="Beside the application"/></ComboBox>
+                        </Grid>
+                        <TextBlock Text="{Binding StorageLocationDisplay}" Style="{StaticResource FooterTextStyle}" Margin="0 8 0 0"/>
+                    </StackPanel>
+                </Border>
+                <ui:CardExpander Header="Network preferences" IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="0 32 0 0">
+                <StackPanel>
+                <Border Style="{StaticResource SettingRowStyle}" Margin="0 0 0 4">
+                    <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0 0 16 0"><TextBlock Text="Check for updates at startup" Style="{StaticResource SettingLabelStyle}"/><TextBlock Text="Look for a new release when the app opens." Style="{StaticResource SettingDescriptionStyle}"/></StackPanel>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding EnableAutomaticUpdateChecks}" Style="{StaticResource ToggleCheckBoxStyle}" AutomationProperties.Name="Check for updates at startup"/>
+                    </Grid>
+                </Border>
+                <Border Style="{StaticResource SettingRowStyle}">
+                    <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0 0 16 0"><TextBlock Text="Refresh my saved account at startup" Style="{StaticResource SettingLabelStyle}"/><TextBlock Text="These checks are optional. No activity telemetry is collected." Style="{StaticResource SettingDescriptionStyle}"/></StackPanel>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding EnableStartupAccountSync}" Style="{StaticResource ToggleCheckBoxStyle}" AutomationProperties.Name="Refresh my saved account at startup"/>
+                    </Grid>
+                </Border>
+                </StackPanel>
+                </ui:CardExpander>
+                <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ValidationTextStyle}" Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap" Margin="0 12 0 0" AutomationProperties.LiveSetting="Assertive"/>
+                <WrapPanel Margin="0 16 0 0"><Button Content="Save preferences" Command="{Binding SaveCommand}" Style="{StaticResource SaveButtonStyle}" Margin="0 0 8 8"/><Button Content="Discard" Command="{Binding DiscardCommand}" Style="{StaticResource GhostButtonStyle}" Margin="0 0 0 8"/></WrapPanel>
+            </StackPanel>
+            <TextBlock Text="About" Style="{StaticResource CardHeaderStyle}" Margin="0 24 0 8"/>
+            <Border Style="{StaticResource SettingRowStyle}">
+                <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center" Margin="0 0 16 0"><TextBlock Text="KeepMeAlive" Style="{StaticResource SettingLabelStyle}"/><TextBlock Text="{Binding UpdateViewModel.AppVersion, StringFormat='Version {0}'}" Style="{StaticResource SettingDescriptionStyle}"/><TextBlock Text="{Binding UpdateViewModel.UpdateLabel}" Style="{StaticResource SettingDescriptionStyle}"/></StackPanel>
+                    <Button Grid.Column="1" Content="Check for updates" Command="{Binding UpdateViewModel.CheckCommand}" Style="{StaticResource GhostButtonStyle}"/>
+                </Grid>
+            </Border>
+            <WrapPanel Margin="0 16 0 0"><Button Content="Download update" Command="{Binding UpdateViewModel.OpenReleasePageCommand}" Visibility="{Binding UpdateViewModel.UpdateAvailable, Converter={StaticResource BoolToVisibilityConverter}}" Style="{StaticResource GhostButtonStyle}" Margin="0 0 8 8"/><Button Content="_Quit KeepMeAlive" Command="{Binding ExitApplicationCommand}" Style="{StaticResource GhostButtonStyle}" AutomationProperties.Name="Quit KeepMeAlive" Margin="0 0 0 8"/></WrapPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

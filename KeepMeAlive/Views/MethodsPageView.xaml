@@ -6,13 +6,13 @@
     <Grid Background="{DynamicResource BackgroundBrush}">
         <ScrollViewer VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Margin="40 36 40 36">
+            <StackPanel Style="{StaticResource PageContentStyle}">
 
                 <!-- Page header -->
                 <TextBlock Text="Methods" Style="{StaticResource PageHeadlineStyle}"/>
                 <TextBlock Text="Configure how KeepMeAlive simulates activity."
                            Style="{StaticResource PageSubtitleStyle}"
-                           Margin="0 6 0 32"/><TextBlock Text="{Binding InputError}" Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Assertive"/>
+                           Margin="0 6 0 32"/><TextBlock Text="{Binding InputError}" Style="{StaticResource ValidationTextStyle}" Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Assertive"/>
 
                 <!-- Method &amp; Interval card -->
                 <Border Style="{StaticResource CardSectionStyle}" Margin="0 0 0 20">

@@ -13,6 +13,7 @@ public partial class MainViewModel : ObservableObject, IRecipient<ShowNotificati
     private readonly IDialogService _dialogs;
     private readonly IShellService _shell;
     private bool _isRunning;
+    private bool _isNavigating;
 
     [ObservableProperty]
     private NavigationPage _currentPage = NavigationPage.Dashboard;
@@ -49,22 +50,33 @@ public partial class MainViewModel : ObservableObject, IRecipient<ShowNotificati
     [RelayCommand]
     private void Navigate(NavigationPage page)
     {
-        if (page == CurrentPage) { return; }
-        if (SettingsViewModel.HasUnsavedChanges || DashboardViewModel.HasUnsavedChanges)
+        if (_isNavigating || page == CurrentPage)
         {
-            switch (_dialogs.ShowUnsavedChangesDialog())
-            {
-                case UnsavedChangesChoice.Cancel: return;
-                case UnsavedChangesChoice.Save:
-                    if (!SettingsViewModel.TrySave() || !DashboardViewModel.ApplySettings()) { return; }
-                    break;
-                case UnsavedChangesChoice.Discard:
-                    SettingsViewModel.LoadFromSettings();
-                    DashboardViewModel.DiscardChanges();
-                    break;
-            }
+            return;
         }
-        CurrentPage = page;
+        _isNavigating = true;
+        try
+        {
+            if (SettingsViewModel.HasUnsavedChanges || DashboardViewModel.HasUnsavedChanges)
+            {
+                switch (_dialogs.ShowUnsavedChangesDialog())
+                {
+                    case UnsavedChangesChoice.Cancel: return;
+                    case UnsavedChangesChoice.Save:
+                        if (!SettingsViewModel.TrySave() || !DashboardViewModel.ApplySettings()) { return; }
+                        break;
+                    case UnsavedChangesChoice.Discard:
+                        SettingsViewModel.LoadFromSettings();
+                        DashboardViewModel.DiscardChanges();
+                        break;
+                }
+            }
+            CurrentPage = page;
+        }
+        finally
+        {
+            _isNavigating = false;
+        }
     }
 
     [RelayCommand] private void ShowWindow() => _shell.Show();

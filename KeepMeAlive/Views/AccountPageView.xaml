@@ -1,27 +1,47 @@
-<UserControl x:Class="KeepMeAlive.Views.AccountPageView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"><StackPanel Margin="32 28">
-<TextBlock Text="Account" Style="{StaticResource PageHeadlineStyle}"/>
-<TextBlock Text="Your account is optional. Keep-alive always works locally." Style="{StaticResource PageSubtitleStyle}" Margin="0 6 0 24"/>
-<Border Style="{StaticResource CardSectionStyle}"><StackPanel>
-<TextBlock Text="{Binding AccountStatus}" Style="{StaticResource CardHeaderStyle}" AutomationProperties.LiveSetting="Polite"/>
-<TextBlock Text="{Binding StatusMessage}" Style="{StaticResource BodyTextStyle}" TextWrapping="Wrap" Margin="0 12 0 20"/>
-<WrapPanel>
-<Button Content="_Sign in" Command="{Binding SignInCommand}" Style="{StaticResource PrimaryButtonStyle}" IsEnabled="{Binding CanSignIn}" Visibility="{Binding IsSignedIn, Converter={StaticResource InverseBoolToVisibilityConverter}}" Margin="0 0 10 8"/>
-<Button Content="Cancel sign-in" Command="{Binding CancelSignInCommand}" Style="{StaticResource GhostButtonStyle}" Visibility="{Binding IsRefreshing, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0 0 10 8"/>
-<Button Content="_Refresh" Command="{Binding RefreshCommand}" Style="{StaticResource GhostButtonStyle}" Margin="0 0 10 8"/>
-<Button Content="Sign _out" Command="{Binding SignOutCommand}" Style="{StaticResource GhostButtonStyle}" Visibility="{Binding IsSignedIn, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0 0 0 8"/>
-</WrapPanel>
-<StackPanel Visibility="{Binding IsSignedIn, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0 20 0 0">
-<TextBlock Text="Display name" Style="{StaticResource FieldLabelStyle}" Margin="0 0 0 8"/>
-<TextBox Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputStyle}" MaxLength="100" AutomationProperties.Name="Account display name"/>
-<TextBlock Text="{Binding Email}" Style="{StaticResource BodyTextStyle}" Margin="0 12 0 16"/>
-<Button Content="Save profile" Command="{Binding SaveProfileCommand}" Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Left"/>
-<Border Height="1" Background="{DynamicResource OutlineVariantBrush}" Margin="0 24"/>
-<TextBlock Text="Subscription" Style="{StaticResource CardHeaderStyle}"/>
-<TextBlock Text="{Binding LicenseAccessStatus}" Style="{StaticResource BodyTextStyle}" Margin="0 12 0 0"/>
-<TextBlock Text="{Binding LicenseExpiryDisplay}" Style="{StaticResource SettingDescriptionStyle}" Margin="0 6 0 0"/>
-<TextBlock Text="{Binding LastSyncedDisplay, StringFormat='Last successful sync: {0}'}" Style="{StaticResource FooterTextStyle}" Margin="0 20 0 0"/>
-</StackPanel>
-</StackPanel></Border>
-<TextBlock Text="Sign-in opens your browser. Session credentials are protected by Windows; your input activity and local settings stay on this PC." Style="{StaticResource FooterTextStyle}" Margin="0 20 0 0"/>
-</StackPanel></ScrollViewer></UserControl>
+<UserControl x:Class="KeepMeAlive.Views.AccountPageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Style="{StaticResource PageContentStyle}">
+            <TextBlock Text="Account" Style="{StaticResource PageHeadlineStyle}" Margin="0 0 0 48"/>
+            <TextBlock Text="Your account" Style="{StaticResource CardHeaderStyle}" Margin="0 0 0 8"/>
+            <Border Style="{StaticResource CardSectionStyle}">
+                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="80"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <ContentControl Content="{StaticResource Tabler.UserCircle}" Style="{StaticResource TablerIconStyle}" Width="64" Height="64" HorizontalAlignment="Left" Foreground="{DynamicResource OnSurfaceVariantBrush}"/>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0 0 16 0">
+                        <TextBlock FontSize="18" TextWrapping="Wrap"><TextBlock.Style><Style TargetType="TextBlock" BasedOn="{StaticResource BodyTextStyle}"><Setter Property="Text" Value="{Binding AccountStatus}"/><Style.Triggers><DataTrigger Binding="{Binding IsSignedIn}" Value="True"><Setter Property="Text" Value="{Binding DisplayName}"/></DataTrigger></Style.Triggers></Style></TextBlock.Style></TextBlock>
+                        <TextBlock Text="{Binding Email}" Style="{StaticResource SettingDescriptionStyle}" Margin="0 4 0 0" Visibility="{Binding IsSignedIn, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        <TextBlock Text="{Binding AccountStatus}" Style="{StaticResource SettingDescriptionStyle}" Margin="0 4 0 0" Visibility="{Binding IsSignedIn, Converter={StaticResource BoolToVisibilityConverter}}" AutomationProperties.LiveSetting="Polite"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                        <Button Content="_Sign in" Command="{Binding SignInCommand}" Style="{StaticResource PrimaryButtonStyle}" IsEnabled="{Binding CanSignIn}" Visibility="{Binding IsSignedIn, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+                        <Button Content="Sign _out" Command="{Binding SignOutCommand}" Style="{StaticResource GhostButtonStyle}" Visibility="{Binding IsSignedIn, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource BodyTextStyle}" Margin="0 16 0 0" AutomationProperties.LiveSetting="Polite"/>
+            <WrapPanel Margin="0 12 0 0">
+                <Button Content="Cancel sign-in" Command="{Binding CancelSignInCommand}" Style="{StaticResource GhostButtonStyle}" Visibility="{Binding IsSigningIn, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0 0 8 8"/>
+                <Button Content="_Refresh" Command="{Binding RefreshCommand}" Style="{StaticResource GhostButtonStyle}" Margin="0 0 0 8"/>
+            </WrapPanel>
+            <StackPanel Visibility="{Binding IsSignedIn, Converter={StaticResource BoolToVisibilityConverter}}">
+                <TextBlock Text="Profile" Style="{StaticResource CardHeaderStyle}" Margin="0 24 0 8"/>
+                <Border Style="{StaticResource SettingRowStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Display name" Style="{StaticResource SettingLabelStyle}" Margin="0 0 0 8"/>
+                        <TextBox Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource InputStyle}" MaxLength="100" AutomationProperties.Name="Account display name"/>
+                        <Button Content="Save profile" Command="{Binding SaveProfileCommand}" Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Left" Margin="0 12 0 0"/>
+                    </StackPanel>
+                </Border>
+                <TextBlock Text="Subscription" Style="{StaticResource CardHeaderStyle}" Margin="0 32 0 8"/>
+                <Border Style="{StaticResource SettingRowStyle}"><StackPanel>
+                    <TextBlock Text="{Binding LicenseAccessStatus}" Style="{StaticResource SettingLabelStyle}"/>
+                    <TextBlock Text="{Binding LicenseExpiryDisplay}" Style="{StaticResource SettingDescriptionStyle}" Margin="0 4 0 0"/>
+                    <TextBlock Text="{Binding LastSyncedDisplay, StringFormat='Last successful sync: {0}'}" Style="{StaticResource FooterTextStyle}" Margin="0 12 0 0"/>
+                </StackPanel></Border>
+            </StackPanel>
+            <TextBlock Text="Your account is optional. Keep-alive always works locally." Style="{StaticResource FooterTextStyle}" Margin="0 24 0 8"/>
+            <TextBlock Text="Sign-in opens your browser. Session credentials are protected by Windows; your input activity and local settings stay on this PC." Style="{StaticResource FooterTextStyle}"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -75,6 +75,41 @@
       "key": "Tabler.Check",
       "file": "check.svg",
       "sha256": "e206067a7d570997b5b3a7d30ab287c0b15a492787649a8b96dff8fad2862fbe"
+    },
+    {
+      "key": "Tabler.PlayerPlay",
+      "file": "player-play.svg",
+      "sha256": "e2bff69284f1dc77224c47c03798017206a29d4ef665549db724b0a4534d8e5c"
+    },
+    {
+      "key": "Tabler.PlayerStop",
+      "file": "player-stop.svg",
+      "sha256": "9ed8cfd7b7cffbc925dae2c28ad5fb5115f3db451511acc47348e01cb862e291"
+    },
+    {
+      "key": "Tabler.Settings",
+      "file": "settings.svg",
+      "sha256": "ef9cf42d822c00b4fad5bc5eeceddd4e1ec3774bb7ddd09891d0fba274bc3e95"
+    },
+    {
+      "key": "Tabler.Palette",
+      "file": "palette.svg",
+      "sha256": "d9c39bf1ce00d10694015d9d736ae6006a7e7b2f0df776dd206e1058a9a700a7"
+    },
+    {
+      "key": "Tabler.Bell",
+      "file": "bell.svg",
+      "sha256": "7ef4f0c56a58fc7ea27ded1c2ee5bc753d63f8851ce85b33da48ddeefe53faf8"
+    },
+    {
+      "key": "Tabler.Power",
+      "file": "power.svg",
+      "sha256": "2a872241a3059da7e3157fc5fbd8b8dfd40a10825934a23dd5e7f43cb4ae1df9"
+    },
+    {
+      "key": "Tabler.WindowMinimize",
+      "file": "window-minimize.svg",
+      "sha256": "25ab1e5c2a0cf62b5beee6c330dbe35d19601d9598d16f5d3b92361994343179"
     }
   ],
   "licenseFile": "LICENSE.txt",

@@ -68,6 +68,36 @@
     <GeometryGroup x:Key="Tabler.Check">
         <PathGeometry Figures="M5 12l5 5l10 -10" />
     </GeometryGroup>
+    <GeometryGroup x:Key="Tabler.PlayerPlay">
+        <PathGeometry Figures="M7 4v16l13 -8l-13 -8" />
+    </GeometryGroup>
+    <GeometryGroup x:Key="Tabler.PlayerStop">
+        <PathGeometry Figures="M5 7a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2l0 -10" />
+    </GeometryGroup>
+    <GeometryGroup x:Key="Tabler.Settings">
+        <PathGeometry Figures="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065" />
+        <PathGeometry Figures="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+    </GeometryGroup>
+    <GeometryGroup x:Key="Tabler.Palette">
+        <PathGeometry Figures="M12 21a9 9 0 0 1 0 -18c4.97 0 9 3.582 9 8c0 1.06 -.474 2.078 -1.318 2.828c-.844 .75 -1.989 1.172 -3.182 1.172h-2.5a2 2 0 0 0 -1 3.75a1.3 1.3 0 0 1 -1 2.25" />
+        <PathGeometry Figures="M7.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+        <PathGeometry Figures="M11.5 7.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+        <PathGeometry Figures="M15.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+    </GeometryGroup>
+    <GeometryGroup x:Key="Tabler.Bell">
+        <PathGeometry Figures="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" />
+        <PathGeometry Figures="M9 17v1a3 3 0 0 0 6 0v-1" />
+    </GeometryGroup>
+    <GeometryGroup x:Key="Tabler.Power">
+        <PathGeometry Figures="M7 6a7.75 7.75 0 1 0 10 0" />
+        <PathGeometry Figures="M12 4l0 8" />
+    </GeometryGroup>
+    <GeometryGroup x:Key="Tabler.WindowMinimize">
+        <PathGeometry Figures="M3 17a1 1 0 0 1 1 -1h3a1 1 0 0 1 1 1v3a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1l0 -3" />
+        <PathGeometry Figures="M4 12v-6a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-6" />
+        <PathGeometry Figures="M15 13h-4v-4" />
+        <PathGeometry Figures="M11 13l5 -5" />
+    </GeometryGroup>
     <PathGeometry FillRule="Nonzero" Figures="M5.292893409729,9.707106590271C4.90236902236938,9.31658267974854 4.90236902236938,8.68341732025146 5.292893409729,8.292893409729 5.68341732025146,7.90236902236938 6.31658267974854,7.90236902236938 6.707106590271,8.292893409729L12.707106590271,14.292893409729 12,15 11.292893409729,14.292893409729 17.2928924560547,8.292893409729C17.6834182739258,7.90236902236938 18.3165817260742,7.90236902236938 18.7071075439453,8.292893409729 19.0976314544678,8.68341732025146 19.0976314544678,9.31658267974854 18.7071075439453,9.707106590271L12.707106590271,15.707106590271C12.3165826797485,16.0976314544678,11.6834173202515,16.0976314544678,11.292893409729,15.707106590271L5.292893409729,9.707106590271z" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" x:Key="ComboBoxDownArrowGeometry" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
     <Style x:Key="TablerIconStyle" TargetType="ContentControl">
         <Setter Property="Width" Value="18" />

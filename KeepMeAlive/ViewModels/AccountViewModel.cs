@@ -9,10 +9,12 @@ namespace KeepMeAlive.ViewModels;
 /// <summary>Coordinates explicit account actions and exposes honest offline and signed-out states.</summary>
 public partial class AccountViewModel : ObservableObject, IAsyncDisposable
 {
+    private const string UnconfiguredSignInMessage = "Account sign-in is being prepared for this release. You can use all local utility features.";
     private readonly IAccountService _accounts;
     private readonly IAuthenticationService _authentication;
     private CancellationTokenSource? _signInCancellation;
     private readonly CancellationTokenSource _lifetime = new();
+    private bool _isSigningIn;
 
     [ObservableProperty] private string _displayName = string.Empty;
     [ObservableProperty] private string _email = "Sign in to connect your account";
@@ -32,6 +34,19 @@ public partial class AccountViewModel : ObservableObject, IAsyncDisposable
     /// <summary>Gets whether another browser sign-in may start.</summary>
     public bool CanSignIn => _authentication.IsConfigured && !IsSignedIn && !IsRefreshing;
 
+    /// <summary>Gets whether the interactive browser sign-in operation can currently be cancelled.</summary>
+    public bool IsSigningIn
+    {
+        get => _isSigningIn;
+        private set
+        {
+            if (SetProperty(ref _isSigningIn, value))
+            {
+                CancelSignInCommand.NotifyCanExecuteChanged();
+            }
+        }
+    }
+
     /// <summary>Creates the account page without initiating network access.</summary>
     /// <param name="accounts">Authenticated account operations.</param>
     /// <param name="authentication">Browser-based authentication and session persistence.</param>
@@ -41,7 +56,7 @@ public partial class AccountViewModel : ObservableObject, IAsyncDisposable
         _authentication = authentication;
         if (!authentication.IsConfigured)
         {
-            StatusMessage = "Account sign-in is being prepared for this release. You can use all local utility features.";
+            StatusMessage = UnconfiguredSignInMessage;
         }
     }
 
@@ -51,6 +66,7 @@ public partial class AccountViewModel : ObservableObject, IAsyncDisposable
         if (!CanSignIn) { return; }
         IsRefreshing = true;
         _signInCancellation = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token);
+        IsSigningIn = true;
         AccountStatus = "Waiting for browser";
         StatusMessage = "Complete sign-in in your browser, or cancel to return.";
         try
@@ -60,10 +76,10 @@ public partial class AccountViewModel : ObservableObject, IAsyncDisposable
         }
         catch (OperationCanceledException) { AccountStatus = "Signed out"; StatusMessage = "Sign-in was cancelled. Your local utility is ready."; }
         catch (Exception error) when (IsAccountError(error)) { AccountStatus = "Connection error"; StatusMessage = UserMessage(error); }
-        finally { IsRefreshing = false; _signInCancellation.Dispose(); _signInCancellation = null; }
+        finally { IsSigningIn = false; IsRefreshing = false; _signInCancellation.Dispose(); _signInCancellation = null; }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsSigningIn))]
     private void CancelSignIn() => _signInCancellation?.Cancel();
 
     [RelayCommand]
@@ -111,7 +127,9 @@ public partial class AccountViewModel : ObservableObject, IAsyncDisposable
         PlanName = entitlement is null ? "No subscription linked" : "Subscription linked";
         LicenseAccessStatus = entitlement is null ? "Local utility available" : "Server-verified access";
         LicenseExpiryDisplay = entitlement?.ExpiresAt?.ToLocalTime().ToString("dd MMM yyyy") ?? (entitlement is null ? "No subscription linked" : "No expiration");
-        StatusMessage = profile is null ? "Your keep-alive sessions work without an account." : "Account details are up to date.";
+        StatusMessage = profile is null
+            ? _authentication.IsConfigured ? "Your keep-alive sessions work without an account." : UnconfiguredSignInMessage
+            : "Account details are up to date.";
     }
     /// <summary>Refreshes the bound profile after an explicitly enabled startup synchronization.</summary>
     public void RefreshFromCache() => Apply(_accounts.Current);

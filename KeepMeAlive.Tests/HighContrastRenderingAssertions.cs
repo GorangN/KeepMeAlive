@@ -4,7 +4,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using MahApps.Metro.Controls;
 
 namespace KeepMeAlive.Tests;
 
@@ -24,13 +23,11 @@ internal static class HighContrastRenderingAssertions
         AssertBrush(SystemColors.WindowTextBrush, popupBorder.BorderBrush);
         Assert.NotNull(popup.Child);
 
-        var option = new ComboBoxItem { Style = (Style)app.FindResource("MahApps.Styles.ComboBoxItem"), Content = "Unselected option" };
+        var option = new ComboBoxItem { Style = (Style)app.FindResource("Clock.ComboBoxItem"), Content = "Unselected option" };
         Layout(option, new Size(200, 40));
         var label = Assert.IsType<ContentPresenter>(option.Template.FindName("ContentPresenter", option));
         AssertBrush(SystemColors.WindowTextBrush, TextElement.GetForeground(label));
         AssertBrush(SystemColors.WindowTextBrush, Assert.Single(Descendants(label).OfType<TextBlock>()).Foreground);
-        AssertBrush(SystemColors.HighlightBrush, ItemHelper.GetHoverBackgroundBrush(option));
-        AssertBrush(SystemColors.HighlightTextBrush, ItemHelper.GetHoverForegroundBrush(option));
         option.IsSelected = true;
         Layout(option, new Size(200, 40));
         AssertBrush(SystemColors.HighlightTextBrush, TextElement.GetForeground(label));
@@ -38,13 +35,12 @@ internal static class HighContrastRenderingAssertions
         var selection = Assert.IsType<Border>(option.Template.FindName("Border", option));
         AssertBrush(SystemColors.HighlightBrush, selection.Background);
 
-        var calendar = new Calendar { Style = (Style)app.FindResource("MahApps.Styles.Calendar.Base"), DisplayDate = new DateTime(2030, 5, 15) };
+        var calendar = new Calendar { Style = (Style)app.FindResource("Clock.Calendar"), DisplayDate = new DateTime(2030, 5, 15) };
         Layout(calendar, new Size(280, 240));
         AssertBrush(SystemColors.WindowBrush, calendar.Background);
         AssertBrush(SystemColors.WindowTextBrush, calendar.Foreground);
-        AssertBrush(SystemColors.HighlightTextBrush, (Brush)app.FindResource("MahApps.Brushes.Selected.Foreground"));
-        AssertBrush(SystemColors.HighlightBrush, (Brush)app.FindResource("MahApps.Brushes.Accent4"));
-        AssertBrush(SystemColors.HighlightTextBrush, (Brush)app.FindResource("MahApps.Brushes.AccentBase"));
+        AssertBrush(SystemColors.HighlightTextBrush, (Brush)app.FindResource("SelectedForegroundBrush"));
+        AssertBrush(SystemColors.HighlightBrush, (Brush)app.FindResource("SelectedBackgroundBrush"));
         var ordinaryDay = Descendants(calendar).OfType<CalendarDayButton>().First(day => !day.IsInactive && !day.IsToday && !day.IsSelected);
         AssertBrush(SystemColors.WindowTextBrush, ordinaryDay.Foreground);
         calendar.SelectedDate = calendar.DisplayDate;
@@ -55,9 +51,9 @@ internal static class HighContrastRenderingAssertions
         AssertBrush(SystemColors.HighlightTextBrush, Assert.Single(Descendants(dayLabel).OfType<TextBlock>()).Foreground);
         var calendarItem = Assert.Single(Descendants(calendar).OfType<CalendarItem>());
         var header = Assert.IsType<Button>(calendarItem.Template.FindName("PART_HeaderButton", calendarItem));
-        AssertBrush(SystemColors.HighlightTextBrush, Assert.Single(Descendants(header).OfType<TextBlock>()).Foreground);
-        var daySelection = Assert.IsType<Rectangle>(selectedDay.Template.FindName("SelectedBackground", selectedDay));
-        AssertBrush(SystemColors.HighlightBrush, daySelection.Fill);
+        AssertBrush(SystemColors.WindowTextBrush, Assert.Single(Descendants(header).OfType<TextBlock>()).Foreground);
+        var daySelection = Assert.IsType<Border>(selectedDay.Template.FindName("Surface", selectedDay));
+        AssertBrush(SystemColors.HighlightBrush, daySelection.Background);
     }
 
     internal static void NormalControlBrushesReturn(App app)
@@ -65,9 +61,9 @@ internal static class HighContrastRenderingAssertions
         var combo = new ComboBox { Style = (Style)app.FindResource("ComboBoxStyle"), ItemsSource = new[] { "First", "Second" }, SelectedIndex = 0, Width = 200 };
         Layout(combo, new Size(200, 40));
         var arrow = Assert.Single(Descendants(combo).OfType<Path>(), path => path.Name == "Arrow");
-        Assert.Equal(Color.FromRgb(51, 51, 51), Assert.IsType<SolidColorBrush>(arrow.Fill).Color);
+        AssertBrush(Assert.IsType<SolidColorBrush>(app.FindResource("OnSurfaceBrush")), arrow.Fill);
         var popupBorder = Assert.IsType<Border>(combo.Template.FindName("PopupBorder", combo));
-        Assert.Equal(Colors.White, Assert.IsType<SolidColorBrush>(popupBorder.Background).Color);
+        AssertBrush(Assert.IsType<SolidColorBrush>(app.FindResource("SurfaceContainerLowestBrush")), popupBorder.Background);
     }
 
     private static void AssertBrush(SolidColorBrush expected, Brush actual) => Assert.Equal(expected.Color, Assert.IsType<SolidColorBrush>(actual).Color);

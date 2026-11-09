@@ -1,3 +1,32 @@
+# Microsoft Clock Fluent redesign
+
+## Native acceptance resumed
+
+- [x] Start the portable build in isolated local storage and inspect all five native pages.
+- [x] Exercise Keyboard/Mouse sessions, live countdown, input locking, interval/delta validation and save/discard/cancel. Calendar-only entry, month/year/decade selection, invalid time rejection and a distant future schedule saved then disarmed successfully.
+- [x] Verify light/dark preview, theme discard, settings persistence and signed-out account presentation; trigger update feedback.
+- [ ] Complete final native retest after fixes, tray Start/Stop/reopen, app restart and clean shutdown. Computer Use remains stopped after physical Escape; do not claim these passed.
+- [x] Fix version display, account cancellation visibility/configuration explanation, vendor accent consistency and reentrant navigation; add focused regression coverage and rebuild package.
+- [x] Exclude contrast and screen-size/DPI measurements at the user's request. Earlier maximize/restore/minimum observations remain evidence only; no additional measurements.
+
+- [x] Replace MahApps with pinned WPF UI 4.3.0 and theme-aware Tabler control templates.
+- [x] Rebuild Clock-style shell, all pages and dedicated Settings navigation.
+- [x] Bind timer ring and countdown to real engine state; verify jitter, pause and reset behavior.
+- [x] Apply Fluent treatment to dialogs, tray, inputs, calendars and high contrast.
+- [x] Run Release build, complete regression suite, rendered visual checks and portable publish.
+- [ ] Complete the remaining native tray/restart/final-build checks after Computer Use becomes available. Contrast and screen-size/DPI measurements are excluded at the user's request.
+- [x] Record concrete verification results and remaining platform checks.
+
+## Review
+
+Implemented against the three Microsoft Clock screenshots supplied in this chat. Existing KeepMeAlive functionality and English labels are retained; official Tabler is the only rendered icon source. WPF UI is confined to the presentation project and both normal/publish dependency lockfiles are updated.
+
+- Release build: zero warnings/errors. Automated regression suite: 144 passed, zero failed/skipped after five acceptance defects were fixed.
+- Rendering covers five pages at 860×580, 1020×680 and 1200×940, light/dark/simulated high contrast and 100/150/200% render scales. Binding errors, accessible control names, Tabler inheritance, selected popup/day text, calendar month/year/decade navigation, tray composition and both dialog variants are checked.
+- Native launch exposed a missing tray style; fixed it and added tray resource composition to regression coverage. Expanded calendar tests exposed missing mode visibility; fixed and verified header/year/month selection behavior. Visual review also corrected transparent offscreen backgrounds, primary-button text inheritance, compact/reference gutters, empty error space and expander stretching.
+- Portable output: `artifacts/fluent-portable`, with portable marker, WPF UI and Tabler license notices. NuGet vulnerability scan reports no known vulnerable direct/transitive packages for the presentation project.
+- Native acceptance resumed: all five pages, Keyboard/Mouse sessions, countdown/input locking, validation, navigation dialogs, real calendar/year/month selection, future schedule save/disarm and theme preview/discard were exercised. See `tasks/verification/clock-design-2026-11-09.md` for the exact results. The user excluded contrast and screen-size/DPI measurements; subsequent UI actions remained stopped by Escape. Remaining tray/restart/final-build checks are not claimed complete. The isolated test process was cleaned up and no scheduled action remains enabled.
+
 # KeepMeAlive Privacy-First Portable Hardening
 
 - [x] Add task tracking and lessons files for the repo workflow.

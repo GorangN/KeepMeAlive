@@ -3,25 +3,24 @@
                     xmlns:tb="http://www.hardcodet.net/taskbar">
 
     <tb:TaskbarIcon x:Key="TrayIcon"
-                    IconSource="/Resources/Icons/tray_inactive.ico"
+                    IconSource="pack://application:,,,/KeepMeAlive;component/Resources/Icons/tray_inactive.ico"
                     ToolTipText="KeepMeAlive"
                     LeftClickCommand="{Binding ShowWindowCommand}"
                     DoubleClickCommand="{Binding ShowWindowCommand}">
         <tb:TaskbarIcon.ContextMenu>
-            <ContextMenu Style="{DynamicResource MahApps.Styles.ContextMenu}"
+            <ContextMenu
                          Background="{DynamicResource SurfaceContainerLowestBrush}"
                          Foreground="{DynamicResource OnSurfaceBrush}"
                          BorderBrush="{DynamicResource OutlineVariantBrush}"
                          BorderThickness="1"
                          HasDropShadow="True">
                 <ContextMenu.Resources>
-                    <Style TargetType="MenuItem"
-                           BasedOn="{StaticResource MahApps.Styles.MenuItem}">
+                    <Style TargetType="MenuItem" BasedOn="{StaticResource TrayMenuItemStyle}">
                         <Setter Property="Background" Value="Transparent"/>
                         <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}"/>
-                        <Setter Property="FontFamily" Value="{DynamicResource InterFont}"/>
+                        <Setter Property="FontFamily" Value="{DynamicResource UiFont}"/>
                         <Setter Property="FontSize" Value="13"/>
-                        <Setter Property="FontWeight" Value="Medium"/>
+                        <Setter Property="FontWeight" Value="Normal"/>
                         <Setter Property="Cursor" Value="Hand"/>
                         <Setter Property="MinWidth" Value="210"/>
                         <Setter Property="Padding" Value="12 8"/>

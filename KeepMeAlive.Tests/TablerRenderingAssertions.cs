@@ -46,7 +46,7 @@ internal static class TablerRenderingAssertions
         HasIcon(check, Assert.IsAssignableFrom<Geometry>(app.FindResource("Tabler.Minus")));
 
         var initialDate = new DateTime(2030, 5, 15);
-        var calendar = new Calendar { Style = (Style)app.FindResource("MahApps.Styles.Calendar.Base"), DisplayDate = initialDate };
+        var calendar = new Calendar { Style = (Style)app.FindResource("Clock.Calendar"), DisplayDate = initialDate };
         Layout(calendar, new Size(280, 240));
         var item = Assert.Single(Descendants(calendar).OfType<CalendarItem>());
         var previous = Assert.IsType<Button>(item.Template.FindName("PART_PreviousButton", item));
@@ -59,23 +59,55 @@ internal static class TablerRenderingAssertions
         Assert.Equal(initialDate.AddMonths(-1).Month, calendar.DisplayDate.Month);
         next.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         Assert.Equal(initialDate.Month, calendar.DisplayDate.Month);
+        var header = Assert.IsType<Button>(item.Template.FindName("PART_HeaderButton", item));
+        header.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Layout(calendar, new Size(280, 240));
+        Assert.Equal(CalendarMode.Year, calendar.DisplayMode);
+        var yearView = Assert.IsType<Grid>(item.Template.FindName("PART_YearView", item));
+        var monthView = Assert.IsType<Grid>(item.Template.FindName("PART_MonthView", item));
+        Assert.Equal(Visibility.Visible, yearView.Visibility);
+        Assert.Equal(Visibility.Collapsed, monthView.Visibility);
+        Assert.Equal(12, yearView.Children.OfType<CalendarButton>().Count());
+        Assert.All(yearView.Children.OfType<CalendarButton>(), button => Assert.True(button.ActualWidth > 0));
+        header.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Layout(calendar, new Size(280, 240));
+        Assert.Equal(CalendarMode.Decade, calendar.DisplayMode);
+        Assert.Equal(Visibility.Visible, yearView.Visibility);
+        Assert.False(header.IsEnabled);
+        var year = Assert.Single(yearView.Children.OfType<CalendarButton>(), button =>
+            button.DataContext is DateTime date && date.Year == 2032);
+        year.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Layout(calendar, new Size(280, 240));
+        Assert.Equal(CalendarMode.Year, calendar.DisplayMode);
+        Assert.Equal(2032, calendar.DisplayDate.Year);
+        Assert.Equal(Visibility.Visible, yearView.Visibility);
+        var august = Assert.Single(yearView.Children.OfType<CalendarButton>(), button =>
+            button.DataContext is DateTime date && date.Month == 8);
+        august.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Layout(calendar, new Size(280, 240));
+        Assert.Equal(CalendarMode.Month, calendar.DisplayMode);
+        Assert.Equal(2032, calendar.DisplayDate.Year);
+        Assert.Equal(8, calendar.DisplayDate.Month);
+        Assert.Equal(Visibility.Visible, monthView.Visibility);
+        Assert.NotEqual(Visibility.Visible, yearView.Visibility);
 
         foreach (var orientation in new[] { Orientation.Horizontal, Orientation.Vertical })
         {
-            var scrollbar = new ScrollBar { Style = (Style)app.FindResource("MahApps.Styles.ScrollBar"), Orientation = orientation, Maximum = 10, Value = 5 };
+            var scrollbar = new ScrollBar { Style = (Style)app.FindResource("Clock.ScrollBar"), Orientation = orientation, Maximum = 10, Value = 5, ViewportSize = 2 };
             Layout(scrollbar, orientation == Orientation.Vertical ? new Size(20, 200) : new Size(200, 20));
             var buttons = Descendants(scrollbar).OfType<RepeatButton>().Where(button =>
-                button.Command == ScrollBar.LineUpCommand || button.Command == ScrollBar.LineDownCommand ||
-                button.Command == ScrollBar.LineLeftCommand || button.Command == ScrollBar.LineRightCommand).ToArray();
+                button.Command == ScrollBar.PageUpCommand || button.Command == ScrollBar.PageDownCommand ||
+                button.Command == ScrollBar.PageLeftCommand || button.Command == ScrollBar.PageRightCommand).ToArray();
             Assert.Equal(2, buttons.Length);
             foreach (var button in buttons)
             {
-                var key = button.Command == ScrollBar.LineLeftCommand ? "Tabler.ChevronLeft" :
-                    button.Command == ScrollBar.LineRightCommand ? "Tabler.ChevronRight" : "Tabler.ChevronDown";
-                HasIcon(button, Assert.IsAssignableFrom<Geometry>(app.FindResource(key)));
                 Assert.False(button.Focusable);
-                Assert.Equal(50, button.Interval);
+                Assert.False(button.IsTabStop);
             }
+            var thumb = Assert.Single(Descendants(scrollbar).OfType<Thumb>());
+            Assert.True(thumb.ActualWidth > 0);
+            Assert.True(thumb.ActualHeight > 0);
+            Assert.Empty(Descendants(scrollbar).OfType<System.Windows.Shapes.Path>());
         }
     }
 

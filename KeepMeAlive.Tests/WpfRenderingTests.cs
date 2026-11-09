@@ -38,6 +38,14 @@ public sealed class WpfRenderingTests
                 var provider = services.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true });
                 provider.GetRequiredService<ISettingsService>().Load();
                 var main = provider.GetRequiredService<MainViewModel>();
+                var trayResources = new ResourceDictionary { Source = new Uri("pack://application:,,,/KeepMeAlive;component/TrayIcon/TrayIconView.xaml") };
+                using var tray = Assert.IsType<Hardcodet.Wpf.TaskbarNotification.TaskbarIcon>(trayResources["TrayIcon"]);
+                tray.DataContext = main;
+                var trayMenu = Assert.IsType<ContextMenu>(tray.ContextMenu);
+                trayMenu.ApplyTemplate();
+                trayMenu.Measure(new Size(240, 220));
+                trayMenu.Arrange(new Rect(0, 0, 240, 220));
+                Assert.Equal(4, trayMenu.Items.OfType<MenuItem>().Count());
                 var window = new MainWindowView { DataContext = main };
                 app.MainWindow = window;
                 var content = Assert.IsAssignableFrom<FrameworkElement>(window.Content);
@@ -48,23 +56,31 @@ public sealed class WpfRenderingTests
                 Directory.CreateDirectory(output);
                 foreach (var theme in new[] { "Light", "Dark", "HighContrast" })
                 {
-                    foreach (var page in new[] { NavigationPage.Dashboard, NavigationPage.Scheduling, NavigationPage.Advanced, NavigationPage.Account })
+                    foreach (var page in new[] { NavigationPage.Dashboard, NavigationPage.Scheduling, NavigationPage.Advanced, NavigationPage.Account, NavigationPage.Settings })
                     {
                         main.NavigateCommand.Execute(page);
-                        foreach (var size in new[] { new Size(860, 580), new Size(1020, 680) })
+                        foreach (var size in new[] { new Size(860, 580), new Size(1020, 680), new Size(1200, 940) })
                         {
+                            window.Width = size.Width;
+                            window.Height = size.Height;
+                            window.Measure(size);
+                            window.Arrange(new Rect(size));
                             content.Measure(size);
                             content.Arrange(new Rect(size));
                             content.UpdateLayout();
                             var names = AssertNamedInteractiveControls(content);
-                            foreach (var navigation in new[] { "Dashboard", "Scheduling", "Advanced", "Account" })
+                            foreach (var navigation in new[] { "Dashboard", "Scheduling", "Advanced", "Account", "Settings" })
                             {
                                 Assert.Contains(navigation, names);
                             }
-                            Assert.Contains("Quit KeepMeAlive", names);
+                            if (page == NavigationPage.Settings)
+                            {
+                                Assert.Contains("Quit KeepMeAlive", names);
+                                Assert.Contains("Appearance", names);
+                                Assert.Contains("Network preferences", names);
+                            }
                             if (page == NavigationPage.Dashboard)
                             {
-                                Assert.Contains("Preferences", names);
                                 var interval = VisualDescendants(content).OfType<TextBox>().Single(control =>
                                     AutomationProperties.GetName(control) == "Pulse interval in seconds" && IsVisibleWithin(control, content));
                                 interval.Text = "abc";
@@ -124,6 +140,8 @@ public sealed class WpfRenderingTests
                                 main.SettingsViewModel.DiscardCommand.Execute(null);
                             }
                             ThemeService.ApplyResources(theme == "HighContrast" ? "Light" : theme, theme == "HighContrast");
+                            Assert.Equal(Assert.IsType<SolidColorBrush>(app.FindResource("PrimaryBrush")).Color,
+                                Assert.IsType<SolidColorBrush>(Wpf.Ui.Appearance.ApplicationAccentColorManager.PrimaryAccentBrush).Color);
                             if (theme == "HighContrast")
                             {
                                 Assert.Same(SystemColors.WindowTextBrush, app.FindResource("ErrorBrush"));
@@ -132,7 +150,7 @@ public sealed class WpfRenderingTests
                             content.UpdateLayout();
                             if (theme != "HighContrast")
                             {
-                                Assert.Equal(ColorConverter.ConvertFromString(theme == "Dark" ? "#111113" : "#F2F2F7"),
+                                Assert.Equal(ColorConverter.ConvertFromString(theme == "Dark" ? "#202422" : "#F4FAF8"),
                                     Assert.IsType<SolidColorBrush>(app.FindResource("BackgroundBrush")).Color);
                             }
                             TablerRenderingAssertions.IconsUseParentBrush(content, app);
@@ -148,6 +166,11 @@ public sealed class WpfRenderingTests
                             }
                         }
                     }
+                }
+                foreach (var theme in new[] { "Light", "Dark", "HighContrast" })
+                {
+                    ThemeService.ApplyResources(theme == "HighContrast" ? "Light" : theme, theme == "HighContrast");
+                    DialogRenderingAssertions.VerifyAndRender(theme, output);
                 }
                 ThemeService.ApplyResources("Light", false);
                 HighContrastRenderingAssertions.NormalControlBrushesReturn(app);

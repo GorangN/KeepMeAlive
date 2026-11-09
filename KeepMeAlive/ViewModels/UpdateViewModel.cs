@@ -23,18 +23,18 @@ public partial class UpdateViewModel : ObservableObject
     private bool _isChecking;
 
     /// <summary>Gets the running application version.</summary>
-    public string AppVersion { get; } =
-        Assembly.GetExecutingAssembly()
-            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-            ?.InformationalVersion?.Split('+')[0] ?? "1.0.0";
+    public string AppVersion { get; }
 
     /// <summary>Creates the release-check controls.</summary>
     /// <param name="updateService">The release metadata service.</param>
     /// <param name="browser">The system browser adapter.</param>
-    public UpdateViewModel(IUpdateService updateService, IBrowserLauncher browser)
+    /// <param name="appVersion">The executable's informational version; null uses the application-layer version for standalone construction.</param>
+    public UpdateViewModel(IUpdateService updateService, IBrowserLauncher browser, string? appVersion = null)
     {
         _updateService = updateService;
         _browser = browser;
+        AppVersion = (appVersion ?? Assembly.GetExecutingAssembly()
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "1.0.0").Split('+')[0];
     }
 
     [RelayCommand]

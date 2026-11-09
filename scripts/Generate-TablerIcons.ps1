@@ -142,7 +142,7 @@ function Render-Activity([int]$Width, [int]$Height, [double]$IconSize, [string]$
     $bitmap.Render($visual)
     return $bitmap
 }
-foreach ($state in @(@{ Name = 'inactive'; Color = '#636366' }, @{ Name = 'active'; Color = '#0066CC' })) {
+foreach ($state in @(@{ Name = 'inactive'; Color = '#606663' }, @{ Name = 'active'; Color = '#007632' })) {
     $sizes = @(16, 20, 24, 32, 48, 64, 128, 256)
     $images = [Collections.Generic.List[byte[]]]::new()
     foreach ($size in $sizes) {
@@ -170,7 +170,7 @@ foreach ($state in @(@{ Name = 'inactive'; Color = '#636366' }, @{ Name = 'activ
     finally { $writer.Dispose(); $output.Dispose() }
 }
 foreach ($wizard in @(@{ Name = 'small'; Width = 55; Height = 55; Size = 40 }, @{ Name = 'large'; Width = 164; Height = 314; Size = 96 })) {
-    $bitmap = Render-Activity $wizard.Width $wizard.Height $wizard.Size '#0066CC' $true
+    $bitmap = Render-Activity $wizard.Width $wizard.Height $wizard.Size '#007632' $true
     $converted = [Windows.Media.Imaging.FormatConvertedBitmap]::new($bitmap, [Windows.Media.PixelFormats]::Bgr24, $null, 0)
     $encoder = [Windows.Media.Imaging.BmpBitmapEncoder]::new()
     $encoder.Frames.Add([Windows.Media.Imaging.BitmapFrame]::Create($converted))

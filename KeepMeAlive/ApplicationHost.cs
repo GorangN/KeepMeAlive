@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using System.IO.Pipes;
 using System.Net.Http;
+using System.Reflection;
 using System.Security.Principal;
 using System.Windows;
 using System.Windows.Threading;
@@ -124,7 +125,10 @@ internal sealed class ApplicationHost : IDisposable
         services.AddSingleton<DashboardViewModel>();
         services.AddSingleton<SettingsViewModel>();
         services.AddSingleton<AccountViewModel>();
-        services.AddSingleton<UpdateViewModel>();
+        services.AddSingleton(provider => new UpdateViewModel(
+            provider.GetRequiredService<IUpdateService>(), provider.GetRequiredService<IBrowserLauncher>(),
+            typeof(App).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+                ?? typeof(App).Assembly.GetName().Version?.ToString(3) ?? "1.0.0"));
         services.AddSingleton<MainViewModel>();
     }
 

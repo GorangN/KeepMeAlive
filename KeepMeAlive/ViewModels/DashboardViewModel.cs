@@ -175,6 +175,10 @@ public partial class DashboardViewModel : ObservableObject, IAsyncDisposable
     partial void OnIntervalSecondsChanged(int value)
     {
         if (!_editingInputText) { IntervalSecondsText = value.ToString(System.Globalization.CultureInfo.InvariantCulture); }
+        if (!HasPulseCountdown && !IsPaused)
+        {
+            PulseCountdownDisplay = FormatCountdown(Math.Max(0, value));
+        }
         MarkDirty();
     }
     partial void OnVirtualKeyCodeChanged(int value)
@@ -220,6 +224,7 @@ public partial class DashboardViewModel : ObservableObject, IAsyncDisposable
             NextPulseDisplay = state.NextPulseAt.HasValue
                 ? $"Next input in {Math.Max(0, (int)Math.Ceiling((state.NextPulseAt.Value - _clock.GetUtcNow()).TotalSeconds))}s"
                 : state.IsPaused ? "Resumes when your session is available" : "Start a session to begin";
+            UpdatePulseCountdown(state);
             _messenger.Send(new KeepAliveStatusMessage(state.IsRunning));
             if (wasRunning && !state.IsRunning && _settingsService.Current.ShowNotifications)
             {

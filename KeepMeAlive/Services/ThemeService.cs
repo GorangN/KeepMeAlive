@@ -2,6 +2,9 @@ using Microsoft.Win32;
 using KeepMeAlive.Services.Interfaces;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Media;
+using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
 namespace KeepMeAlive.Services;
 /// <summary>Follows live system appearance with a solid high-contrast fallback.</summary>
 public sealed class ThemeService : IThemeService, IDisposable
@@ -28,23 +31,21 @@ public sealed class ThemeService : IThemeService, IDisposable
         var dictionaries = System.Windows.Application.Current.Resources.MergedDictionaries;
         var highContrastControls = dictionaries.FirstOrDefault(d => d.Source?.OriginalString.EndsWith("HighContrastControls.xaml", StringComparison.Ordinal) == true);
         if (highContrastControls != null) { dictionaries.Remove(highContrastControls); }
-        var controlsTheme = dictionaries.FirstOrDefault(d => d.Source?.OriginalString.Contains("/MahApps.Metro;component/Styles/Themes/", StringComparison.Ordinal) == true);
-        if (controlsTheme != null)
-        {
-            var index = dictionaries.IndexOf(controlsTheme);
-            dictionaries[index] = new ResourceDictionary { Source = new Uri($"pack://application:,,,/MahApps.Metro;component/Styles/Themes/{resolved}.Blue.xaml") };
-        }
+        ApplicationThemeManager.Apply(resolved == "Dark" ? ApplicationTheme.Dark : ApplicationTheme.Light, WindowBackdropType.None, false);
         var existing = dictionaries.FirstOrDefault(d => d.Source?.OriginalString.EndsWith("LightTheme.xaml", StringComparison.Ordinal) == true || d.Source?.OriginalString.EndsWith("DarkTheme.xaml", StringComparison.Ordinal) == true);
         if (existing != null) { dictionaries.Remove(existing); }
-        dictionaries.Insert(0, CreateResources(resolved, highContrast));
+        var palette = CreateResources(resolved, highContrast);
+        dictionaries.Add(palette);
+        var accent = ((SolidColorBrush)palette["PrimaryBrush"]).Color;
+        ApplicationAccentColorManager.Apply(accent, accent, accent, accent);
         if (highContrast)
         {
             var controls = new ResourceDictionary { Source = new Uri("pack://application:,,,/KeepMeAlive;component/Resources/Themes/HighContrastControls.xaml") };
-            controls["MahApps.Styles.ComboBoxItem"] = controls["HighContrast.ComboBoxItem"];
-            controls["MahApps.Styles.CalendarDayButton"] = controls["HighContrast.CalendarDayButton"];
-            controls["MahApps.Styles.CalendarButton"] = controls["HighContrast.CalendarButton"];
-            controls["MahApps.Styles.Button.Calendar.Header"] = controls["HighContrast.CalendarHeader"];
             dictionaries.Add(controls);
+        }
+        foreach (Window window in System.Windows.Application.Current.Windows)
+        {
+            WindowMaterial.Apply(window, highContrast);
         }
     }
     internal static ResourceDictionary CreateResources(string resolved, bool highContrast)
@@ -62,6 +63,11 @@ public sealed class ThemeService : IThemeService, IDisposable
             theme["OutlineVariantBrush"] = SystemColors.WindowTextBrush;
             theme["ToggleOffBrush"] = SystemColors.WindowTextBrush;
             theme["ToggleThumbBrush"] = SystemColors.WindowBrush;
+            theme["SelectedBackgroundBrush"] = SystemColors.HighlightBrush;
+            theme["SelectedForegroundBrush"] = SystemColors.HighlightTextBrush;
+            theme["ControlHoverBrush"] = SystemColors.HighlightBrush;
+            theme["NavItemActiveBgBrush"] = SystemColors.WindowBrush;
+            theme["RingTrackBrush"] = SystemColors.GrayTextBrush;
         }
         return theme;
     }
